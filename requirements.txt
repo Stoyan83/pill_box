@@ -1,0 +1,4 @@
+greenlet==2.0.2
+SQLAlchemy==2.0.20
+typing-extensions==4.7.1
+xlrd==2.0.1
