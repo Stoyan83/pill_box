@@ -6,7 +6,7 @@ import models
 def main():
     root = tk.Tk()
     view_instance = view.View(root)
-    model_instance = models.Client()
+    model_instance = models.Medicine()
     controller.Controller(view=view_instance, model=model_instance)
     root.mainloop()
 

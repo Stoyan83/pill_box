@@ -1,6 +1,6 @@
 
 from db import Base, engine, Session
-from models import Client
+from models import Medicine
 
 class Controller:
     def __init__(self, model=None, view=None):
