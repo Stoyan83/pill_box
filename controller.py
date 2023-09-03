@@ -10,4 +10,13 @@ class Controller:
         self.create_database()
 
     def create_database(self):
-        self.model.create()
+        self.model.create_table()
+
+        session = Session()
+        count = session.query(Medicine).count()
+        session.close()
+
+        if count == 0:
+            self.model.extract_and_insert_data()
+        else:
+            print("Database is not empty. Skipping data extraction and insertion.")

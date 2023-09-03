@@ -4,6 +4,7 @@ __pycache__/
 
 # Local development settings
 *.env
+*.venv
 
 # Compiled Python files
 *.pyc
