@@ -29,13 +29,37 @@ class View():
         frame = ttk.Frame(self.notebook)
         self.notebook.add(frame, text=page_title)
 
+        canvas = tk.Canvas(frame)
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=canvas.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        medicine_frame_container = ttk.Frame(canvas)
+        canvas.create_window((0, 0), window=medicine_frame_container, anchor=tk.NW)
+
+        canvas.bind("<Configure>", lambda event, canvas=canvas: self.on_canvas_configure(event, canvas))
+        canvas.bind_all("<MouseWheel>", lambda event, canvas=canvas: self.on_mousewheel(event, canvas))
+
+
         for data in data_list:
-            medicine_frame = ttk.Frame(frame, borderwidth=1, relief="solid")
+            medicine_frame = ttk.Frame(medicine_frame_container, borderwidth=1, relief="solid")
             medicine_frame.pack(pady=5, padx=10, fill="x")
 
             for label, value in data.items():
                 label_widget = ttk.Label(medicine_frame, text=f"{label}: {value}")
                 label_widget.pack(padx=5, pady=2, anchor="w", fill="x")
+
+        medicine_frame_container.update_idletasks()
+        canvas.config(scrollregion=canvas.bbox("all"))
+
+    def on_canvas_configure(self, event, canvas):
+        canvas.itemconfig(canvas.find_withtag("all"), width=event.width)
+
+    def on_mousewheel(self, event, canvas):
+        canvas.yview_scroll(-1*(event.delta//120), "units")
 
 
 
@@ -119,10 +143,8 @@ class View():
 
             for item_label, command in menu_items:
                 if isinstance(command, str):
-                    # Check if the command is a string (i.e., the name of a method)
                     menu.add_command(label=item_label, command=lambda cmd=command: self.execute_command(cmd))
                 else:
-                    # Assume it's a callable (e.g., a function)
                     menu.add_command(label=item_label, command=command)
     def execute_command(self, command):
         getattr(self.controller, command)()
