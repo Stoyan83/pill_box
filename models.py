@@ -102,10 +102,9 @@ class Medicine(Base):
                     "INN": medicine.inn,
                     "ATC Code": medicine.atc_code,
                     "Prescription Mode": medicine.prescription_mode
-                    # Add more attributes here as needed
                 }
                 medicine_data_list.append(medicine_data)
 
             return medicine_data_list
-        else:
-            return []
+
+        return []
