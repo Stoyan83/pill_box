@@ -19,11 +19,22 @@ class View():
         self.load_widgets()
 
     def load_widgets(self):
-        self.label = ttk.Label(self.master, text="Hello")
-        self.label.pack()
-        self.label = ttk.Label(self.master, text="World")
-        self.label.pack()
+        self.notebook = ttk.Notebook(self.master)
+        self.notebook.pack(fill=tk.BOTH, expand=True)
+
         self.load_menu()
+
+
+    def create_notebook(self, page_title, data):
+        frame = ttk.Frame(self.notebook)
+        self.notebook.add(frame, text=page_title)
+
+        for label, value in data.items():
+            label_frame = ttk.Frame(frame, borderwidth=1, relief="solid")
+            label_frame.pack(pady=5, padx=10, fill="x")
+
+            label_widget = ttk.Label(label_frame, text=f"{label}: {value}")
+            label_widget.pack(padx=5, pady=2, anchor="w", fill="x")
 
 
     def load_login_window(self):
@@ -82,18 +93,18 @@ class View():
     def load_menu(self):
         menu_data = [
             ("Menu", [
-                ("Sales", None)
+                ("Nomenclature", "show_nomenclature")
             ]),
             ("Admin Menu", [
                 ("Users", [
-                    ("Add New User", None),
-                    ("Show Users", None)
+                    ("Add New User", "add_new_user"),
+                    ("Show Users", "show_users")
                 ])
             ]),
             ("Help", [
-                ("About", None),
-                ("Documentation", None),
-                ("Log Out", None)
+                ("About", "show_about"),
+                ("Documentation", "show_documentation"),
+                ("Log Out", "log_out")
             ])
         ]
 
@@ -110,6 +121,9 @@ class View():
                     menu.add_cascade(label=item_label, menu=sub_menu)
 
                     for sub_item_label, sub_command in command:
-                        sub_menu.add_command(label=sub_item_label, command=sub_command)
+                        sub_menu.add_command(label=sub_item_label, command=lambda cmd=sub_command: self.execute_command(cmd))
                 else:
-                    menu.add_command(label=item_label, command=command)
+                    menu.add_command(label=item_label, command=lambda cmd=command: self.execute_command(cmd))
+
+    def execute_command(self, command):
+        getattr(self.controller, command)()

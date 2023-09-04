@@ -25,3 +25,7 @@ class Controller:
         print(workplace)
         self.view.master.deiconify()
         self.view.top_login.destroy()
+
+
+    def show_nomenclature(self):
+        print("showw")
