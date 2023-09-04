@@ -15,6 +15,7 @@ class View():
         self.style.theme_use('flatly')
 
         self.current_notebook_tab = None
+        self.search_frame_loaded = False
 
         self.selected_workplace = tk.StringVar()
         self.load_login_window()
@@ -28,14 +29,12 @@ class View():
 
 
     def create_notebook(self, page_title, data_list):
-        # Close the current tab if it exists
         if self.current_notebook_tab is not None:
             self.notebook.forget(self.current_notebook_tab)
 
         frame = ttk.Frame(self.notebook)
         self.notebook.add(frame, text=page_title)
 
-        # Set the current tab variable to the newly added tab
         self.current_notebook_tab = frame
 
         canvas = tk.Canvas(frame)
@@ -155,30 +154,32 @@ class View():
                     menu.add_command(label=item_label, command=lambda cmd=command: self.execute_command(cmd))
                 else:
                     menu.add_command(label=item_label, command=command)
+
     def execute_command(self, command):
         getattr(self.controller, command)()
 
-
     def load_search(self):
-        search_frame = ttk.Frame(self.master)
-        search_frame.pack(pady=10, padx=10, fill="x")
+        if not self.search_frame_loaded:
+            search_frame = ttk.Frame(self.master)
+            search_frame.pack(pady=10, padx=10, fill="x")
 
-        search_label = ttk.Label(search_frame, text="Search:")
-        search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            search_label = ttk.Label(search_frame, text="Search:")
+            search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-        self.search_entry = ttk.Entry(search_frame)
-        self.search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+            self.search_entry = ttk.Entry(search_frame)
+            self.search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
 
-        self.criteria_listbox = ttk.Combobox(search_frame, values=["Name", "ID"])
-        self.criteria_listbox.set("Name")
-        self.criteria_listbox.grid(row=0, column=2, padx=5, pady=5, sticky="e")
+            self.criteria_listbox = ttk.Combobox(search_frame, values=["Name", "ID"])
+            self.criteria_listbox.set("Name")
+            self.criteria_listbox.grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
-        search_button = ttk.Button(search_frame, text="Search", command=self.on_search)
-        search_button.grid(row=0, column=3, padx=5, pady=5)
+            search_button = ttk.Button(search_frame, text="Search", command=self.on_search)
+            search_button.grid(row=0, column=3, padx=5, pady=5)
 
-        self.search_results_label = ttk.Label(self.master, text="", font=("Arial", 16))
-        self.search_results_label.pack(pady=10)
+            self.search_results_label = ttk.Label(self.master, text="", font=("Arial", 16))
+            self.search_results_label.pack(pady=10)
 
+            self.search_frame_loaded = True
 
     def on_search(self):
         search_term = self.search_entry.get()
