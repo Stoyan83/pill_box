@@ -150,10 +150,23 @@ class View():
             self.menu_bar.add_cascade(label=menu_label, menu=menu)
 
             for item_label, command in menu_items:
-                if isinstance(command, str):
-                    menu.add_command(label=item_label, command=lambda cmd=command: self.execute_command(cmd))
+                if isinstance(command, list):
+                    self.add_submenu(menu, item_label, command)
                 else:
-                    menu.add_command(label=item_label, command=command)
+                    self.add_menu_item(menu, item_label, command)
+
+    def add_submenu(self, parent_menu, label, submenu_data):
+        submenu = tk.Menu(parent_menu, tearoff=0)
+        parent_menu.add_cascade(label=label, menu=submenu)
+
+        for sub_item_label, sub_command in submenu_data:
+            self.add_menu_item(submenu, sub_item_label, sub_command)
+
+    def add_menu_item(self, menu, label, command):
+        if isinstance(command, str):
+            menu.add_command(label=label, command=lambda cmd=command: self.execute_command(cmd))
+        else:
+            menu.add_command(label=label, command=command)
 
     def execute_command(self, command):
         getattr(self.controller, command)()
