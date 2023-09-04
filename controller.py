@@ -28,4 +28,5 @@ class Controller:
 
 
     def show_nomenclature(self):
-        print("showw")
+        nomenclature = self.model.search_medicines("analgin")
+        self.view.create_notebook("title", nomenclature)

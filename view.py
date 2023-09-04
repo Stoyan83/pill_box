@@ -25,16 +25,18 @@ class View():
         self.load_menu()
 
 
-    def create_notebook(self, page_title, data):
+    def create_notebook(self, page_title, data_list):
         frame = ttk.Frame(self.notebook)
         self.notebook.add(frame, text=page_title)
 
-        for label, value in data.items():
-            label_frame = ttk.Frame(frame, borderwidth=1, relief="solid")
-            label_frame.pack(pady=5, padx=10, fill="x")
+        for data in data_list:
+            medicine_frame = ttk.Frame(frame, borderwidth=1, relief="solid")
+            medicine_frame.pack(pady=5, padx=10, fill="x")
 
-            label_widget = ttk.Label(label_frame, text=f"{label}: {value}")
-            label_widget.pack(padx=5, pady=2, anchor="w", fill="x")
+            for label, value in data.items():
+                label_widget = ttk.Label(medicine_frame, text=f"{label}: {value}")
+                label_widget.pack(padx=5, pady=2, anchor="w", fill="x")
+
 
 
     def load_login_window(self):

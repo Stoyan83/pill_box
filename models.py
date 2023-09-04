@@ -3,6 +3,22 @@ from db import Base, engine, Session
 import xlrd
 
 
+class SessionManager:
+    _session = None
+
+    @classmethod
+    def get_session(cls):
+        if cls._session is None:
+            cls._session = Session()
+        return cls._session
+
+    @classmethod
+    def close_session(cls):
+        if cls._session:
+            cls._session.close()
+            cls._session = None
+
+
 class Medicine(Base):
     __tablename__ = 'medicines'
 
@@ -22,19 +38,22 @@ class Medicine(Base):
     atc_code = Column(String)
     prescription_mode = Column(String)
 
+    def __init__(self, session, **kwargs):
+        super().__init__(**kwargs)
+        self.session = session
+
     def create_table(self):
         Base.metadata.create_all(engine)
 
     def extract_and_insert_data(self):
-
         workbook = xlrd.open_workbook('IAL_Register_07_2023.xls')
         sheet = workbook.sheet_by_index(0)
-
-        session = Session()
+        session = SessionManager.get_session()
 
         for row_index in range(1, sheet.nrows):
             row_data = sheet.row_values(row_index)
             medicine = Medicine(
+                session=session,
                 reg_number=row_data[0],
                 identifier=row_data[1],
                 trade_name=row_data[2],
@@ -50,7 +69,25 @@ class Medicine(Base):
                 atc_code=row_data[12],
                 prescription_mode=row_data[13]
             )
-            session.add(medicine)
+            self.session.add(medicine)
 
-        session.commit()
-        session.close()
+        self.session.commit()
+
+    def search_medicines(self, search_term):
+        query = self.session.query(Medicine).filter(
+            (Medicine.trade_name.like(f"%{search_term}%")) |
+            (Medicine.id == search_term)
+        )
+
+        medicines = query.all()
+        medicine_data_list = []
+
+        for medicine in medicines:
+            medicine_data = {
+                "Medicine ID": medicine.id,
+                "Trade Name": medicine.trade_name,
+                "Active Ingredient Quantity": medicine.active_ingredient_quantity,
+            }
+            medicine_data_list.append(medicine_data)
+
+        return medicine_data_list
