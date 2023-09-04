@@ -95,7 +95,7 @@ class View():
     def load_menu(self):
         menu_data = [
             ("Menu", [
-                ("Nomenclature", "show_nomenclature")
+                ("Nomenclature", self.load_search)
             ]),
             ("Admin Menu", [
                 ("Users", [
@@ -118,14 +118,37 @@ class View():
             self.menu_bar.add_cascade(label=menu_label, menu=menu)
 
             for item_label, command in menu_items:
-                if isinstance(command, list):
-                    sub_menu = tk.Menu(menu, tearoff=0)
-                    menu.add_cascade(label=item_label, menu=sub_menu)
-
-                    for sub_item_label, sub_command in command:
-                        sub_menu.add_command(label=sub_item_label, command=lambda cmd=sub_command: self.execute_command(cmd))
-                else:
+                if isinstance(command, str):
+                    # Check if the command is a string (i.e., the name of a method)
                     menu.add_command(label=item_label, command=lambda cmd=command: self.execute_command(cmd))
-
+                else:
+                    # Assume it's a callable (e.g., a function)
+                    menu.add_command(label=item_label, command=command)
     def execute_command(self, command):
         getattr(self.controller, command)()
+
+
+    def load_search(self):
+        search_frame = ttk.Frame(self.master)
+        search_frame.pack(pady=10, padx=10, fill="x")
+
+        search_label = ttk.Label(search_frame, text="Search:")
+        search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+        self.search_entry = ttk.Entry(search_frame)
+        self.search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+
+        self.criteria_listbox = ttk.Combobox(search_frame, values=["Name", "ID"])
+        self.criteria_listbox.set("Name")
+        self.criteria_listbox.grid(row=0, column=2, padx=5, pady=5, sticky="e")
+
+        search_button = ttk.Button(search_frame, text="Search", command=self.on_search)
+        search_button.grid(row=0, column=3, padx=5, pady=5)
+
+        self.search_results_label = ttk.Label(self.master, text="", font=("Arial", 16))
+        self.search_results_label.pack(pady=10)
+
+
+    def on_search(self):
+        search_term = self.search_entry.get()
+        self.controller.show_nomenclature(search_term)
