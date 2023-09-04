@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from utils import *
+from ttkbootstrap import Style
 
 
 class View():
@@ -12,11 +13,15 @@ class View():
         self.load_login_window()
         self.load_widgets()
 
+        self.style = Style()
+        self.style.theme_use('pulse')
+
     def load_widgets(self):
         self.label = ttk.Label(self.master, text="Hello")
         self.label.pack()
         self.label = ttk.Label(self.master, text="World")
         self.label.pack()
+        self.load_menu()
 
 
     def load_login_window(self):
@@ -52,3 +57,27 @@ class View():
 
     def on_login_window_close(self):
         self.top_login.destroy()
+
+
+    def load_menu(self):
+        self.menu_bar = tk.Menu(self.master)
+        self.master.config(menu=self.menu_bar)
+
+        self.file_menu = tk.Menu(self.menu_bar, tearoff=0)
+        self.menu_bar.add_cascade(label="Menu", menu=self.file_menu)
+        self.file_menu.add_command(label="Sales")
+
+        self.settings_menu = tk.Menu(self.menu_bar, tearoff=0)
+        self.menu_bar.add_cascade(label="Admin Menu", menu=self.settings_menu)
+
+        self.users_menu = tk.Menu(self.settings_menu, tearoff=0)
+        self.settings_menu.add_cascade(label="Users", menu=self.users_menu)
+
+        self.users_menu.add_command(label="Add New User")
+        self.users_menu.add_command(label="Show Users")
+
+        self.help_menu = tk.Menu(self.menu_bar, tearoff=0)
+        self.menu_bar.add_cascade(label="Help", menu=self.help_menu)
+        self.help_menu.add_command(label="About")
+        self.help_menu.add_command(label="Documentation")
+        self.help_menu.add_command(label="Log Out")

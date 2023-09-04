@@ -1,4 +1,5 @@
 import tkinter as tk
+from utils import WindowUtils
 import view
 import controller
 import models
@@ -11,6 +12,7 @@ def main():
     model_instance = models.Medicine()
     controller_instance = controller.Controller(view=view_instance, model=model_instance)
     view_instance.controller = controller_instance
+    WindowUtils.center_window(root, 1000, 800)
     root.mainloop()
 
 if __name__ == "__main__":
