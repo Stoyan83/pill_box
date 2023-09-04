@@ -58,26 +58,37 @@ class View():
     def on_login_window_close(self):
         self.top_login.destroy()
 
-
     def load_menu(self):
+        menu_data = [
+            ("Menu", [
+                ("Sales", None)
+            ]),
+            ("Admin Menu", [
+                ("Users", [
+                    ("Add New User", None),
+                    ("Show Users", None)
+                ])
+            ]),
+            ("Help", [
+                ("About", None),
+                ("Documentation", None),
+                ("Log Out", None)
+            ])
+        ]
+
         self.menu_bar = tk.Menu(self.master)
         self.master.config(menu=self.menu_bar)
 
-        self.file_menu = tk.Menu(self.menu_bar, tearoff=0)
-        self.menu_bar.add_cascade(label="Menu", menu=self.file_menu)
-        self.file_menu.add_command(label="Sales")
+        for menu_label, menu_items in menu_data:
+            menu = tk.Menu(self.menu_bar, tearoff=0)
+            self.menu_bar.add_cascade(label=menu_label, menu=menu)
 
-        self.settings_menu = tk.Menu(self.menu_bar, tearoff=0)
-        self.menu_bar.add_cascade(label="Admin Menu", menu=self.settings_menu)
+            for item_label, command in menu_items:
+                if isinstance(command, list):
+                    sub_menu = tk.Menu(menu, tearoff=0)
+                    menu.add_cascade(label=item_label, menu=sub_menu)
 
-        self.users_menu = tk.Menu(self.settings_menu, tearoff=0)
-        self.settings_menu.add_cascade(label="Users", menu=self.users_menu)
-
-        self.users_menu.add_command(label="Add New User")
-        self.users_menu.add_command(label="Show Users")
-
-        self.help_menu = tk.Menu(self.menu_bar, tearoff=0)
-        self.menu_bar.add_cascade(label="Help", menu=self.help_menu)
-        self.help_menu.add_command(label="About")
-        self.help_menu.add_command(label="Documentation")
-        self.help_menu.add_command(label="Log Out")
+                    for sub_item_label, sub_command in command:
+                        sub_menu.add_command(label=sub_item_label, command=sub_command)
+                else:
+                    menu.add_command(label=item_label, command=command)
