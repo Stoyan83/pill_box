@@ -179,8 +179,10 @@ class View():
             search_label = ttk.Label(search_frame, text="Search:")
             search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-            self.search_entry = ttk.Entry(search_frame)
+            self.search_entry = ttk.Entry(search_frame, validate="key")
             self.search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+
+            self.search_entry['validatecommand'] = (self.master.register(self.validate_id), '%P')
 
             self.criteria_listbox = ttk.Combobox(search_frame, values=["Name", "ID"])
             self.criteria_listbox.set("Name")
@@ -194,6 +196,13 @@ class View():
 
             self.search_frame_loaded = True
 
+    def validate_id(self, text):
+
+        if self.criteria_listbox.get() == "ID":
+            return text.isdigit()
+        return True
+
     def on_search(self):
         search_term = self.search_entry.get()
         self.controller.show_nomenclature(search_term)
+        self.search_entry.delete(0, tk.END)
