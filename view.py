@@ -47,8 +47,8 @@ class View():
         medicine_frame_container = ttk.Frame(canvas)
         canvas.create_window((0, 0), window=medicine_frame_container, anchor=tk.NW)
 
-        canvas.bind("<Configure>", lambda event, canvas=canvas: self.on_canvas_configure(event, canvas))
-        canvas.bind_all("<MouseWheel>", lambda event, canvas=canvas: self.on_mousewheel(event, canvas))
+        canvas.bind("<Configure>", lambda event, canvas=canvas: canvas.itemconfig(canvas.find_withtag("all"), width=event.width))
+        canvas.bind_all("<MouseWheel>", lambda event, canvas=canvas: canvas.yview_scroll(-1*(event.delta//120), "units"))
 
         for data in data_list:
             medicine_frame = ttk.Frame(medicine_frame_container, borderwidth=1, relief="solid")
@@ -67,6 +67,7 @@ class View():
         medicine_frame_container.update_idletasks()
         canvas.config(scrollregion=canvas.bbox("all"))
 
+
     def toggle_label_visibility(self, label, data):
         if label.is_visible:
             label.config(state=tk.HIDDEN)
@@ -76,16 +77,11 @@ class View():
             additional_info = "\n".join([f"{key}: {value}" for key, value in data.items()])
             label.config(text=additional_info)
 
+        canvas = self.current_notebook_tab.winfo_children()[0]
+        canvas.update_idletasks()
+        canvas.config(scrollregion=canvas.bbox("all"))
+
         label.is_visible = not label.is_visible
-
-
-
-
-    def on_canvas_configure(self, event, canvas):
-        canvas.itemconfig(canvas.find_withtag("all"), width=event.width)
-
-    def on_mousewheel(self, event, canvas):
-        canvas.yview_scroll(-1*(event.delta//120), "units")
 
     def load_login_window(self):
         self.top_login = tk.Toplevel(self.master)
