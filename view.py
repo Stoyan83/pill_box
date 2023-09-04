@@ -73,7 +73,6 @@ class View():
 
     def load_login_window(self):
         self.top_login = tk.Toplevel(self.master)
-        self.top_login.title("Login")
         WindowUtils.center_window(self.top_login, 400, 500)
 
         login_label = ttk.Label(
@@ -182,8 +181,6 @@ class View():
             self.search_entry = ttk.Entry(search_frame, validate="key")
             self.search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
 
-            self.search_entry['validatecommand'] = (self.master.register(self.validate_id), '%P')
-
             self.criteria_listbox = ttk.Combobox(search_frame, values=["Name", "ID"])
             self.criteria_listbox.set("Name")
             self.criteria_listbox.grid(row=0, column=2, padx=5, pady=5, sticky="e")
@@ -196,14 +193,8 @@ class View():
 
             self.search_frame_loaded = True
 
-    def validate_id(self, text):
-
-        if self.criteria_listbox.get() == "ID":
-            return text.isdigit()
-        return True
-
     def on_search(self):
         search_term = self.search_entry.get()
-        search_criteria = self.criteria_listbox.get()  
+        search_criteria = self.criteria_listbox.get()
         self.controller.show_nomenclature(search_term, search_criteria)
         self.search_entry.delete(0, tk.END)
