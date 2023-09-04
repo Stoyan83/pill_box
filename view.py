@@ -3,7 +3,6 @@ from tkinter import ttk
 from utils import *
 from ttkbootstrap import Style
 import ttkbootstrap as tb
-from ttkbootstrap.constants import *
 
 
 class View():
@@ -28,38 +27,35 @@ class View():
 
     def load_login_window(self):
         self.top_login = tk.Toplevel(self.master)
+        self.top_login.title("Login")
         WindowUtils.center_window(self.top_login, 400, 500)
 
-        self.login_label = tb.Label(
+        login_label = ttk.Label(
             self.top_login, text="Login", font=("Arial", 22, "bold")
         )
-        self.login_label.pack(pady=10)
+        login_label.pack(pady=10)
 
-        self.entry_username = tb.Entry(
-            self.top_login, font=("Arial", 12), style="Primary.TEntry"
-        )
-        self.entry_username.insert(0, "Username")
-        self.entry_username.pack(pady=10, padx=20)
-        self.entry_username.bind("<FocusIn>", self.clear_placeholder)
-        self.entry_username.bind("<FocusOut>", self.restore_placeholder)
+        self.entry_username = self.create_entry(self.top_login, "Username")
+        self.entry_password = self.create_entry(self.top_login, "Password", show="•")
 
-        self.entry_password = tb.Entry(
-            self.top_login, show="•", font=("Arial", 12), style="Primary.TEntry"
-        )
-        self.entry_password.insert(0, "Password")
-        self.entry_password.pack(pady=10, padx=20)
-        self.entry_password.bind("<FocusIn>", self.clear_placeholder)
-        self.entry_password.bind("<FocusOut>", self.restore_placeholder)
-
-        self.login_button = tb.Button(
+        login_button = ttk.Button(
             self.top_login,
             text="Login",
             command=self.on_login,
-            bootstyle=SECONDARY
+            style="primary"
         )
-        self.login_button.pack(pady=20)
+        login_button.pack(pady=20)
 
         self.top_login.bind("<Return>", lambda event: self.on_login())
+        self.top_login.protocol("WM_DELETE_WINDOW", self.on_login_window_close)
+
+    def create_entry(self, parent, placeholder, **kwargs):
+        entry = ttk.Entry(parent, font=("Arial", 12), style="secondary", **kwargs)
+        entry.insert(0, placeholder)
+        entry.pack(pady=10, padx=20)
+        entry.bind("<FocusIn>", self.clear_placeholder)
+        entry.bind("<FocusOut>", self.restore_placeholder)
+        return entry
 
     def clear_placeholder(self, event):
         if event.widget.get() in ("Username", "Password"):
