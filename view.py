@@ -14,6 +14,8 @@ class View():
         self.style = Style()
         self.style.theme_use('flatly')
 
+        self.current_notebook_tab = None
+
         self.selected_workplace = tk.StringVar()
         self.load_login_window()
         self.load_widgets()
@@ -26,8 +28,15 @@ class View():
 
 
     def create_notebook(self, page_title, data_list):
+        # Close the current tab if it exists
+        if self.current_notebook_tab is not None:
+            self.notebook.forget(self.current_notebook_tab)
+
         frame = ttk.Frame(self.notebook)
         self.notebook.add(frame, text=page_title)
+
+        # Set the current tab variable to the newly added tab
+        self.current_notebook_tab = frame
 
         canvas = tk.Canvas(frame)
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -43,7 +52,6 @@ class View():
         canvas.bind("<Configure>", lambda event, canvas=canvas: self.on_canvas_configure(event, canvas))
         canvas.bind_all("<MouseWheel>", lambda event, canvas=canvas: self.on_mousewheel(event, canvas))
 
-
         for data in data_list:
             medicine_frame = ttk.Frame(medicine_frame_container, borderwidth=1, relief="solid")
             medicine_frame.pack(pady=5, padx=10, fill="x")
@@ -54,6 +62,7 @@ class View():
 
         medicine_frame_container.update_idletasks()
         canvas.config(scrollregion=canvas.bbox("all"))
+
 
     def on_canvas_configure(self, event, canvas):
         canvas.itemconfig(canvas.find_withtag("all"), width=event.width)
