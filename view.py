@@ -8,14 +8,15 @@ import ttkbootstrap as tb
 class View():
     def __init__(self, master,  controller=None):
         self.master = master
-        self.master.title("PillBox")
         self.controller = controller
 
-        self.load_login_window()
-        self.load_widgets()
-
+        self.master.title("PillBox")
         self.style = Style()
         self.style.theme_use('flatly')
+
+        self.selected_workplace = tk.StringVar()
+        self.load_login_window()
+        self.load_widgets()
 
     def load_widgets(self):
         self.label = ttk.Label(self.master, text="Hello")
@@ -34,6 +35,10 @@ class View():
             self.top_login, text="Login", font=("Arial", 22, "bold")
         )
         login_label.pack(pady=10)
+
+        login_options = ttk.Combobox(self.top_login, values=["workplace 1", "workplace 2", "workplace 3"], textvariable=self.selected_workplace)
+        login_options.set("Select Workplace")
+        login_options.pack(pady=10, padx=20)
 
         self.entry_username = self.create_entry(self.top_login, "Username")
         self.entry_password = self.create_entry(self.top_login, "Password", show="•")
@@ -67,10 +72,12 @@ class View():
 
 
     def on_login(self):
-        self.controller.login()
+        selected_option = self.selected_workplace.get()
+        self.controller.login(selected_option)
 
     def on_login_window_close(self):
         self.top_login.destroy()
+        self.master.destroy()
 
     def load_menu(self):
         menu_data = [

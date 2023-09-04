@@ -21,6 +21,7 @@ class Controller:
         else:
             print("Database is not empty. Skipping data extraction and insertion.")
 
-    def login(self):
+    def login(self, workplace):
+        print(workplace)
         self.view.master.deiconify()
         self.view.top_login.destroy()
