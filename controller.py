@@ -20,3 +20,7 @@ class Controller:
             self.model.extract_and_insert_data()
         else:
             print("Database is not empty. Skipping data extraction and insertion.")
+
+    def login(self):
+        self.view.master.deiconify()
+        self.view.top_login.destroy()
