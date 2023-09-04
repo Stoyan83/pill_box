@@ -73,21 +73,26 @@ class Medicine(Base):
 
         self.session.commit()
 
-    def search_medicines(self, search_term):
-        query = self.session.query(Medicine).filter(
-            (Medicine.trade_name.like(f"%{search_term}%")) |
-            (Medicine.id == search_term)
-        )
+    def search_medicines(self, search_term, search_criteria):
+        query = None
 
-        medicines = query.all()
-        medicine_data_list = []
+        if search_criteria == "ID":
+            query = self.session.query(Medicine).filter(Medicine.id == search_term)
+        elif search_criteria == "Name":
+            query = self.session.query(Medicine).filter(Medicine.trade_name.like(f"%{search_term}%"))
 
-        for medicine in medicines:
-            medicine_data = {
-                "Medicine ID": medicine.id,
-                "Trade Name": medicine.trade_name,
-                "Active Ingredient Quantity": medicine.active_ingredient_quantity,
-            }
-            medicine_data_list.append(medicine_data)
+        if query is not None:
+            medicines = query.all()
+            medicine_data_list = []
 
-        return medicine_data_list
+            for medicine in medicines:
+                medicine_data = {
+                    "Medicine ID": medicine.id,
+                    "Trade Name": medicine.trade_name,
+                    "Active Ingredient Quantity": medicine.active_ingredient_quantity,
+                }
+                medicine_data_list.append(medicine_data)
+
+            return medicine_data_list
+        else:
+            return []

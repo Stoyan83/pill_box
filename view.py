@@ -204,5 +204,6 @@ class View():
 
     def on_search(self):
         search_term = self.search_entry.get()
-        self.controller.show_nomenclature(search_term)
+        search_criteria = self.criteria_listbox.get()  
+        self.controller.show_nomenclature(search_term, search_criteria)
         self.search_entry.delete(0, tk.END)

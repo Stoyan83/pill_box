@@ -27,6 +27,6 @@ class Controller:
         self.view.top_login.destroy()
 
 
-    def show_nomenclature(self, search_term):
-        nomenclature = self.model.search_medicines(search_term)
+    def show_nomenclature(self, search_term, search_criteria):
+        nomenclature = self.model.search_medicines(search_term, search_criteria)
         self.view.create_notebook("Nomenclature", nomenclature)
