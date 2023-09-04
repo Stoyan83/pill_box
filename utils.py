@@ -18,42 +18,6 @@ class WindowUtils:
         window.geometry(f"{width}x{height}+{x}+{y}")
 
 
-class EntryWithPlaceholder(tk.Entry):
-    """
-        Note:
-             Shows placeholders for entries.
-    """
-    def __init__(self, master=None, placeholder="PLACEHOLDER", color='grey', show=None):
-        super().__init__(master)
-
-        self.placeholder = placeholder
-        self.placeholder_color = color
-        self.default_fg_color = self['fg']
-        self.show = show
-
-        self.bind("<FocusIn>", self.focus_in)
-        self.bind("<FocusOut>", self.focus_out)
-
-        self.put_placeholder()
-
-    def put_placeholder(self):
-        self.insert(0, self.placeholder)
-        self['fg'] = self.placeholder_color
-
-    def focus_in(self, *args):
-        if self['fg'] == self.placeholder_color:
-            self.delete('0', 'end')
-            self['fg'] = self.default_fg_color
-            if self.show is not None:
-                self.configure(show=self.show)
-
-    def focus_out(self, *args):
-        if not self.get():
-            self.put_placeholder()
-            if self.show is not None:
-                self.configure(show='')
-
-
 class Tooltip:
     def __init__(self, widget, text):
         self.widget = widget

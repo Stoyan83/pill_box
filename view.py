@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from utils import *
 from ttkbootstrap import Style
+import ttkbootstrap as tb
+from ttkbootstrap.constants import *
 
 
 class View():
@@ -14,7 +16,7 @@ class View():
         self.load_widgets()
 
         self.style = Style()
-        self.style.theme_use('pulse')
+        self.style.theme_use('flatly')
 
     def load_widgets(self):
         self.label = ttk.Label(self.master, text="Hello")
@@ -25,31 +27,47 @@ class View():
 
 
     def load_login_window(self):
-        self.top_login = tk.Toplevel()
-        WindowUtils.center_window(self.top_login, 600, 400)
+        self.top_login = tk.Toplevel(self.master)
+        WindowUtils.center_window(self.top_login, 400, 500)
 
-        self.top_login.configure(bg="#2c3e50")
+        self.login_label = tb.Label(
+            self.top_login, text="Login", font=("Arial", 22, "bold")
+        )
+        self.login_label.pack(pady=10)
 
-        self.login_label = tk.Label(self.top_login, text="Login", bg="#2c3e50", fg="white", font=("Arial", 24, "bold"))
-        self.login_label.grid(row=0, column=0, padx=10, pady=20, columnspan=2)
+        self.entry_username = tb.Entry(
+            self.top_login, font=("Arial", 12), style="Primary.TEntry"
+        )
+        self.entry_username.insert(0, "Username")
+        self.entry_username.pack(pady=10, padx=20)
+        self.entry_username.bind("<FocusIn>", self.clear_placeholder)
+        self.entry_username.bind("<FocusOut>", self.restore_placeholder)
 
-        self.entry_username = EntryWithPlaceholder(self.top_login, placeholder="Username", color="#34495e")
-        self.entry_username.grid(row=1, column=0, padx=10, pady=10, columnspan=2)
+        self.entry_password = tb.Entry(
+            self.top_login, show="•", font=("Arial", 12), style="Primary.TEntry"
+        )
+        self.entry_password.insert(0, "Password")
+        self.entry_password.pack(pady=10, padx=20)
+        self.entry_password.bind("<FocusIn>", self.clear_placeholder)
+        self.entry_password.bind("<FocusOut>", self.restore_placeholder)
 
-        self.entry_password = EntryWithPlaceholder(self.top_login, placeholder="Password", show='\u2022', color="#34495e")
-        self.entry_password.grid(row=2, column=0, padx=10, pady=10, columnspan=2)
-
-        self.login_button = tk.Button(self.top_login, text="Login", command=self.on_login, font=("Arial", 14), bg="#3498db", fg="white")
-        self.login_button.grid(row=3, column=0, columnspan=2, padx=10, pady=20)
+        self.login_button = tb.Button(
+            self.top_login,
+            text="Login",
+            command=self.on_login,
+            bootstyle=SECONDARY
+        )
+        self.login_button.pack(pady=20)
 
         self.top_login.bind("<Return>", lambda event: self.on_login())
 
-        self.top_login.protocol("WM_DELETE_WINDOW", self.on_login_window_close)
+    def clear_placeholder(self, event):
+        if event.widget.get() in ("Username", "Password"):
+            event.widget.delete(0, "end")
 
-        self.top_login.grid_rowconfigure(0, weight=1)
-        self.top_login.grid_rowconfigure(4, weight=1)
-        self.top_login.grid_columnconfigure(0, weight=1)
-        self.top_login.grid_columnconfigure(1, weight=1)
+    def restore_placeholder(self, event):
+        if not event.widget.get():
+            event.widget.insert(0, "Username" if event.widget == self.entry_username else "Password")
 
 
     def on_login(self):
