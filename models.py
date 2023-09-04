@@ -90,6 +90,19 @@ class Medicine(Base):
                     "Medicine ID": medicine.id,
                     "Trade Name": medicine.trade_name,
                     "Active Ingredient Quantity": medicine.active_ingredient_quantity,
+                    "Registration Number": medicine.reg_number,
+                    "Identifier": medicine.identifier,
+                    "Dosage Form (BG)": medicine.dosage_form_bg,
+                    "Dosage Form (EN)": medicine.dosage_form_en,
+                    "Packaging": medicine.packaging,
+                    "Volume Dose Unit": medicine.volume_dose_unit,
+                    "Quantity per Packaging": medicine.quantity_per_packaging,
+                    "Marketing Authorization Holder": medicine.marketing_authorization_holder,
+                    "Country (BG)": medicine.country_bg,
+                    "INN": medicine.inn,
+                    "ATC Code": medicine.atc_code,
+                    "Prescription Mode": medicine.prescription_mode
+                    # Add more attributes here as needed
                 }
                 medicine_data_list.append(medicine_data)
 

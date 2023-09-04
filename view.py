@@ -34,7 +34,6 @@ class View():
 
         frame = ttk.Frame(self.notebook)
         self.notebook.add(frame, text=page_title)
-
         self.current_notebook_tab = frame
 
         canvas = tk.Canvas(frame)
@@ -55,12 +54,31 @@ class View():
             medicine_frame = ttk.Frame(medicine_frame_container, borderwidth=1, relief="solid")
             medicine_frame.pack(pady=5, padx=10, fill="x")
 
-            for label, value in data.items():
-                label_widget = ttk.Label(medicine_frame, text=f"{label}: {value}")
-                label_widget.pack(padx=5, pady=2, anchor="w", fill="x")
+            label_widget = ttk.Label(medicine_frame, text=f"Medicine ID: {data['Medicine ID']}\nTrade Name: {data['Trade Name']}", cursor="hand2")
+            label_widget.pack(padx=5, pady=2, anchor="w", fill="x")
+
+            additional_info_widget = ttk.Label(medicine_frame, text=f"", state=tk.HIDDEN)
+            additional_info_widget.pack(padx=5, pady=2, anchor="w", fill="x")
+
+            label_widget.is_visible = False
+
+            label_widget.bind("<Button-1>", lambda event, label=label_widget, data=data: self.toggle_label_visibility(label, data))
 
         medicine_frame_container.update_idletasks()
         canvas.config(scrollregion=canvas.bbox("all"))
+
+    def toggle_label_visibility(self, label, data):
+        if label.is_visible:
+            label.config(state=tk.HIDDEN)
+            label.config(text=f"Medicine ID: {data['Medicine ID']}\nTrade Name: {data['Trade Name']}")
+        else:
+            label.config(state=tk.NORMAL)
+            additional_info = "\n".join([f"{key}: {value}" for key, value in data.items()])
+            label.config(text=additional_info)
+
+        label.is_visible = not label.is_visible
+
+
 
 
     def on_canvas_configure(self, event, canvas):
@@ -68,8 +86,6 @@ class View():
 
     def on_mousewheel(self, event, canvas):
         canvas.yview_scroll(-1*(event.delta//120), "units")
-
-
 
     def load_login_window(self):
         self.top_login = tk.Toplevel(self.master)
