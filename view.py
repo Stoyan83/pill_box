@@ -177,7 +177,14 @@ class View():
     def load_menu(self):
         menu_data = [
             ("Menu", [
-                ("Nomenclature", self.load_search)
+                ("Nomenclature", self.load_search),
+
+                ("Inventory Management", [
+                    ("Receive Inventory", self.receive_inventory),
+                    ("Placing Order", "placing_order"),
+                    ("Inventory Check", "inventory_check")
+                ])
+
             ]),
             ("Admin Menu", [
                 ("Users", [
@@ -260,3 +267,6 @@ class View():
             self.current_notebook_tab = None
         self.master.withdraw()
         self.load_login_window()
+
+    def receive_inventory(self):
+        print("Recieving ...")
