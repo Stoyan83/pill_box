@@ -312,6 +312,9 @@ class View():
 
         self.data_list.append(data)
 
+        for entry in entries:
+            entry.delete(0, "end")
+
         row_height, offset = 20, 0
 
         for i, row_data in enumerate(self.data_list):

@@ -15,7 +15,7 @@ def main():
     medicine_model = models.Medicine(session=session)
     controller_instance = controller.Controller(view=view_instance, medicine_model=medicine_model, session_model=session_model)
     view_instance.controller = controller_instance
-    WindowUtils.center_window(root, 1000, 800)
+    WindowUtils.center_window(root, 1200, 800)
     root.mainloop()
     models.SessionManager.close_session()
 
