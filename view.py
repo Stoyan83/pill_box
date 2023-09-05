@@ -271,4 +271,29 @@ class View():
         self.load_login_window()
 
     def receive_inventory(self):
-        print("Recieving ...")
+        receive_inventory_tab = ttk.Frame(self.notebook)
+        self.notebook.add(receive_inventory_tab, text="Receive Inventory")
+
+
+        labels = ["Name:", "Quantity:", "Delivery Price:", "VAT:", "Customer Price:", "Notice:", "Batch Number:", "Expiration Date:", "Company Delivered:"]
+        entries = [ttk.Entry(receive_inventory_tab) for _ in range(len(labels))]
+        entry_labels = [ttk.Label(receive_inventory_tab, text=label) for label in labels]
+
+        for i in range(len(labels)):
+            label = entry_labels[i]
+            entry = entries[i]
+
+            row = i // 2
+            col = i % 2
+
+            label.grid(row=row, column=col * 2, padx=5, pady=5, sticky="w")
+            entry.grid(row=row, column=col * 2 + 1, padx=5, pady=5, sticky="ew")
+
+        submit_button = ttk.Button(receive_inventory_tab, text="Submit", command=lambda: self.submit_inventory(receive_inventory_tab))
+        submit_button.grid(row=row + 1, column=0, columnspan=4, pady=10)
+
+    def submit_inventory(self, receive_inventory_tab):
+        name = self.entries[0].get()  
+        print(name)
+
+        receive_inventory_tab.destroy()
