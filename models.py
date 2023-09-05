@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, ForeignKey, Date
+from sqlalchemy.orm import relationship
 from db import Base, engine, Session
 import xlrd
 
@@ -17,6 +18,10 @@ class SessionManager:
         if cls._session:
             cls._session.close()
             cls._session = None
+
+
+    def create_table(self):
+        Base.metadata.create_all(engine)
 
 
 class Medicine(Base):
@@ -38,12 +43,11 @@ class Medicine(Base):
     atc_code = Column(String)
     prescription_mode = Column(String)
 
+    inventory = relationship('Inventory', back_populates='medicine')
+
     def __init__(self, session, **kwargs):
         super().__init__(**kwargs)
         self.session = session
-
-    def create_table(self):
-        Base.metadata.create_all(engine)
 
     def extract_and_insert_data(self):
         workbook = xlrd.open_workbook('IAL_Register_07_2023.xls')
@@ -111,3 +115,27 @@ class Medicine(Base):
             return medicine_data_list
 
         return []
+
+
+class Inventory(Base):
+    __tablename__ = 'inventory'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    medicine_id = Column(Integer, ForeignKey('medicines.id'), nullable=False)
+    quantity = Column(Integer, nullable=False)
+    batch_number = Column(String)
+    expiration_date = Column(Date)
+    delivery_price = Column(Integer)
+    vat = Column(Integer)
+    customer_price = Column(Integer)
+
+
+
+    medicine = relationship('Medicine', back_populates='inventory')
+
+    def __init__(self, medicine_id, quantity, delivery_price, vat, customer_price):
+        self.medicine_id = medicine_id
+        self.quantity = quantity
+        self.delivery_price = delivery_price
+        self.vat = vat
+        self.customer_price = customer_price
