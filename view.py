@@ -282,7 +282,7 @@ class View():
         entries = [ttk.Entry(left_frame) for _ in range(len(labels))]
 
         for i, label in enumerate(labels):
-            label_widget = ttk.Label(left_frame, text=label)
+            label_widget = ttk.Label(left_frame, text=label, width=15)  # Increase the width here
             entry_widget = entries[i]
 
             label_widget.grid(row=i, column=0, padx=5, pady=5, sticky="w")
@@ -292,41 +292,49 @@ class View():
         submit_button.grid(row=len(labels), column=0, columnspan=2, pady=10)
 
         right_frame = ttk.Frame(receive_inventory_tab)
-        right_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        right_frame.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
 
         labels_frame = ttk.Frame(right_frame)
         labels_frame.pack(fill=tk.X)
 
         for i, label in enumerate(labels):
-            label_widget = ttk.Label(labels_frame, text=label)
-            label_widget.grid(row=0, column=i, padx=10 - i, pady=5, sticky="w")
+            label_widget = ttk.Label(labels_frame, text=label, width=15)  # Increase the width here
+            label_widget.grid(row=0, column=i, padx=10, pady=5, sticky="w")
 
-        canvas = tk.Canvas(right_frame, bg="white")
+        canvas = tk.Canvas(right_frame, bg="black")
         canvas.pack(fill=tk.BOTH, expand=True)
 
         self.canvas = canvas
         self.data_list = []
 
     def submit_inventory(self, entries, canvas, labels):
-        # Get data from entry widgets
         data = [entry.get() for entry in entries]
 
-        # Append data to the data list
         self.data_list.append(data)
 
-        # Define row height and initial offset
         row_height, offset = 20, 0
 
-        # Loop through data and display it on the canvas
         for i, row_data in enumerate(self.data_list):
-            y = (i + 1) * 20
+            y = (i + 1) * row_height + offset
             x = 20
-            for col, value in enumerate(row_data):
-                column_width = canvas.winfo_width() // len(labels)
-                canvas.create_text(x + (col * column_width), y, text=value, anchor="w")
 
-        # Calculate total height
+            row_frame = tk.Frame(canvas)
+            canvas.create_window(x, y, anchor="w", window=row_frame)
+
+            for col, value in enumerate(row_data):
+                label_width = 18
+                label = tk.Label(row_frame, text=value, width=label_width, anchor="w", cursor="hand2")
+                label.grid(row=0, column=col, pady=10, sticky="w")
+
+                label.bind("<Button-1>", lambda event, i=i: self.edit_row(i))
+
+            offset += row_height
+
         total_height = (len(self.data_list) + 1) * row_height + offset
 
-        # Configure canvas scroll region
         canvas.config(scrollregion=(0, 0, 0, total_height))
+
+
+    def edit_row(self, row_index):
+        print("click")
+        pass
