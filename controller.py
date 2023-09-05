@@ -28,5 +28,8 @@ class Controller:
 
 
     def show_nomenclature(self, search_term, search_criteria):
-        nomenclature = self.model.search_medicines(search_term, search_criteria)
-        self.view.create_notebook("Nomenclature", nomenclature)
+        page = 1  # You can set the initial page to 1
+        results_per_page = 10  # You can set the number of results per page
+        nomenclature = self.model.search_medicines(search_term, search_criteria, page, results_per_page)
+        self.view.create_notebook("Nomenclature", nomenclature, page, results_per_page)
+

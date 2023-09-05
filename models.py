@@ -84,13 +84,13 @@ class Medicine(Base):
         if query is not None:
             offset = (page - 1) * results_per_page
 
-            medicines = query.offset(offset).limit(results_per_page).all()
+            medicines = query.offset(offset).all()
 
             medicine_data_list = []
 
             for medicine in medicines:
                 medicine_data = {
-                    "Medicine ID": medicine.id,
+                    "ID": medicine.id,
                     "Trade Name": medicine.trade_name,
                     "Active Ingredient Quantity": medicine.active_ingredient_quantity,
                     "Registration Number": medicine.reg_number,

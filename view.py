@@ -28,7 +28,7 @@ class View():
         self.load_menu()
 
 
-    def create_notebook(self, page_title, data_list):
+    def create_notebook(self, page_title, data_list, page, results_per_page):
         if self.current_notebook_tab is not None:
             self.notebook.forget(self.current_notebook_tab)
 
@@ -50,11 +50,15 @@ class View():
         canvas.bind("<Configure>", lambda event, canvas=canvas: canvas.itemconfig(canvas.find_withtag("all"), width=event.width))
         canvas.bind_all("<MouseWheel>", lambda event, canvas=canvas: canvas.yview_scroll(-1*(event.delta//120), "units"))
 
-        for data in data_list:
+        offset = (page - 1) * results_per_page
+        end_index = offset + results_per_page
+        displayed_data = data_list[offset:end_index]
+
+        for data in displayed_data:
             medicine_frame = ttk.Frame(medicine_frame_container, borderwidth=1, relief="solid")
             medicine_frame.pack(pady=5, padx=10, fill="x")
 
-            label_widget = ttk.Label(medicine_frame, text=f"Medicine ID: {data['Medicine ID']}\nTrade Name: {data['Trade Name']}", cursor="hand2")
+            label_widget = ttk.Label(medicine_frame, text=f"ID: {data['ID']}\nTrade Name: {data['Trade Name']}", cursor="hand2")
             label_widget.pack(padx=5, pady=2, anchor="w", fill="x")
 
             additional_info_widget = ttk.Label(medicine_frame, text=f"", state=tk.HIDDEN)
@@ -67,11 +71,39 @@ class View():
         medicine_frame_container.update_idletasks()
         canvas.config(scrollregion=canvas.bbox("all"))
 
+        pagination_frame = ttk.Frame(self.current_notebook_tab)
+        pagination_frame.pack(side=tk.BOTTOM, pady=10)
+
+        prev_button = ttk.Button(pagination_frame, text="Previous Page", command=lambda: self.load_previous_page(page, results_per_page, data_list))
+        prev_button.grid(row=0, column=0, padx=5)
+
+        next_button = ttk.Button(pagination_frame, text="Next Page", command=lambda: self.load_next_page(page, results_per_page, data_list))
+        next_button.grid(row=0, column=1, padx=5)
+
+    def load_previous_page(self, current_page, results_per_page, data_list):
+        if current_page > 1:
+            new_page = current_page - 1
+            self.create_notebook("Search Results", data_list, new_page, results_per_page)
+
+    def load_next_page(self, current_page, results_per_page, data_list):
+        print(len(data_list))
+        total_pages = (len(data_list) - 1) // results_per_page + 1
+        print(f"Current Page: {current_page}, Total Pages: {total_pages}")
+
+        if current_page < total_pages:
+            new_page = current_page + 1
+            print(f"Loading Next Page: {new_page}")
+            self.create_notebook("Search Results", data_list, new_page, results_per_page)
+
+            canvas = self.current_notebook_tab.winfo_children()[0]
+            canvas.update_idletasks()
+            canvas.config(scrollregion=canvas.bbox("all"))
+
 
     def toggle_label_visibility(self, label, data):
         if label.is_visible:
             label.config(state=tk.HIDDEN)
-            label.config(text=f"Medicine ID: {data['Medicine ID']}\nTrade Name: {data['Trade Name']}")
+            label.config(text=f"ID: {data['ID']}\nTrade Name: {data['Trade Name']}")
         else:
             label.config(state=tk.NORMAL)
             additional_info = "\n".join([f"{key}: {value}" for key, value in data.items()])
@@ -207,7 +239,7 @@ class View():
 
     def on_search(self):
         search_term = self.search_entry.get().strip()
-        if search_term: 
+        if search_term:
             search_criteria = self.criteria_listbox.get()
             self.controller.show_nomenclature(search_term, search_criteria)
             self.search_entry.delete(0, tk.END)
