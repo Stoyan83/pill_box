@@ -16,6 +16,7 @@ class View():
 
         self.current_notebook_tab = None
         self.search_frame_loaded = False
+        self.search_frame = None
 
         self.selected_workplace = tk.StringVar()
         self.load_login_window()
@@ -36,19 +37,22 @@ class View():
         self.notebook.add(frame, text=page_title)
         self.current_notebook_tab = frame
 
-        canvas = tk.Canvas(frame)
-        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        close_button = tb.Button(frame, text="Close", bootstyle="danger-outline", command=lambda: self.close_notebook(frame))
+        close_button.pack(side=tk.TOP, anchor=tk.NE)
 
-        scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=canvas.yview)
+        self.canvas = tk.Canvas(frame)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.canvas.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        canvas.configure(yscrollcommand=scrollbar.set)
+        self.canvas.configure(yscrollcommand=scrollbar.set)
 
-        medicine_frame_container = ttk.Frame(canvas)
-        canvas.create_window((0, 0), window=medicine_frame_container, anchor=tk.NW)
+        medicine_frame_container = ttk.Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=medicine_frame_container, anchor=tk.NW)
 
-        canvas.bind("<Configure>", lambda event, canvas=canvas: canvas.itemconfig(canvas.find_withtag("all"), width=event.width))
-        canvas.bind_all("<MouseWheel>", lambda event, canvas=canvas: canvas.yview_scroll(-1*(event.delta//120), "units"))
+        self.canvas.bind("<Configure>", lambda event, canvas=self.canvas: self.canvas.itemconfig(self.canvas.find_withtag("all"), width=event.width))
+        self.canvas.bind_all("<MouseWheel>", lambda event, canvas=self.canvas: self.canvas.yview_scroll(-1*(event.delta//120), "units"))
 
         offset = (page - 1) * results_per_page
         end_index = offset + results_per_page
@@ -69,7 +73,7 @@ class View():
             label_widget.bind("<Button-1>", lambda event, label=label_widget, data=data: self.toggle_label_visibility(label, data))
 
         medicine_frame_container.update_idletasks()
-        canvas.config(scrollregion=canvas.bbox("all"))
+        self.canvas.config(scrollregion=self.canvas.bbox("all"))
 
         # Pagination
         pagination_frame = ttk.Frame(self.current_notebook_tab)
@@ -105,12 +109,18 @@ class View():
             label.config(state=tk.NORMAL)
             additional_info = "\n".join([f"{key}: {value}" for key, value in data.items()])
             label.config(text=additional_info)
-
-        canvas = self.current_notebook_tab.winfo_children()[0]
-        canvas.update_idletasks()
-        canvas.config(scrollregion=canvas.bbox("all"))
+            
+        self.canvas.update_idletasks()
+        self.canvas.config(scrollregion=self.canvas.bbox("all"))
 
         label.is_visible = not label.is_visible
+
+    def close_notebook(self, frame_to_close):
+        self.notebook.forget(frame_to_close)
+        if self.search_frame is not None:
+            self.search_frame.destroy()
+            self.search_frame_loaded = False
+            self.current_notebook_tab = None
 
     def load_login_window(self):
         self.top_login = tk.Toplevel(self.master)
@@ -213,20 +223,20 @@ class View():
 
     def load_search(self):
         if not self.search_frame_loaded:
-            search_frame = ttk.Frame(self.master)
-            search_frame.pack(pady=10, padx=10, fill="x")
+            self.search_frame = ttk.Frame(self.master)
+            self.search_frame.pack(pady=10, padx=10, fill="x")
 
-            search_label = ttk.Label(search_frame, text="Search:")
+            search_label = ttk.Label(self.search_frame, text="Search:")
             search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-            self.search_entry = ttk.Entry(search_frame, validate="key")
+            self.search_entry = ttk.Entry(self.search_frame, validate="key")
             self.search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
 
-            self.criteria_listbox = ttk.Combobox(search_frame, values=["Name", "ID"])
+            self.criteria_listbox = ttk.Combobox(self.search_frame, values=["Name", "ID"])
             self.criteria_listbox.set("Name")
             self.criteria_listbox.grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
-            search_button = ttk.Button(search_frame, text="Search", command=self.on_search)
+            search_button = ttk.Button(self.search_frame, text="Search", command=self.on_search)
             search_button.grid(row=0, column=3, padx=5, pady=5)
 
             self.search_results_label = ttk.Label(self.master, text="", font=("Arial", 16))
