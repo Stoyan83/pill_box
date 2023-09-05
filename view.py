@@ -251,6 +251,8 @@ class View():
 
             self.search_frame_loaded = True
 
+            self.create_notebook("Nomenclature", [], 1, 10)
+
     def on_search(self):
         search_term = self.search_entry.get().strip()
         if search_term:
