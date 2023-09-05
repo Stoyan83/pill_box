@@ -25,7 +25,7 @@ class Medicine(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     reg_number = Column(String)
     identifier = Column(String, unique=True)
-    trade_name = Column(String)
+    trade_name = Column(String, index=True)
     dosage_form_bg = Column(String)
     dosage_form_en = Column(String)
     active_ingredient_quantity = Column(String)
@@ -73,7 +73,7 @@ class Medicine(Base):
 
         self.session.commit()
 
-    def search_medicines(self, search_term, search_criteria):
+    def search_medicines(self, search_term, search_criteria, page=1, results_per_page=10):
         query = None
 
         if search_criteria == "ID":
@@ -82,7 +82,10 @@ class Medicine(Base):
             query = self.session.query(Medicine).filter(Medicine.trade_name.like(f"%{search_term}%"))
 
         if query is not None:
-            medicines = query.all()
+            offset = (page - 1) * results_per_page
+
+            medicines = query.offset(offset).limit(results_per_page).all()
+
             medicine_data_list = []
 
             for medicine in medicines:
