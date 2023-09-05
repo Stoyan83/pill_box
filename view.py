@@ -71,6 +71,7 @@ class View():
         medicine_frame_container.update_idletasks()
         canvas.config(scrollregion=canvas.bbox("all"))
 
+        # Pagination
         pagination_frame = ttk.Frame(self.current_notebook_tab)
         pagination_frame.pack(side=tk.BOTTOM, pady=10)
 
@@ -80,24 +81,21 @@ class View():
         next_button = ttk.Button(pagination_frame, text="Next Page", command=lambda: self.load_next_page(page, results_per_page, data_list))
         next_button.grid(row=0, column=1, padx=5)
 
+
+        self.total_pages = (len(data_list) - 1) // results_per_page + 1
+
+        prev_button.config(state=tk.NORMAL if page > 1 else tk.DISABLED)
+        next_button.config(state=tk.NORMAL if page < self.total_pages else tk.DISABLED)
+
     def load_previous_page(self, current_page, results_per_page, data_list):
         if current_page > 1:
             new_page = current_page - 1
             self.create_notebook("Search Results", data_list, new_page, results_per_page)
 
     def load_next_page(self, current_page, results_per_page, data_list):
-        print(len(data_list))
-        total_pages = (len(data_list) - 1) // results_per_page + 1
-        print(f"Current Page: {current_page}, Total Pages: {total_pages}")
-
-        if current_page < total_pages:
+        if current_page < self.total_pages:
             new_page = current_page + 1
-            print(f"Loading Next Page: {new_page}")
             self.create_notebook("Search Results", data_list, new_page, results_per_page)
-
-            canvas = self.current_notebook_tab.winfo_children()[0]
-            canvas.update_idletasks()
-            canvas.config(scrollregion=canvas.bbox("all"))
 
     def toggle_label_visibility(self, label, data):
         if label.is_visible:
