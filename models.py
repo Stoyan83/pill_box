@@ -1,7 +1,12 @@
+import random
+from faker import Faker
+fake = Faker()
 from sqlalchemy import Column, String, Integer, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from db import Base, engine, Session
 import xlrd
+
+
 
 
 class SessionManager:
@@ -18,7 +23,6 @@ class SessionManager:
         if cls._session:
             cls._session.close()
             cls._session = None
-
 
     def create_table(self):
         Base.metadata.create_all(engine)
@@ -129,13 +133,39 @@ class Inventory(Base):
     vat = Column(Integer)
     customer_price = Column(Integer)
 
-
-
     medicine = relationship('Medicine', back_populates='inventory')
 
-    def __init__(self, medicine_id, quantity, delivery_price, vat, customer_price):
+    def __init__(self, medicine_id, quantity, batch_number, expiration_date, delivery_price, vat, customer_price):
         self.medicine_id = medicine_id
         self.quantity = quantity
+        self.batch_number = batch_number
+        self.expiration_date = expiration_date
         self.delivery_price = delivery_price
         self.vat = vat
         self.customer_price = customer_price
+
+    @staticmethod
+    def generate_fake_data(num_records=100):
+        session = SessionManager.get_session()
+
+        medicine_ids = [medicine.id for medicine in session.query(Medicine).all()]
+
+        for _ in range(num_records):
+            medicine_id = random.choice(medicine_ids)
+            inventory_data = Inventory._generate_random_inventory_data(medicine_id, fake)  # Pass the Faker instance
+            inventory = Inventory(**inventory_data)
+            session.add(inventory)
+
+        session.commit()
+
+    @staticmethod
+    def _generate_random_inventory_data(medicine_id, fake):
+        return {
+            'medicine_id': medicine_id,
+            'quantity': random.randint(1, 100),
+            'batch_number': fake.unique.random_number(digits=6),
+            'expiration_date': fake.date_between(start_date='-1y', end_date='+2y'),
+            'delivery_price': random.randint(10, 100),
+            'vat': random.randint(1, 10),
+            'customer_price': random.randint(50, 200),
+        }

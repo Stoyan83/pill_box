@@ -1,5 +1,5 @@
 from db import Base, engine, Session
-from models import Medicine
+from models import Medicine, Inventory
 
 class Controller:
     def __init__(self, view=None, **models):
@@ -18,6 +18,7 @@ class Controller:
 
         if count == 0:
             self.medicine_model.extract_and_insert_data()
+            Inventory.generate_fake_data(num_records=100)
         else:
             print("Database is not empty. Skipping data extraction and insertion.")
 
