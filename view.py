@@ -280,10 +280,9 @@ class View():
 
         labels = ["Name:", "Quantity:", "Delivery Price:", "VAT:", "Customer Price:", "Notice:", "Batch Number:", "Expiration Date:", "Company Delivered:"]
         entries = [ttk.Entry(left_frame) for _ in range(len(labels))]
-        entry_labels = [ttk.Label(left_frame, text=label) for label in labels]
 
         for i in range(len(labels)):
-            label = entry_labels[i]
+            label = ttk.Label(left_frame, text=labels[i])
             entry = entries[i]
 
             row = i // 2
@@ -297,6 +296,14 @@ class View():
 
         right_frame = ttk.Frame(receive_inventory_tab)
         right_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
+        # Create a separate frame for labels above the canvas
+        labels_frame = ttk.Frame(right_frame)
+        labels_frame.pack(fill=tk.X)
+
+        for i, label in enumerate(labels):
+            label = ttk.Label(labels_frame, text=label)
+            label.grid(row=0, column=i, padx=5, pady=5, sticky="w")
 
         # Calculate the available width for the canvas
         available_width = right_frame.winfo_width()
@@ -320,16 +327,6 @@ class View():
 
         row_height = 30
         offset = 0
-
-        # Display column names above the values
-        if len(self.data_list) == 1:
-            y = offset
-            for col, label in enumerate(labels):
-                # Calculate the width of the column
-                column_width = canvas.winfo_width() // len(labels)
-
-                # Create a text element for column names
-                canvas.create_text(x + (col * column_width) + 10, y, text=label, anchor="w")
 
         for i, row_data in enumerate(self.data_list):
             y = (i + 1) * row_height + offset  # Add 1 to skip the first row for column names
