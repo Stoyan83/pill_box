@@ -252,7 +252,11 @@ class View():
             self.search_entry.delete(0, tk.END)
 
     def log_out(self):
-        self.close_notebook(self.frame)
+        if self.current_notebook_tab:
+            self.close_notebook(self.frame)
+        if self.search_frame is not None:
+            self.search_frame.destroy()
+            self.search_frame_loaded = False
+            self.current_notebook_tab = None
         self.master.withdraw()
         self.load_login_window()
-       
