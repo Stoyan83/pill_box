@@ -1,6 +1,5 @@
 import random
-from faker import Faker
-fake = Faker()
+from datetime import date, timedelta
 from sqlalchemy import Column, String, Integer, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from db import Base, engine, Session
@@ -148,23 +147,26 @@ class Inventory(Base):
     def generate_fake_data(num_records=100):
         session = SessionManager.get_session()
 
+        # Get a list of all medicine IDs
         medicine_ids = [medicine.id for medicine in session.query(Medicine).all()]
 
+        # Generate and insert fake inventory data for the specified number of records
         for _ in range(num_records):
             medicine_id = random.choice(medicine_ids)
-            inventory_data = Inventory._generate_random_inventory_data(medicine_id, fake)  # Pass the Faker instance
+            inventory_data = Inventory._generate_random_inventory_data(medicine_id)
             inventory = Inventory(**inventory_data)
             session.add(inventory)
 
+        # Commit the changes to the database
         session.commit()
 
     @staticmethod
-    def _generate_random_inventory_data(medicine_id, fake):
+    def _generate_random_inventory_data(medicine_id):
         return {
             'medicine_id': medicine_id,
             'quantity': random.randint(1, 100),
-            'batch_number': fake.unique.random_number(digits=6),
-            'expiration_date': fake.date_between(start_date='-1y', end_date='+2y'),
+            'batch_number': str(random.randint(100000, 999999)),  # Generates a random 6-digit number as a string
+            'expiration_date': date.today() + timedelta(days=random.randint(365, 730)),  # Generates a random date within the next 2 years
             'delivery_price': random.randint(10, 100),
             'vat': random.randint(1, 10),
             'customer_price': random.randint(50, 200),
