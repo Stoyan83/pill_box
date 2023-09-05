@@ -79,7 +79,7 @@ class Medicine(Base):
         if search_criteria == "ID":
             query = self.session.query(Medicine).filter(Medicine.id == search_term)
         elif search_criteria == "Name":
-            query = self.session.query(Medicine).filter(Medicine.trade_name.like(f"%{search_term}%"))
+            query = self.session.query(Medicine).filter(Medicine.trade_name.like(f"{search_term}%"))
 
         if query is not None:
             offset = (page - 1) * results_per_page

@@ -99,7 +99,6 @@ class View():
             canvas.update_idletasks()
             canvas.config(scrollregion=canvas.bbox("all"))
 
-
     def toggle_label_visibility(self, label, data):
         if label.is_visible:
             label.config(state=tk.HIDDEN)
