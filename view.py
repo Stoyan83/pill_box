@@ -278,7 +278,7 @@ class View():
         left_frame = ttk.Frame(receive_inventory_tab)
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        labels = ["Name:", "Quantity:", "Delivery Price:", "VAT:", "Customer Price:", "Notice:", "Batch Number:", "Expiration Date:", "Company Delivered:"]
+        labels = ["Name:", "Quantity:", "Delivery Price:", "VAT Price:", "Customer Price:", "Batch Number:", "Expiration Date:", "Delivered:"]
         entries = [ttk.Entry(left_frame) for _ in range(len(labels))]
 
         for i in range(len(labels)):
@@ -313,7 +313,7 @@ class View():
         column_width = available_width // num_columns
 
         # Adjust the width of the canvas widget based on the available space
-        canvas_width = available_width - 20  # Adjust the padding as needed
+        canvas_width = available_width - 10  # Adjust the padding as needed
         canvas = tk.Canvas(right_frame, bg="white", width=canvas_width)
         canvas.pack(fill=tk.BOTH, expand=True)
 
@@ -328,19 +328,23 @@ class View():
         row_height = 30
         offset = 0
 
+        # Update the canvas size to match the current width of the right_frame
+        canvas.update_idletasks()
+        canvas_width = canvas.winfo_width()
+
         for i, row_data in enumerate(self.data_list):
-            y = (i + 1) * row_height + offset  # Add 1 to skip the first row for column names
+            y = (i + 1) * row_height + offset + 20  # Add 1 to skip the first row for column names and 20 for spacing
 
             # Initialize x-coordinate for each column
             x = 10
 
             for col, value in enumerate(row_data):
                 # Calculate the width of the column
-                column_width = canvas.winfo_width() // len(labels)
+                column_width = canvas_width // len(labels)
 
                 # Create a text element for each column value
                 canvas.create_text(x + (col * column_width), y, text=value, anchor="w")
 
-        total_height = (len(self.data_list) + 1) * row_height  # Add 1 for column names
+        total_height = (len(self.data_list) + 1) * row_height + 20  # Add 1 for column names and 20 for spacing
 
         canvas.config(scrollregion=(0, 0, 0, total_height))
