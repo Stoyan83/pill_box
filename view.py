@@ -270,11 +270,11 @@ class View():
         self.master.withdraw()
         self.load_login_window()
 
+
     def receive_inventory(self):
         receive_inventory_tab = ttk.Frame(self.notebook)
         self.notebook.add(receive_inventory_tab, text="Receive Inventory")
 
-        # Create a left frame for labels and entry fields
         left_frame = ttk.Frame(receive_inventory_tab)
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
@@ -292,27 +292,58 @@ class View():
             label.grid(row=row, column=col * 2, padx=5, pady=5, sticky="w")
             entry.grid(row=row, column=col * 2 + 1, padx=5, pady=5, sticky="ew")
 
-        submit_button = ttk.Button(left_frame, text="Submit", command=lambda: self.submit_inventory(entries, tree, labels))
+        submit_button = ttk.Button(left_frame, text="Submit", command=lambda: self.submit_inventory(entries, canvas, labels))
         submit_button.grid(row=row + 1, column=0, columnspan=4, pady=10)
 
-        # Create a right frame for displaying entered data as a table
         right_frame = ttk.Frame(receive_inventory_tab)
         right_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-        # Create a Treeview widget in the right frame to display the entered data as a table
-        tree = ttk.Treeview(right_frame, columns=labels, show="headings")
+        # Calculate the available width for the canvas
+        available_width = right_frame.winfo_width()
 
-        # Set column headings
-        for label in labels:
-            tree.heading(label, text=label)
-            tree.column(label, width=100)  # Adjust column width as needed
+        # Calculate the column widths based on the number of columns and available width
+        num_columns = len(labels)
+        column_width = available_width // num_columns
 
-        tree.pack(fill=tk.BOTH, expand=True)
+        # Adjust the width of the canvas widget based on the available space
+        canvas_width = available_width - 20  # Adjust the padding as needed
+        canvas = tk.Canvas(right_frame, bg="white", width=canvas_width)
+        canvas.pack(fill=tk.BOTH, expand=True)
 
-        self.tree = tree  # Store the Treeview as an instance variable
+        self.canvas = canvas
+        self.data_list = []
 
-    def submit_inventory(self, entries, tree, labels):
+    def submit_inventory(self, entries, canvas, labels):
         data = [entry.get() for entry in entries]
 
-        # Insert the entered data as a new row in the Treeview
-        tree.insert("", tk.END, values=data)
+        self.data_list.append(data)
+
+        row_height = 30
+        offset = 0
+
+        # Display column names above the values
+        if len(self.data_list) == 1:
+            y = offset
+            for col, label in enumerate(labels):
+                # Calculate the width of the column
+                column_width = canvas.winfo_width() // len(labels)
+
+                # Create a text element for column names
+                canvas.create_text(x + (col * column_width) + 10, y, text=label, anchor="w")
+
+        for i, row_data in enumerate(self.data_list):
+            y = (i + 1) * row_height + offset  # Add 1 to skip the first row for column names
+
+            # Initialize x-coordinate for each column
+            x = 10
+
+            for col, value in enumerate(row_data):
+                # Calculate the width of the column
+                column_width = canvas.winfo_width() // len(labels)
+
+                # Create a text element for each column value
+                canvas.create_text(x + (col * column_width), y, text=value, anchor="w")
+
+        total_height = (len(self.data_list) + 1) * row_height  # Add 1 for column names
+
+        canvas.config(scrollregion=(0, 0, 0, total_height))
