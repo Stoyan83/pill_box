@@ -278,20 +278,18 @@ class View():
         left_frame = ttk.Frame(receive_inventory_tab)
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        labels = ["Name:", "Quantity:", "Delivery Price:", "VAT Price:", "Customer Price:", "Batch Number:", "Expiration Date:", "Delivered:"]
+        labels = ["Name:", "Quantity:", "Delivery Price:", "VAT Price:", "Customer Price:", "Batch Number:", "Exp. Date:", "Delivered:"]
         entries = [ttk.Entry(left_frame) for _ in range(len(labels))]
 
         for i, label in enumerate(labels):
-            row, col = divmod(i, 2)
-
             label_widget = ttk.Label(left_frame, text=label)
             entry_widget = entries[i]
 
-            label_widget.grid(row=row, column=col * 2, padx=5, pady=5, sticky="w")
-            entry_widget.grid(row=row, column=col * 2 + 1, padx=5, pady=5, sticky="ew")
+            label_widget.grid(row=i, column=0, padx=5, pady=5, sticky="w")
+            entry_widget.grid(row=i, column=1, padx=5, pady=5, sticky="ew")
 
         submit_button = ttk.Button(left_frame, text="Submit", command=lambda: self.submit_inventory(entries, canvas, labels))
-        submit_button.grid(row=row + 1, column=0, columnspan=4, pady=10)
+        submit_button.grid(row=len(labels), column=0, columnspan=2, pady=10)
 
         right_frame = ttk.Frame(receive_inventory_tab)
         right_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
@@ -301,39 +299,34 @@ class View():
 
         for i, label in enumerate(labels):
             label_widget = ttk.Label(labels_frame, text=label)
-            label_widget.grid(row=0, column=i, padx=5, pady=5, sticky="w")
+            label_widget.grid(row=0, column=i, padx=10 - i, pady=5, sticky="w")
 
-        available_width = right_frame.winfo_width()
-        num_columns = len(labels)
-        column_width = available_width // num_columns
-        canvas_width = available_width - 10
-
-        canvas = tk.Canvas(right_frame, bg="white", width=canvas_width)
+        canvas = tk.Canvas(right_frame, bg="white")
         canvas.pack(fill=tk.BOTH, expand=True)
 
         self.canvas = canvas
         self.data_list = []
 
-
     def submit_inventory(self, entries, canvas, labels):
+        # Get data from entry widgets
         data = [entry.get() for entry in entries]
 
+        # Append data to the data list
         self.data_list.append(data)
 
-        row_height = 30
-        offset = 0
+        # Define row height and initial offset
+        row_height, offset = 20, 0
 
-        canvas.update_idletasks()
-        canvas_width = canvas.winfo_width()
-
+        # Loop through data and display it on the canvas
         for i, row_data in enumerate(self.data_list):
-            y = (i + 1) * row_height + offset + 20
-            x = 10
+            y = (i + 1) * 20
+            x = 20
             for col, value in enumerate(row_data):
-                column_width = canvas_width // len(labels)
-
+                column_width = canvas.winfo_width() // len(labels)
                 canvas.create_text(x + (col * column_width), y, text=value, anchor="w")
 
-        total_height = (len(self.data_list) + 1) * row_height + 20  # Add 1 for column names and 20 for spacing
+        # Calculate total height
+        total_height = (len(self.data_list) + 1) * row_height + offset
 
+        # Configure canvas scroll region
         canvas.config(scrollregion=(0, 0, 0, total_height))
