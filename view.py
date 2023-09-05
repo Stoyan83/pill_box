@@ -281,15 +281,14 @@ class View():
         labels = ["Name:", "Quantity:", "Delivery Price:", "VAT Price:", "Customer Price:", "Batch Number:", "Expiration Date:", "Delivered:"]
         entries = [ttk.Entry(left_frame) for _ in range(len(labels))]
 
-        for i in range(len(labels)):
-            label = ttk.Label(left_frame, text=labels[i])
-            entry = entries[i]
+        for i, label in enumerate(labels):
+            row, col = divmod(i, 2)
 
-            row = i // 2
-            col = i % 2
+            label_widget = ttk.Label(left_frame, text=label)
+            entry_widget = entries[i]
 
-            label.grid(row=row, column=col * 2, padx=5, pady=5, sticky="w")
-            entry.grid(row=row, column=col * 2 + 1, padx=5, pady=5, sticky="ew")
+            label_widget.grid(row=row, column=col * 2, padx=5, pady=5, sticky="w")
+            entry_widget.grid(row=row, column=col * 2 + 1, padx=5, pady=5, sticky="ew")
 
         submit_button = ttk.Button(left_frame, text="Submit", command=lambda: self.submit_inventory(entries, canvas, labels))
         submit_button.grid(row=row + 1, column=0, columnspan=4, pady=10)
@@ -297,28 +296,24 @@ class View():
         right_frame = ttk.Frame(receive_inventory_tab)
         right_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-        # Create a separate frame for labels above the canvas
         labels_frame = ttk.Frame(right_frame)
         labels_frame.pack(fill=tk.X)
 
         for i, label in enumerate(labels):
-            label = ttk.Label(labels_frame, text=label)
-            label.grid(row=0, column=i, padx=5, pady=5, sticky="w")
+            label_widget = ttk.Label(labels_frame, text=label)
+            label_widget.grid(row=0, column=i, padx=5, pady=5, sticky="w")
 
-        # Calculate the available width for the canvas
         available_width = right_frame.winfo_width()
-
-        # Calculate the column widths based on the number of columns and available width
         num_columns = len(labels)
         column_width = available_width // num_columns
+        canvas_width = available_width - 10
 
-        # Adjust the width of the canvas widget based on the available space
-        canvas_width = available_width - 10  # Adjust the padding as needed
         canvas = tk.Canvas(right_frame, bg="white", width=canvas_width)
         canvas.pack(fill=tk.BOTH, expand=True)
 
         self.canvas = canvas
         self.data_list = []
+
 
     def submit_inventory(self, entries, canvas, labels):
         data = [entry.get() for entry in entries]
@@ -328,21 +323,15 @@ class View():
         row_height = 30
         offset = 0
 
-        # Update the canvas size to match the current width of the right_frame
         canvas.update_idletasks()
         canvas_width = canvas.winfo_width()
 
         for i, row_data in enumerate(self.data_list):
-            y = (i + 1) * row_height + offset + 20  # Add 1 to skip the first row for column names and 20 for spacing
-
-            # Initialize x-coordinate for each column
+            y = (i + 1) * row_height + offset + 20
             x = 10
-
             for col, value in enumerate(row_data):
-                # Calculate the width of the column
                 column_width = canvas_width // len(labels)
 
-                # Create a text element for each column value
                 canvas.create_text(x + (col * column_width), y, text=value, anchor="w")
 
         total_height = (len(self.data_list) + 1) * row_height + 20  # Add 1 for column names and 20 for spacing
