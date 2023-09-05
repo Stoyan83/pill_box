@@ -33,17 +33,17 @@ class View():
         if self.current_notebook_tab is not None:
             self.notebook.forget(self.current_notebook_tab)
 
-        frame = ttk.Frame(self.notebook)
-        self.notebook.add(frame, text=page_title)
-        self.current_notebook_tab = frame
+        self.frame = ttk.Frame(self.notebook)
+        self.notebook.add(self.frame, text=page_title)
+        self.current_notebook_tab = self.frame
 
-        close_button = tb.Button(frame, text="Close", bootstyle="danger-outline", command=lambda: self.close_notebook(frame))
+        close_button = tb.Button(self.frame, text="Close", bootstyle="danger-outline", command=lambda: self.close_notebook(self.frame))
         close_button.pack(side=tk.TOP, anchor=tk.NE)
 
-        self.canvas = tk.Canvas(frame)
+        self.canvas = tk.Canvas(self.frame)
         self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=self.canvas.yview)
+        scrollbar = ttk.Scrollbar(self.frame, orient=tk.VERTICAL, command=self.canvas.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         self.canvas.configure(yscrollcommand=scrollbar.set)
@@ -188,7 +188,7 @@ class View():
             ("Help", [
                 ("About", "show_about"),
                 ("Documentation", "show_documentation"),
-                ("Log Out", "log_out")
+                ("Log Out", self.log_out)
             ])
         ]
 
@@ -250,3 +250,9 @@ class View():
             search_criteria = self.criteria_listbox.get()
             self.controller.show_nomenclature(search_term, search_criteria)
             self.search_entry.delete(0, tk.END)
+
+    def log_out(self):
+        self.close_notebook(self.frame)
+        self.master.withdraw()
+        self.load_login_window()
+       
