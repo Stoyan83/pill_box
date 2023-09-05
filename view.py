@@ -274,10 +274,13 @@ class View():
         receive_inventory_tab = ttk.Frame(self.notebook)
         self.notebook.add(receive_inventory_tab, text="Receive Inventory")
 
+        # Create a left frame for labels and entry fields
+        left_frame = ttk.Frame(receive_inventory_tab)
+        left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
         labels = ["Name:", "Quantity:", "Delivery Price:", "VAT:", "Customer Price:", "Notice:", "Batch Number:", "Expiration Date:", "Company Delivered:"]
-        entries = [ttk.Entry(receive_inventory_tab) for _ in range(len(labels))]
-        entry_labels = [ttk.Label(receive_inventory_tab, text=label) for label in labels]
+        entries = [ttk.Entry(left_frame) for _ in range(len(labels))]
+        entry_labels = [ttk.Label(left_frame, text=label) for label in labels]
 
         for i in range(len(labels)):
             label = entry_labels[i]
@@ -289,11 +292,27 @@ class View():
             label.grid(row=row, column=col * 2, padx=5, pady=5, sticky="w")
             entry.grid(row=row, column=col * 2 + 1, padx=5, pady=5, sticky="ew")
 
-        submit_button = ttk.Button(receive_inventory_tab, text="Submit", command=lambda: self.submit_inventory(receive_inventory_tab))
+        submit_button = ttk.Button(left_frame, text="Submit", command=lambda: self.submit_inventory(entries, tree, labels))
         submit_button.grid(row=row + 1, column=0, columnspan=4, pady=10)
 
-    def submit_inventory(self, receive_inventory_tab):
-        name = self.entries[0].get()  
-        print(name)
+        # Create a right frame for displaying entered data as a table
+        right_frame = ttk.Frame(receive_inventory_tab)
+        right_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-        receive_inventory_tab.destroy()
+        # Create a Treeview widget in the right frame to display the entered data as a table
+        tree = ttk.Treeview(right_frame, columns=labels, show="headings")
+
+        # Set column headings
+        for label in labels:
+            tree.heading(label, text=label)
+            tree.column(label, width=100)  # Adjust column width as needed
+
+        tree.pack(fill=tk.BOTH, expand=True)
+
+        self.tree = tree  # Store the Treeview as an instance variable
+
+    def submit_inventory(self, entries, tree, labels):
+        data = [entry.get() for entry in entries]
+
+        # Insert the entered data as a new row in the Treeview
+        tree.insert("", tk.END, values=data)
