@@ -62,7 +62,7 @@ class View():
             medicine_frame = ttk.Frame(medicine_frame_container, borderwidth=1, relief="solid")
             medicine_frame.pack(pady=5, padx=10, fill="x")
 
-            label_widget = ttk.Label(medicine_frame, text=f"ID: {data['ID']}\nTrade Name: {data['Trade Name']}", cursor="hand2")
+            label_widget = ttk.Label(medicine_frame, text=f"ID: {data['ID']}\nTrade Name: {data['Trade Name']}\nQuantity: {data['Quantity']}", cursor="hand2")
             label_widget.pack(padx=5, pady=2, anchor="w", fill="x")
 
             additional_info_widget = ttk.Label(medicine_frame, text=f"", state=tk.HIDDEN)
@@ -104,12 +104,12 @@ class View():
     def toggle_label_visibility(self, label, data):
         if label.is_visible:
             label.config(state=tk.HIDDEN)
-            label.config(text=f"ID: {data['ID']}\nTrade Name: {data['Trade Name']}")
+            label.config(text=f"ID: {data['ID']}\nTrade Name: {data['Trade Name']}\nQuantity: {data['Quantity']}")
         else:
             label.config(state=tk.NORMAL)
             additional_info = "\n".join([f"{key}: {value}" for key, value in data.items()])
             label.config(text=additional_info)
-            
+
         self.canvas.update_idletasks()
         self.canvas.config(scrollregion=self.canvas.bbox("all"))
 

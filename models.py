@@ -96,9 +96,14 @@ class Medicine(Base):
             medicine_data_list = []
 
             for medicine in medicines:
+
+                inventory_quantities = [inv.quantity for inv in medicine.inventory]
+                total_inventory_quantity = sum(inventory_quantities)
+
                 medicine_data = {
                     "ID": medicine.id,
                     "Trade Name": medicine.trade_name,
+                    "Quantity": total_inventory_quantity,
                     "Active Ingredient Quantity": medicine.active_ingredient_quantity,
                     "Registration Number": medicine.reg_number,
                     "Identifier": medicine.identifier,
@@ -147,17 +152,14 @@ class Inventory(Base):
     def generate_fake_data(num_records=100):
         session = SessionManager.get_session()
 
-        # Get a list of all medicine IDs
         medicine_ids = [medicine.id for medicine in session.query(Medicine).all()]
 
-        # Generate and insert fake inventory data for the specified number of records
         for _ in range(num_records):
             medicine_id = random.choice(medicine_ids)
             inventory_data = Inventory._generate_random_inventory_data(medicine_id)
             inventory = Inventory(**inventory_data)
             session.add(inventory)
 
-        # Commit the changes to the database
         session.commit()
 
     @staticmethod
@@ -165,8 +167,8 @@ class Inventory(Base):
         return {
             'medicine_id': medicine_id,
             'quantity': random.randint(1, 100),
-            'batch_number': str(random.randint(100000, 999999)),  # Generates a random 6-digit number as a string
-            'expiration_date': date.today() + timedelta(days=random.randint(365, 730)),  # Generates a random date within the next 2 years
+            'batch_number': str(random.randint(100000, 999999)),
+            'expiration_date': date.today() + timedelta(days=random.randint(365, 730)),
             'delivery_price': random.randint(10, 100),
             'vat': random.randint(1, 10),
             'customer_price': random.randint(50, 200),
