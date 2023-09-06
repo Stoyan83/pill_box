@@ -410,6 +410,9 @@ class View():
                 label_value = row_data[label_name]
                 label_text = f"{label_value}"
 
+                if label_name == "id":
+                    label_text = self.label_text
+
                 width = column_widths[col - 1] if col <= len(column_widths) else 20  # Default width
                 label = tk.Label(row_frame, text=label_text, width=width, anchor="w", cursor="hand2")
                 label.grid(row=0, column=col, pady=10, sticky="w")
