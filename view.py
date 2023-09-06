@@ -293,14 +293,18 @@ class View():
             entry_widget.grid(row=i + 1, column=1, padx=5, pady=5, sticky="ew")
 
         invoice_labels = ["Invoice Number:", "Date:", "Sum:", "VAT:", "Total Sum:"]
-        invoice_entries = [ttk.Entry(left_frame) for _ in range(len(invoice_labels))]
+        invoice_entries = [tb.Entry(left_frame) for _ in range(len(invoice_labels))]
 
         for i, label in enumerate(invoice_labels):
-            label_widget = ttk.Label(left_frame, text=label, width=15, anchor="w")
+            label_widget = tb.Label(left_frame, text=label, width=15, anchor="w")
             entry_widget = invoice_entries[i]
 
             label_widget.grid(row=i + 1, column=4, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=i + 1, column=5, padx=5, pady=5, sticky="ew")
+
+
+        invoice_entries[3].config(state="readonly")
+        invoice_entries[4].config(state="readonly")  
 
         submit_button = ttk.Button(left_frame, text="Add Medicine", command=lambda: self.add_medicine(entries, canvas, input_fields))
         submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
@@ -346,10 +350,9 @@ class View():
             canvas.create_window(x, y, anchor="w", window=row_frame)
 
             for col, label_name in enumerate(row_data):
-                label_width = 18
                 label_value = row_data[label_name]
                 label_text = f"{label_value}"
-                label = tk.Label(row_frame, text=label_text, width=label_width, anchor="w", cursor="hand2")
+                label = tk.Label(row_frame, text=label_text, width=18, anchor="w", cursor="hand2")
                 label.grid(row=0, column=col, pady=10, sticky="w")
 
                 label.bind("<Button-1>", lambda event, i=i: self.edit_row(i))
@@ -372,6 +375,11 @@ class View():
         for entry, label in zip(invoice_entries, invoice_labels):
             entry_value = entry.get()
             invoice_data[label] = entry_value
+
+        print(invoice_data)
+
+        for entry in invoice_entries:
+            entry.configure(state="disabled")
 
         # print(invoice_data)
         # print(self.get_invoice_fields)
