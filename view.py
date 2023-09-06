@@ -278,11 +278,11 @@ class View():
         left_frame = ttk.Frame(receive_inventory_tab)
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        labels = ["Name:", "Quantity:", "Delivery Price:", "VAT Price:", "Customer Price:", "Batch Number:", "Exp. Date:", "Delivered:"]
+        labels = ["Name:", "Quantity:", "Delivery Price:", "VAT Price:", "Customer Price:", "Batch Number:", "Exp. Date:", "Supplier:"]
         entries = [ttk.Entry(left_frame) for _ in range(len(labels))]
 
         for i, label in enumerate(labels):
-            label_widget = ttk.Label(left_frame, text=label, width=15)  # Increase the width here
+            label_widget = ttk.Label(left_frame, text=label, width=15)
             entry_widget = entries[i]
 
             label_widget.grid(row=i, column=0, padx=5, pady=5, sticky="w")
@@ -291,11 +291,38 @@ class View():
         submit_button = ttk.Button(left_frame, text="Submit", command=lambda: self.submit_inventory(entries, canvas, labels))
         submit_button.grid(row=len(labels), column=0, columnspan=2, pady=10)
 
+        invoice_number_label = ttk.Label(left_frame, text="Invoice Number:", width=15, anchor="w")
+        invoice_number_entry = ttk.Entry(left_frame)
+        invoice_number_label.grid(row=0, column=4, padx=5, pady=5, sticky="w")
+        invoice_number_entry.grid(row=0, column=5, padx=5, pady=5, sticky="ew")
+
+        date_label = ttk.Label(left_frame, text="Date:", width=15, anchor="w")
+        date_entry = ttk.Entry(left_frame)
+        date_label.grid(row=1, column=4, padx=5, pady=5, sticky="w")
+        date_entry.grid(row=1, column=5, padx=5, pady=5, sticky="ew")
+
+        sum_label = ttk.Label(left_frame, text="Sum:", width=15, anchor="w")
+        sum_entry = ttk.Entry(left_frame)
+        sum_label.grid(row=2, column=4, padx=5, pady=5, sticky="w")
+        sum_entry.grid(row=2, column=5, padx=5, pady=5, sticky="ew")
+
+        vat_label = ttk.Label(left_frame, text="VAT:", width=15, anchor="w")
+        vat_entry = ttk.Entry(left_frame)
+        vat_label.grid(row=3, column=4, padx=5, pady=5, sticky="w")
+        vat_entry.grid(row=3, column=5, padx=5, pady=5, sticky="ew")
+
+        total_sum_label = ttk.Label(left_frame, text="Total Sum:", width=15, anchor="w")
+        total_sum_entry = ttk.Entry(left_frame)
+        total_sum_label.grid(row=4, column=4, padx=5, pady=5, sticky="w")
+        total_sum_entry.grid(row=4, column=5, padx=5, pady=5, sticky="ew")
+
         right_frame = ttk.Frame(receive_inventory_tab)
         right_frame.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
 
         labels_frame = ttk.Frame(right_frame)
         labels_frame.pack(fill=tk.X)
+
+
 
         for i, label in enumerate(labels):
             label_widget = ttk.Label(labels_frame, text=label, width=15)  # Increase the width here
