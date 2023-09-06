@@ -134,18 +134,16 @@ class Inventory(Base):
     batch_number = Column(String)
     expiration_date = Column(Date)
     delivery_price = Column(Numeric(precision=10, scale=2))
-    vat = Column(Numeric(precision=10, scale=2))
     customer_price = Column(Numeric(precision=10, scale=2))
 
     medicine = relationship('Medicine', back_populates='inventory')
 
-    def __init__(self, medicine_id, quantity, batch_number, expiration_date, delivery_price, vat, customer_price):
+    def __init__(self, medicine_id, quantity, batch_number, expiration_date, delivery_price, customer_price):
         self.medicine_id = medicine_id
         self.quantity = quantity
         self.batch_number = batch_number
         self.expiration_date = expiration_date
         self.delivery_price = delivery_price
-        self.vat = vat
         self.customer_price = customer_price
 
     @staticmethod
@@ -170,6 +168,5 @@ class Inventory(Base):
             'batch_number': str(random.randint(100000, 999999)),
             'expiration_date': date.today() + timedelta(days=random.randint(365, 730)),
             'delivery_price': random.randint(10, 100),
-            'vat': random.randint(1, 10),
-            'customer_price': random.randint(50, 200),
+            'customer_price': random.randint(50, 200)
         }
