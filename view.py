@@ -70,15 +70,15 @@ class View():
             medicine_frame = ttk.Frame(medicine_frame_container, borderwidth=1, relief="solid")
             medicine_frame.pack(pady=5, padx=10, fill="x")
 
-            if self.from_inventory:
-                add_button = ttk.Button(medicine_frame, text="Add", command=None)
-                add_button.pack(side=tk.RIGHT, padx=5, pady=5)
-
             label_widget = ttk.Label(medicine_frame, text=f"ID: {data['ID']}\nTrade Name: {data['Trade Name']}\nQuantity: {data['Quantity']}", cursor="hand2")
             label_widget.pack(padx=5, pady=2, anchor="w", fill="x")
 
             additional_info_widget = ttk.Label(medicine_frame, text=f"", state=tk.HIDDEN)
             additional_info_widget.pack(padx=5, pady=2, anchor="w", fill="x")
+
+            if self.from_inventory:
+                add_button = ttk.Button(medicine_frame, text="Add", command=lambda medecine_id=data['ID'], name=data['Trade Name']: self.controller.add_medicine_to_invoice(medecine_id, name))
+                add_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
             label_widget.is_visible = False
 
@@ -297,7 +297,7 @@ class View():
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
         input_fields = [
-            "row", "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date", "supplier"
+            "row", "id", "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date", "supplier"
         ]
 
         entries = [ttk.Entry(left_frame) for _ in range(len(input_fields))]
@@ -308,9 +308,13 @@ class View():
                 continue
             if label == "row":
                 continue
+            if label == "id":
+                continue
             label = self.controller.humanize_text(label)
             label_widget = ttk.Label(left_frame, text=label, width=15)
             entry_widget = entries[i]
+            if label == "Name":
+                entry_widget.config(state="readonly")
 
             self.combobox_methods = {
                 "Search by Name": self.search_by_name

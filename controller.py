@@ -36,7 +36,6 @@ class Controller:
         nomenclature = self.medicine_model.search_medicines(search_term, search_criteria, page, results_per_page)
         self.view.create_notebook("Nomenclature", nomenclature, page, results_per_page)
 
-
     def calculate_total(self, invoice_data):
         invoice_sum = Decimal(invoice_data["sum"])
         invoice_data["vat"] = invoice_sum * Decimal("0.20")
@@ -50,6 +49,10 @@ class Controller:
         current_delivery_price = Decimal(self.view.delivery_price_var.get() or 0)
         new_sum = current_delivery_price + Decimal(price)
         self.view.delivery_price_var.set(new_sum.quantize(Decimal("0.00")))
+
+    def add_medicine_to_invoice(self, medecine_id, name):
+        print(medecine_id)
+        print(name)
 
     def humanize_text(self, label):
         return ' '.join(word.capitalize() for word in label.split('_'))
