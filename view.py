@@ -38,7 +38,12 @@ class View():
 
         self.frame = ttk.Frame(self.notebook)
         self.notebook.add(self.frame, text=page_title)
+
+        self.notebook.select(self.frame)
+
         self.current_notebook_tab = self.frame
+
+
 
         close_button = tb.Button(self.frame, text="Close", bootstyle="danger-outline", command=lambda: self.close_notebook(self.frame))
         close_button.pack(side=tk.TOP, anchor=tk.NE)
@@ -261,6 +266,8 @@ class View():
 
             self.create_notebook("Nomenclature", [], 1, 10)
 
+        self.notebook.select(self.current_notebook_tab)
+
     def on_search(self):
         search_term = self.search_entry.get().strip()
         if search_term:
@@ -360,6 +367,8 @@ class View():
 
         self.canvas = canvas
         self.get_invoice_fields = []
+
+        self.notebook.select(self.receive_inventory_tab)
 
     def add_medicine(self, entries, canvas, labels):
         self.data_dict = {}
