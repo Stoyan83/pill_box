@@ -44,7 +44,7 @@ class Controller:
         self.view.confirm_inventory(calculated=invoice_data)
 
     def calculate_customer_price(self, delivery_price):
-        return Decimal(delivery_price) * Decimal("1.4").quantize(Decimal("0.00"))
+         return (delivery_price * Decimal("1.4")).quantize(Decimal("0.00"))
 
     def humanize_text(self, label):
         return ' '.join(word.capitalize() for word in label.split('_'))

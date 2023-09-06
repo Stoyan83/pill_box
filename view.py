@@ -3,6 +3,7 @@ from tkinter import ttk
 from utils import *
 from ttkbootstrap import Style
 import ttkbootstrap as tb
+from decimal import Decimal
 
 
 class View():
@@ -342,10 +343,11 @@ class View():
         for entry, label in zip(entries, labels):
             entry_value = entry.get()
             if label == "customer_price":
-                entry_value = self.controller.calculate_customer_price(self.data_dict["delivery_price"])
-                current_delivery_price = int(self.delivery_price_var.get()) if  self.delivery_price_var.get() else 0
-                new_sum = int(current_delivery_price) + int(self.data_dict["delivery_price"])
-                self.delivery_price_var.set(str(new_sum))
+                delivery_price = self.data_dict.get("delivery_price", 0)
+                entry_value = self.controller.calculate_customer_price(Decimal(delivery_price))
+                current_delivery_price = Decimal(self.delivery_price_var.get() or 0)
+                new_sum = current_delivery_price + Decimal(delivery_price)
+                self.delivery_price_var.set(new_sum.quantize(Decimal("0.00")))
             self.data_dict[label] = entry_value
 
         self.get_invoice_fields.append(self.data_dict)
