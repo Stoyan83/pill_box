@@ -281,43 +281,32 @@ class View():
         confirm_button = ttk.Button(left_frame, text="Confirm", command=self.confirm_inventory)
         confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
-        labels = ["Name:", "Quantity:", "Delivery Price:", "VAT Price:", "Customer Price:", "Batch Number:", "Exp. Date:", "Supplier:"]
-        entries = [ttk.Entry(left_frame) for _ in range(len(labels))]
+        input_fields = [
+            "Name:", "Quantity:", "Delivery Price:", "VAT Price:",
+            "Customer Price:", "Batch Number:", "Exp. Date:", "Supplier:"
+        ]
 
-        for i, label in enumerate(labels):
+        entries = [ttk.Entry(left_frame) for _ in range(len(input_fields))]
+
+        for i, label in enumerate(input_fields):
             label_widget = ttk.Label(left_frame, text=label, width=15)
             entry_widget = entries[i]
 
             label_widget.grid(row=i + 1, column=0, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=i + 1, column=1, padx=5, pady=5, sticky="ew")
 
-        submit_button = ttk.Button(left_frame, text="Add Medicine", command=lambda: self.add_medicine(entries, canvas, labels))
-        submit_button.grid(row=len(labels) + 1, column=1, columnspan=2, pady=10)
+        submit_button = ttk.Button(left_frame, text="Add Medicine", command=lambda: self.add_medicine(entries, canvas, input_fields))
+        submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
 
-        invoice_number_label = ttk.Label(left_frame, text="Invoice Number:", width=15, anchor="w")
-        invoice_number_entry = ttk.Entry(left_frame)
-        invoice_number_label.grid(row=1, column=4, padx=5, pady=5, sticky="w")
-        invoice_number_entry.grid(row=1, column=5, padx=5, pady=5, sticky="ew")
+        input_labels = ["Invoice Number:", "Date:", "Sum:", "VAT:", "Total Sum:"]
+        input_entries = [ttk.Entry(left_frame) for _ in range(len(input_labels))]
 
-        date_label = ttk.Label(left_frame, text="Date:", width=15, anchor="w")
-        date_entry = ttk.Entry(left_frame)
-        date_label.grid(row=2, column=4, padx=5, pady=5, sticky="w")
-        date_entry.grid(row=2, column=5, padx=5, pady=5, sticky="ew")
+        for i, label in enumerate(input_labels):
+            label_widget = ttk.Label(left_frame, text=label, width=15, anchor="w")
+            entry_widget = input_entries[i]
 
-        sum_label = ttk.Label(left_frame, text="Sum:", width=15, anchor="w")
-        sum_entry = ttk.Entry(left_frame)
-        sum_label.grid(row=3, column=4, padx=5, pady=5, sticky="w")
-        sum_entry.grid(row=3, column=5, padx=5, pady=5, sticky="ew")
-
-        vat_label = ttk.Label(left_frame, text="VAT:", width=15, anchor="w")
-        vat_entry = ttk.Entry(left_frame)
-        vat_label.grid(row=4, column=4, padx=5, pady=5, sticky="w")
-        vat_entry.grid(row=4, column=5, padx=5, pady=5, sticky="ew")
-
-        total_sum_label = ttk.Label(left_frame, text="Total Sum:", width=15, anchor="w")
-        total_sum_entry = ttk.Entry(left_frame)
-        total_sum_label.grid(row=5, column=4, padx=5, pady=5, sticky="w")
-        total_sum_entry.grid(row=5, column=5, padx=5, pady=5, sticky="ew")
+            label_widget.grid(row=i + 1, column=4, padx=5, pady=5, sticky="w")
+            entry_widget.grid(row=i + 1, column=5, padx=5, pady=5, sticky="ew")
 
         right_frame = ttk.Frame(receive_inventory_tab)
         right_frame.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
@@ -325,9 +314,7 @@ class View():
         labels_frame = ttk.Frame(right_frame)
         labels_frame.pack(fill=tk.X)
 
-
-
-        for i, label in enumerate(labels):
+        for i, label in enumerate(input_fields):
             label_widget = ttk.Label(labels_frame, text=label, width=15)
             label_widget.grid(row=0, column=i, padx=10, pady=5, sticky="w")
 
@@ -336,6 +323,7 @@ class View():
 
         self.canvas = canvas
         self.data_list = []
+
 
     def add_medicine(self, entries, canvas, labels):
         data = [entry.get() for entry in entries]
