@@ -37,7 +37,11 @@ class Controller:
 
     def calculata_total(self, invoice_data):
         invoice = invoice_data
-        invoice_sum = int(invoice["Sum"])
+        invoice_sum = float(invoice["sum"])
         invoice_vat = invoice_sum * 0.20
         total_sum = invoice_sum + invoice_vat
+        # invoice[]
         print(total_sum)
+
+    def humanize_text(self, label):
+        return ' '.join(word.capitalize() for word in label.split('_'))

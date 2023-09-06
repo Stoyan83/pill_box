@@ -279,23 +279,26 @@ class View():
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
         input_fields = [
-            "Name", "Quantity", "Delivery Price", "VAT Price",
-            "Customer Price", "Batch Number", "Exp. Date", "Supplier"
+            "name", "quantity", "delivery_price", "vat_price",
+            "customer_price", "batch_number", "expiry_date", "supplier"
         ]
 
         entries = [ttk.Entry(left_frame) for _ in range(len(input_fields))]
 
         for i, label in enumerate(input_fields):
+            label = self.controller.humanize_text(label)
             label_widget = ttk.Label(left_frame, text=label, width=15)
             entry_widget = entries[i]
 
             label_widget.grid(row=i + 1, column=0, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=i + 1, column=1, padx=5, pady=5, sticky="ew")
 
-        invoice_labels = ["Invoice Number", "Date", "Sum", "VAT", "Total Sum"]
+        invoice_labels = ["invoice_number", "date", "sum", "vat", "total_sum"]
         invoice_entries = [tb.Entry(left_frame) for _ in range(len(invoice_labels))]
 
+
         for i, label in enumerate(invoice_labels):
+            label = self.controller.humanize_text(label)
             label_widget = tb.Label(left_frame, text=label, width=15, anchor="w")
             entry_widget = invoice_entries[i]
 
@@ -319,6 +322,7 @@ class View():
         labels_frame.pack(fill=tk.X)
 
         for i, label in enumerate(input_fields):
+            label = self.controller.humanize_text(label)
             label_widget = ttk.Label(labels_frame, text=label, width=15)
             label_widget.grid(row=0, column=i, padx=10, pady=5, sticky="w")
 
