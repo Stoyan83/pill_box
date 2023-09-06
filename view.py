@@ -278,9 +278,6 @@ class View():
         left_frame = ttk.Frame(receive_inventory_tab)
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        confirm_button = ttk.Button(left_frame, text="Confirm", command=self.confirm_inventory)
-        confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
-
         input_fields = [
             "Name:", "Quantity:", "Delivery Price:", "VAT Price:",
             "Customer Price:", "Batch Number:", "Exp. Date:", "Supplier:"
@@ -295,18 +292,21 @@ class View():
             label_widget.grid(row=i + 1, column=0, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=i + 1, column=1, padx=5, pady=5, sticky="ew")
 
-        submit_button = ttk.Button(left_frame, text="Add Medicine", command=lambda: self.add_medicine(entries, canvas, input_fields))
-        submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
+        invoice_labels = ["Invoice Number:", "Date:", "Sum:", "VAT:", "Total Sum:"]
+        invoice_entries = [ttk.Entry(left_frame) for _ in range(len(invoice_labels))]
 
-        input_labels = ["Invoice Number:", "Date:", "Sum:", "VAT:", "Total Sum:"]
-        input_entries = [ttk.Entry(left_frame) for _ in range(len(input_labels))]
-
-        for i, label in enumerate(input_labels):
+        for i, label in enumerate(invoice_labels):
             label_widget = ttk.Label(left_frame, text=label, width=15, anchor="w")
-            entry_widget = input_entries[i]
+            entry_widget = invoice_entries[i]
 
             label_widget.grid(row=i + 1, column=4, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=i + 1, column=5, padx=5, pady=5, sticky="ew")
+
+        submit_button = ttk.Button(left_frame, text="Add Medicine", command=lambda: self.add_medicine(entries, canvas, input_fields))
+        submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
+
+        confirm_button = ttk.Button(left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels, invoice_entries))
+        confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
         right_frame = ttk.Frame(receive_inventory_tab)
         right_frame.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
@@ -322,24 +322,23 @@ class View():
         canvas.pack(fill=tk.BOTH, expand=True)
 
         self.canvas = canvas
-        self.data_list = []
+        self.get_invoice_fields = []
 
     def add_medicine(self, entries, canvas, labels):
         self.data_dict = {}
 
         for entry, label in zip(entries, labels):
-            label_name = label
             entry_value = entry.get()
-            self.data_dict[label_name] = entry_value
+            self.data_dict[label] = entry_value
 
-        self.data_list.append(self.data_dict)
+        self.get_invoice_fields.append(self.data_dict)
 
         for entry in entries:
             entry.delete(0, "end")
 
         row_height, offset = 20, 0
 
-        for i, row_data in enumerate(self.data_list):
+        for i, row_data in enumerate(self.get_invoice_fields):
             y = (i + 1) * row_height + offset
             x = 20
 
@@ -357,7 +356,7 @@ class View():
 
             offset += row_height
 
-        total_height = (len(self.data_list) + 1) * row_height + offset
+        total_height = (len(self.get_invoice_fields) + 1) * row_height + offset
 
         canvas.config(scrollregion=(0, 0, 0, total_height))
 
@@ -367,5 +366,12 @@ class View():
         pass
 
 
-    def confirm_inventory(self):
-        print(self.data_list)
+    def confirm_inventory(self, invoice_labels, invoice_entries):
+        invoice_data = {}
+
+        for entry, label in zip(invoice_entries, invoice_labels):
+            entry_value = entry.get()
+            invoice_data[label] = entry_value
+
+        # print(invoice_data)
+        # print(self.get_invoice_fields)
