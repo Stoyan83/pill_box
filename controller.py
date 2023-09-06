@@ -53,10 +53,19 @@ class Controller:
         self.view.delivery_price_var.set(new_sum.quantize(Decimal("0.00")))
 
     def add_medicine_to_invoice(self, medicine_id, name):
-        self.view.name_widget.configure(state="default")
+        self.update_name_entry(name)
+        self.cleanup_view()
+
+    def update_name_entry(self, name):
+        self.view.name_widget.configure(state="normal")
         self.view.name_widget.delete(0, tk.END)
         self.view.name_widget.insert(0, name)
         self.view.name_widget.configure(state="readonly")
+
+    def cleanup_view(self):
+        self.view.close_notebook(self.view.frame)
+        # self.view.destroy_search_frame()
+        self.view.current_notebook_tab = None
 
     def humanize_text(self, label):
         return ' '.join(word.capitalize() for word in label.split('_'))

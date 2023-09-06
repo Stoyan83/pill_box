@@ -373,6 +373,7 @@ class View():
         self.notebook.select(self.receive_inventory_tab)
 
     def add_medicine(self, entries, canvas, labels):
+
         self.data_dict = {}
 
         for entry, label in zip(entries, labels):
@@ -421,6 +422,10 @@ class View():
 
         canvas.config(scrollregion=(0, 0, 0, total_height))
 
+        self.name_widget.configure(state="default")
+        self.name_widget.delete(0, tk.END)
+        self.name_widget.configure(state="readonly")
+
 
     def on_combobox_select(self, event):
         selected_item = self.combobox.get()
@@ -463,5 +468,3 @@ class View():
                 entry.configure(state="disabled")
                 entry_value = entry.get()
                 invoice_data[label] = entry_value
-
-        print(self.get_invoice_fields)
