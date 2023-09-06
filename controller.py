@@ -35,13 +35,14 @@ class Controller:
         self.view.create_notebook("Nomenclature", nomenclature, page, results_per_page)
 
 
-    def calculata_total(self, invoice_data):
+    def calculate_total(self, invoice_data):
         invoice = invoice_data
         invoice_sum = float(invoice["sum"])
         invoice_vat = invoice_sum * 0.20
         total_sum = invoice_sum + invoice_vat
-        # invoice[]
-        print(total_sum)
+        invoice["vat"] = invoice_vat
+        invoice["total_sum"] = total_sum
+        self.view.confirm_inventory(calculated=invoice)
 
     def humanize_text(self, label):
         return ' '.join(word.capitalize() for word in label.split('_'))

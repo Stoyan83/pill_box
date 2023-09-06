@@ -312,7 +312,7 @@ class View():
         submit_button = ttk.Button(left_frame, text="Add Medicine", command=lambda: self.add_medicine(entries, canvas, input_fields))
         submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
 
-        confirm_button = ttk.Button(left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels, invoice_entries))
+        confirm_button = ttk.Button(left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=invoice_entries))
         confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
         right_frame = ttk.Frame(receive_inventory_tab)
@@ -373,17 +373,26 @@ class View():
         pass
 
 
-    def confirm_inventory(self, invoice_labels, invoice_entries, calculated=None):
+    def confirm_inventory(self, invoice_labels=None, invoice_entries=None, calculated=None):
         invoice_data = {}
 
-        for entry, label in zip(invoice_entries, invoice_labels):
-            entry_value = entry.get()
-            invoice_data[label] = entry_value
+        if not calculated:
+            self.invoice_entries = invoice_entries
+            self.invoice_labels = invoice_labels
+            for entry, label in zip(invoice_entries, invoice_labels):
+                entry_value = entry.get()
+                invoice_data[label] = entry_value
 
-        self.controller.calculata_total(invoice_data)
+            self.controller.calculate_total(invoice_data)
 
-        # for entry in invoice_entries:
-        #     entry.configure(state="disabled")
+        else:
+            new_data = calculated
+            for entry, label in zip(self.invoice_entries, self.invoice_labels):
+                entry.configure(state="default")
+                entry.delete(0, "end")
+                entry.insert(0, new_data.get(label))
+                entry.configure(state="disabled")
+                entry_value = entry.get()
+                invoice_data[label] = entry_value
 
-        # print(invoice_data)
-        # print(self.get_invoice_fields)
+        print(invoice_data)
