@@ -1,5 +1,7 @@
 from db import Base, engine, Session
 from models import Medicine, Inventory
+from decimal import Decimal
+
 
 class Controller:
     def __init__(self, view=None, **models):
@@ -37,8 +39,8 @@ class Controller:
 
     def calculate_total(self, invoice_data):
         invoice = invoice_data
-        invoice_sum = float(invoice["sum"])
-        invoice_vat = invoice_sum * 0.20
+        invoice_sum = Decimal(invoice["sum"])
+        invoice_vat = invoice_sum * Decimal("0.20")
         total_sum = invoice_sum + invoice_vat
         invoice["vat"] = invoice_vat
         invoice["total_sum"] = total_sum

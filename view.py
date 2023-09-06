@@ -395,4 +395,4 @@ class View():
                 entry_value = entry.get()
                 invoice_data[label] = entry_value
 
-        print(invoice_data)
+            print(invoice_data)
