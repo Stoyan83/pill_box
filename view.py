@@ -303,13 +303,12 @@ class View():
         entries = [ttk.Entry(left_frame) for _ in range(len(input_fields))]
         row_num = 1
 
+        labels_to_skip = ["customer_price", "row", "id"]
+
         for i, label in enumerate(input_fields):
-            if label == "customer_price":
+            if label in labels_to_skip:
                 continue
-            if label == "row":
-                continue
-            if label == "id":
-                continue
+            
             label = self.controller.humanize_text(label)
             label_widget = ttk.Label(left_frame, text=label, width=15)
             entry_widget = entries[i]
