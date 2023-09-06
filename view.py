@@ -279,8 +279,7 @@ class View():
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
         input_fields = [
-            "name", "quantity", "delivery_price", "vat_price",
-            "customer_price", "batch_number", "expiry_date", "supplier"
+            "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date", "supplier"
         ]
 
         entries = [ttk.Entry(left_frame) for _ in range(len(input_fields))]
@@ -337,6 +336,8 @@ class View():
 
         for entry, label in zip(entries, labels):
             entry_value = entry.get()
+            if label == "customer_price":
+                entry_value = self.controller.calculate_customer_price(self.data_dict["delivery_price"])
             self.data_dict[label] = entry_value
 
         self.get_invoice_fields.append(self.data_dict)
@@ -395,4 +396,4 @@ class View():
                 entry_value = entry.get()
                 invoice_data[label] = entry_value
 
-            print(invoice_data)
+        print(self.get_invoice_fields)
