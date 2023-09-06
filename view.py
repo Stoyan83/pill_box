@@ -324,11 +324,15 @@ class View():
         self.canvas = canvas
         self.data_list = []
 
-
     def add_medicine(self, entries, canvas, labels):
-        data = [entry.get() for entry in entries]
+        self.data_dict = {}
 
-        self.data_list.append(data)
+        for entry, label in zip(entries, labels):
+            label_name = label
+            entry_value = entry.get()
+            self.data_dict[label_name] = entry_value
+
+        self.data_list.append(self.data_dict)
 
         for entry in entries:
             entry.delete(0, "end")
@@ -342,9 +346,11 @@ class View():
             row_frame = tk.Frame(canvas)
             canvas.create_window(x, y, anchor="w", window=row_frame)
 
-            for col, value in enumerate(row_data):
+            for col, label_name in enumerate(row_data):
                 label_width = 18
-                label = tk.Label(row_frame, text=value, width=label_width, anchor="w", cursor="hand2")
+                label_value = row_data[label_name]
+                label_text = f"{label_value}"
+                label = tk.Label(row_frame, text=label_text, width=label_width, anchor="w", cursor="hand2")
                 label.grid(row=0, column=col, pady=10, sticky="w")
 
                 label.bind("<Button-1>", lambda event, i=i: self.edit_row(i))
@@ -362,4 +368,4 @@ class View():
 
 
     def confirm_inventory(self):
-        pass
+        print(self.data_list)
