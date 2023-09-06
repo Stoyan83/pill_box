@@ -43,8 +43,6 @@ class View():
 
         self.current_notebook_tab = self.frame
 
-
-
         close_button = tb.Button(self.frame, text="Close", bootstyle="danger-outline", command=lambda: self.close_notebook(self.frame))
         close_button.pack(side=tk.TOP, anchor=tk.NE)
 
@@ -293,14 +291,14 @@ class View():
         self.receive_inventory_tab = ttk.Frame(self.notebook)
         self.notebook.add(self.receive_inventory_tab, text="Receive Inventory")
 
-        left_frame = ttk.Frame(self.receive_inventory_tab)
-        left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.left_frame = ttk.Frame(self.receive_inventory_tab)
+        self.left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
         input_fields = [
             "row", "id", "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date", "supplier"
         ]
 
-        entries = [ttk.Entry(left_frame) for _ in range(len(input_fields))]
+        entries = [ttk.Entry(self.left_frame) for _ in range(len(input_fields))]
         row_num = 1
 
         labels_to_skip = ["customer_price", "row", "id"]
@@ -308,19 +306,19 @@ class View():
         for i, label in enumerate(input_fields):
             if label in labels_to_skip:
                 continue
-            
+
             label = self.controller.humanize_text(label)
-            label_widget = ttk.Label(left_frame, text=label, width=15)
+            label_widget = ttk.Label(self.left_frame, text=label, width=15)
             entry_widget = entries[i]
             if label == "Name":
                 entry_widget.config(state="readonly")
-
+                self.name_widget = entry_widget
             self.combobox_methods = {
                 "Search by Name": self.search_by_name
             }
 
             if label == "Name":
-                self.combobox = ttk.Combobox(left_frame, values=list(self.combobox_methods.keys()))
+                self.combobox = ttk.Combobox(self.left_frame, values=list(self.combobox_methods.keys()))
                 self.combobox.set("Choose Medicine")
                 self.combobox.grid(row=row_num, column=2, padx=5, pady=5, sticky="ew")
 
@@ -331,12 +329,12 @@ class View():
         self.combobox.bind("<<ComboboxSelected>>", self.on_combobox_select)
 
         invoice_labels = ["invoice_number", "date", "sum", "vat", "total_sum"]
-        invoice_entries = [tb.Entry(left_frame) for _ in range(len(invoice_labels))]
+        invoice_entries = [tb.Entry(self.left_frame) for _ in range(len(invoice_labels))]
 
 
         for i, label in enumerate(invoice_labels):
             label = self.controller.humanize_text(label)
-            label_widget = tb.Label(left_frame, text=label, width=15, anchor="w")
+            label_widget = tb.Label(self.left_frame, text=label, width=15, anchor="w")
             entry_widget = invoice_entries[i]
 
             if label == "Sum":
@@ -349,10 +347,10 @@ class View():
         invoice_entries[3].config(state="readonly")
         invoice_entries[4].config(state="readonly")
 
-        submit_button = ttk.Button(left_frame, text="Add Medicine", command=lambda: self.add_medicine(entries, canvas, input_fields))
+        submit_button = ttk.Button(self.left_frame, text="Add Medicine", command=lambda: self.add_medicine(entries, canvas, input_fields))
         submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
 
-        confirm_button = ttk.Button(left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=invoice_entries))
+        confirm_button = ttk.Button(self.left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=invoice_entries))
         confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
         right_frame = ttk.Frame(self.receive_inventory_tab)

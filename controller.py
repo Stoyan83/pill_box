@@ -1,6 +1,8 @@
 from db import Base, engine, Session
 from models import Medicine, Inventory
 from decimal import Decimal
+from tkinter import ttk
+import tkinter as tk
 
 
 class Controller:
@@ -50,9 +52,11 @@ class Controller:
         new_sum = current_delivery_price + Decimal(price)
         self.view.delivery_price_var.set(new_sum.quantize(Decimal("0.00")))
 
-    def add_medicine_to_invoice(self, medecine_id, name):
-        print(medecine_id)
-        print(name)
+    def add_medicine_to_invoice(self, medicine_id, name):
+        self.view.name_widget.configure(state="default")
+        self.view.name_widget.delete(0, tk.END)
+        self.view.name_widget.insert(0, name)
+        self.view.name_widget.configure(state="readonly")
 
     def humanize_text(self, label):
         return ' '.join(word.capitalize() for word in label.split('_'))
