@@ -1,6 +1,6 @@
 from db import Base, engine, Session
 from models import Medicine, Inventory
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 
 
 class Controller:
@@ -38,20 +38,13 @@ class Controller:
 
 
     def calculate_total(self, invoice_data):
-        invoice = invoice_data
-        invoice_sum = Decimal(invoice["sum"])
-        invoice_vat = invoice_sum * Decimal("0.20")
-        total_sum = invoice_sum + invoice_vat
-        invoice["vat"] = invoice_vat
-        invoice["total_sum"] = total_sum
-        self.view.confirm_inventory(calculated=invoice)
+        invoice_sum = Decimal(invoice_data["sum"])
+        invoice_data["vat"] = invoice_sum * Decimal("0.20")
+        invoice_data["total_sum"] = invoice_sum + invoice_data["vat"]
+        self.view.confirm_inventory(calculated=invoice_data)
 
     def calculate_customer_price(self, delivery_price):
-        delivery_price_decimal = Decimal(delivery_price)
-        multiplier = Decimal('1.4')
-        customer_price = delivery_price_decimal * multiplier
-        customer_price = customer_price.quantize(Decimal('0.00'))
-        return customer_price
+        return Decimal(delivery_price) * Decimal("1.4").quantize(Decimal("0.00"))
 
     def humanize_text(self, label):
         return ' '.join(word.capitalize() for word in label.split('_'))
