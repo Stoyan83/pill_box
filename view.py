@@ -17,6 +17,7 @@ class View():
         self.current_notebook_tab = None
         self.search_frame_loaded = False
         self.search_frame = None
+        self.delivery_price_var = tk.StringVar()
 
         self.selected_workplace = tk.StringVar()
         self.load_login_window()
@@ -301,6 +302,10 @@ class View():
             label_widget = tb.Label(left_frame, text=label, width=15, anchor="w")
             entry_widget = invoice_entries[i]
 
+            if label == "Sum":
+                entry_widget.config(textvariable=self.delivery_price_var)
+
+
             label_widget.grid(row=i + 1, column=4, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=i + 1, column=5, padx=5, pady=5, sticky="ew")
 
@@ -338,6 +343,7 @@ class View():
             entry_value = entry.get()
             if label == "customer_price":
                 entry_value = self.controller.calculate_customer_price(self.data_dict["delivery_price"])
+                self.delivery_price_var.set(self.data_dict["delivery_price"])
             self.data_dict[label] = entry_value
 
         self.get_invoice_fields.append(self.data_dict)
