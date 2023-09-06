@@ -284,14 +284,19 @@ class View():
         ]
 
         entries = [ttk.Entry(left_frame) for _ in range(len(input_fields))]
+        row_num = 1
 
         for i, label in enumerate(input_fields):
+            if label == "customer_price":
+                continue
             label = self.controller.humanize_text(label)
             label_widget = ttk.Label(left_frame, text=label, width=15)
             entry_widget = entries[i]
 
-            label_widget.grid(row=i + 1, column=0, padx=5, pady=5, sticky="w")
-            entry_widget.grid(row=i + 1, column=1, padx=5, pady=5, sticky="ew")
+
+            label_widget.grid(row=row_num, column=0, padx=5, pady=5, sticky="w")
+            entry_widget.grid(row=row_num, column=1, padx=5, pady=5, sticky="ew")
+            row_num += 1
 
         invoice_labels = ["invoice_number", "date", "sum", "vat", "total_sum"]
         invoice_entries = [tb.Entry(left_frame) for _ in range(len(invoice_labels))]
