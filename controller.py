@@ -33,3 +33,8 @@ class Controller:
         results_per_page = 10
         nomenclature = self.medicine_model.search_medicines(search_term, search_criteria, page, results_per_page)
         self.view.create_notebook("Nomenclature", nomenclature, page, results_per_page)
+
+
+    def calculata_total(self, invoice_data):
+        invoice_sum = invoice_data["Sum"]
+        print(invoice_sum)

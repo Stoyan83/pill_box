@@ -279,8 +279,8 @@ class View():
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
         input_fields = [
-            "Name:", "Quantity:", "Delivery Price:", "VAT Price:",
-            "Customer Price:", "Batch Number:", "Exp. Date:", "Supplier:"
+            "Name", "Quantity", "Delivery Price", "VAT Price",
+            "Customer Price", "Batch Number", "Exp. Date", "Supplier"
         ]
 
         entries = [ttk.Entry(left_frame) for _ in range(len(input_fields))]
@@ -292,7 +292,7 @@ class View():
             label_widget.grid(row=i + 1, column=0, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=i + 1, column=1, padx=5, pady=5, sticky="ew")
 
-        invoice_labels = ["Invoice Number:", "Date:", "Sum:", "VAT:", "Total Sum:"]
+        invoice_labels = ["Invoice Number", "Date", "Sum", "VAT", "Total Sum"]
         invoice_entries = [tb.Entry(left_frame) for _ in range(len(invoice_labels))]
 
         for i, label in enumerate(invoice_labels):
@@ -304,7 +304,7 @@ class View():
 
 
         invoice_entries[3].config(state="readonly")
-        invoice_entries[4].config(state="readonly")  
+        invoice_entries[4].config(state="readonly")
 
         submit_button = ttk.Button(left_frame, text="Add Medicine", command=lambda: self.add_medicine(entries, canvas, input_fields))
         submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
@@ -369,17 +369,17 @@ class View():
         pass
 
 
-    def confirm_inventory(self, invoice_labels, invoice_entries):
+    def confirm_inventory(self, invoice_labels, invoice_entries, calculated=None):
         invoice_data = {}
 
         for entry, label in zip(invoice_entries, invoice_labels):
             entry_value = entry.get()
             invoice_data[label] = entry_value
 
-        print(invoice_data)
+        self.controller.calculata_total(invoice_data)
 
-        for entry in invoice_entries:
-            entry.configure(state="disabled")
+        # for entry in invoice_entries:
+        #     entry.configure(state="disabled")
 
         # print(invoice_data)
         # print(self.get_invoice_fields)
