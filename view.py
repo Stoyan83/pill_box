@@ -292,15 +292,21 @@ class View():
             label = self.controller.humanize_text(label)
             label_widget = ttk.Label(left_frame, text=label, width=15)
             entry_widget = entries[i]
-            if label == "Name":
-                combobox = ttk.Combobox(left_frame, values=["Search by Name", "Search by Id"])
-                combobox.set("Choose Medicine")
-                combobox.grid(row=row_num, column=2, padx=5, pady=5, sticky="ew")
 
+            self.combobox_methods = {
+                "Search by Name": self.search_by_name
+            }
+
+            if label == "Name":
+                self.combobox = ttk.Combobox(left_frame, values=list(self.combobox_methods.keys()))
+                self.combobox.set("Choose Medicine")
+                self.combobox.grid(row=row_num, column=2, padx=5, pady=5, sticky="ew")
 
             label_widget.grid(row=row_num, column=0, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=row_num, column=1, padx=5, pady=5, sticky="ew")
             row_num += 1
+
+        self.combobox.bind("<<ComboboxSelected>>", self.on_combobox_select)
 
         invoice_labels = ["invoice_number", "date", "sum", "vat", "total_sum"]
         invoice_entries = [tb.Entry(left_frame) for _ in range(len(invoice_labels))]
@@ -385,6 +391,13 @@ class View():
 
         canvas.config(scrollregion=(0, 0, 0, total_height))
 
+    def on_combobox_select(self, event):
+        selected_item = self.combobox.get()
+        if selected_item in self.combobox_methods:
+            self.combobox_methods[selected_item]()
+
+    def search_by_name(self):
+        self.load_search()
 
     def edit_row(self, row_index):
         print("click")
