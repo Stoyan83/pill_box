@@ -1,6 +1,6 @@
 import random
 from datetime import date, timedelta
-from sqlalchemy import Column, String, Integer, ForeignKey, Date
+from sqlalchemy import Column, String, Integer, ForeignKey, Date, Numeric
 from sqlalchemy.orm import relationship
 from db import Base, engine, Session
 import xlrd
@@ -133,9 +133,9 @@ class Inventory(Base):
     quantity = Column(Integer, nullable=False)
     batch_number = Column(String)
     expiration_date = Column(Date)
-    delivery_price = Column(Integer)
-    vat = Column(Integer)
-    customer_price = Column(Integer)
+    delivery_price = Column(Numeric(precision=10, scale=2))
+    vat = Column(Numeric(precision=10, scale=2))
+    customer_price = Column(Numeric(precision=10, scale=2))
 
     medicine = relationship('Medicine', back_populates='inventory')
 

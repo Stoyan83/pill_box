@@ -36,5 +36,8 @@ class Controller:
 
 
     def calculata_total(self, invoice_data):
-        invoice_sum = invoice_data["Sum"]
-        print(invoice_sum)
+        invoice = invoice_data
+        invoice_sum = int(invoice["Sum"])
+        invoice_vat = invoice_sum * 0.20
+        total_sum = invoice_sum + invoice_vat
+        print(total_sum)
