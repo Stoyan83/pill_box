@@ -17,6 +17,8 @@ class View():
         self.current_notebook_tab = None
         self.search_frame_loaded = False
         self.search_frame = None
+        self.from_inventory = False
+        self.receive_inventory_tab = None
         self.delivery_price_var = tk.StringVar()
 
         self.selected_workplace = tk.StringVar()
@@ -62,6 +64,10 @@ class View():
         for data in displayed_data:
             medicine_frame = ttk.Frame(medicine_frame_container, borderwidth=1, relief="solid")
             medicine_frame.pack(pady=5, padx=10, fill="x")
+
+            if self.from_inventory:
+                add_button = ttk.Button(medicine_frame, text="Add", command=None)
+                add_button.pack(side=tk.RIGHT, padx=5, pady=5)
 
             label_widget = ttk.Label(medicine_frame, text=f"ID: {data['ID']}\nTrade Name: {data['Trade Name']}\nQuantity: {data['Quantity']}", cursor="hand2")
             label_widget.pack(padx=5, pady=2, anchor="w", fill="x")
@@ -118,6 +124,7 @@ class View():
 
     def close_notebook(self, frame_to_close):
         self.notebook.forget(frame_to_close)
+        self.from_inventory = False
         if self.search_frame is not None:
             self.search_frame.destroy()
             self.search_frame_loaded = False
@@ -273,10 +280,13 @@ class View():
 
 
     def receive_inventory(self):
-        receive_inventory_tab = ttk.Frame(self.notebook)
-        self.notebook.add(receive_inventory_tab, text="Receive Inventory")
+        if self.receive_inventory_tab:
+            return
 
-        left_frame = ttk.Frame(receive_inventory_tab)
+        self.receive_inventory_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.receive_inventory_tab, text="Receive Inventory")
+
+        left_frame = ttk.Frame(self.receive_inventory_tab)
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
         input_fields = [
@@ -334,7 +344,7 @@ class View():
         confirm_button = ttk.Button(left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=invoice_entries))
         confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
-        right_frame = ttk.Frame(receive_inventory_tab)
+        right_frame = ttk.Frame(self.receive_inventory_tab)
         right_frame.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
 
         labels_frame = ttk.Frame(right_frame)
@@ -397,6 +407,13 @@ class View():
             self.combobox_methods[selected_item]()
 
     def search_by_name(self):
+        if self.current_notebook_tab:
+            self.close_notebook(self.frame)
+        if self.search_frame is not None:
+            self.search_frame.destroy()
+            self.search_frame_loaded = False
+            self.current_notebook_tab = None
+        self.from_inventory = True
         self.load_search()
 
     def edit_row(self, row_index):
