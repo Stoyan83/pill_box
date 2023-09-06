@@ -292,6 +292,10 @@ class View():
             label = self.controller.humanize_text(label)
             label_widget = ttk.Label(left_frame, text=label, width=15)
             entry_widget = entries[i]
+            if label == "Name":
+                combobox = ttk.Combobox(left_frame, values=["Search by Name", "Search by Id"])
+                combobox.set("Choose Medicine")
+                combobox.grid(row=row_num, column=2, padx=5, pady=5, sticky="ew")
 
 
             label_widget.grid(row=row_num, column=0, padx=5, pady=5, sticky="w")
