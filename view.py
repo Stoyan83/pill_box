@@ -297,7 +297,7 @@ class View():
         left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
         input_fields = [
-            "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date", "supplier"
+            "row", "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date", "supplier"
         ]
 
         entries = [ttk.Entry(left_frame) for _ in range(len(input_fields))]
@@ -305,6 +305,8 @@ class View():
 
         for i, label in enumerate(input_fields):
             if label == "customer_price":
+                continue
+            if label == "row":
                 continue
             label = self.controller.humanize_text(label)
             label_widget = ttk.Label(left_frame, text=label, width=15)
@@ -340,7 +342,6 @@ class View():
 
             label_widget.grid(row=i + 1, column=4, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=i + 1, column=5, padx=5, pady=5, sticky="ew")
-
 
         invoice_entries[3].config(state="readonly")
         invoice_entries[4].config(state="readonly")
@@ -389,6 +390,9 @@ class View():
 
         row_height, offset = 20, 0
 
+        column_widths = [11, 17, 18, 17, 18, 17, 18]
+
+
         for i, row_data in enumerate(self.get_invoice_fields):
             y = (i + 1) * row_height + offset
             x = 20
@@ -396,10 +400,16 @@ class View():
             row_frame = tk.Frame(canvas)
             canvas.create_window(x, y, anchor="w", window=row_frame)
 
-            for col, label_name in enumerate(row_data):
+
+            label = tk.Label(row_frame, text=str(i + 1), width=5, anchor="w", cursor="hand2")
+            label.grid(row=0, column=0, pady=10, sticky="w")
+
+            for col, label_name in enumerate(row_data, start=1):
                 label_value = row_data[label_name]
                 label_text = f"{label_value}"
-                label = tk.Label(row_frame, text=label_text, width=18, anchor="w", cursor="hand2")
+
+                width = column_widths[col - 1] if col <= len(column_widths) else 20  # Default width
+                label = tk.Label(row_frame, text=label_text, width=width, anchor="w", cursor="hand2")
                 label.grid(row=0, column=col, pady=10, sticky="w")
 
                 label.bind("<Button-1>", lambda event, i=i: self.edit_row(i))
@@ -409,6 +419,7 @@ class View():
         total_height = (len(self.get_invoice_fields) + 1) * row_height + offset
 
         canvas.config(scrollregion=(0, 0, 0, total_height))
+
 
     def on_combobox_select(self, event):
         selected_item = self.combobox.get()
