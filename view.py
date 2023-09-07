@@ -250,7 +250,7 @@ class View():
             self.search_entry = ttk.Entry(self.search_frame, validate="key")
             self.search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
 
-            self.criteria_listbox = ttk.Combobox(self.search_frame, values=["Name", "ID"])
+            self.criteria_listbox = ttk.Combobox(self.search_frame, values=["Name", "ID"], state="readonly")
             self.criteria_listbox.set("Name")
             self.criteria_listbox.grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
@@ -328,7 +328,7 @@ class View():
             }
 
             if label == "Name":
-                self.combobox = ttk.Combobox(self.left_frame, values=list(self.combobox_methods.keys()))
+                self.combobox = ttk.Combobox(self.left_frame, values=list(self.combobox_methods.keys()), state="readonly")
                 self.combobox.set("Choose Medicine")
                 self.combobox.grid(row=row_num, column=2, padx=5, pady=5, sticky="ew")
 
@@ -448,6 +448,7 @@ class View():
         selected_item = self.combobox.get()
         if selected_item in self.combobox_methods:
             self.combobox_methods[selected_item]()
+        self.combobox.set("Choose Medicine")
 
     def search_by_name(self):
         if self.current_notebook_tab:
