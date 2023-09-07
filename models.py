@@ -179,6 +179,30 @@ class Supplier(Base):
     name = Column(String, nullable=False)
     initials = Column(String, nullable=False)
 
+    invoices = relationship('Invoice', back_populates='supplier')
+
     def __init__(self, name, initials):
         self.name = name
         self.initials = initials
+
+
+class Invoice(Base):
+    __tablename__ = 'invoices'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    number = Column(String, nullable=False)
+    date = Column(Date, nullable=False)
+    invoice_sum = Column(Numeric(precision=10, scale=2), nullable=False)
+    vat = Column(Numeric(precision=10, scale=2), nullable=False)
+    total_sum = Column(Numeric(precision=10, scale=2), nullable=False)
+
+    supplier_id = Column(Integer, ForeignKey('suppliers.id'), nullable=False)
+    supplier = relationship('Supplier', back_populates='invoices')
+
+    def __init__(self, number, date, sum, vat, total_sum, supplier_id):
+        self.number = number
+        self.date = date
+        self.sum = sum
+        self.vat = vat
+        self.total_sum = total_sum
+        self.supplier_id = supplier_id
