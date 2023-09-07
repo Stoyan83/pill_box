@@ -47,6 +47,8 @@ class Medicine(Base):
     prescription_mode = Column(String)
 
     inventory = relationship('Inventory', back_populates='medicine')
+    inventory_invoices = relationship('InvoiceInventories', back_populates='medicine')  # Added this line
+
 
     def __init__(self, session, **kwargs):
         super().__init__(**kwargs)
@@ -195,9 +197,11 @@ class Invoice(Base):
     invoice_sum = Column(Numeric(precision=10, scale=2), nullable=False)
     vat = Column(Numeric(precision=10, scale=2), nullable=False)
     total_sum = Column(Numeric(precision=10, scale=2), nullable=False)
-
     supplier_id = Column(Integer, ForeignKey('suppliers.id'), nullable=False)
+
     supplier = relationship('Supplier', back_populates='invoices')
+    invoice_inventories = relationship('InvoiceInventories', back_populates='invoice')  # Added this line
+
 
     def __init__(self, number, date, sum, vat, total_sum, supplier_id):
         self.number = number
@@ -206,3 +210,28 @@ class Invoice(Base):
         self.vat = vat
         self.total_sum = total_sum
         self.supplier_id = supplier_id
+
+
+class InvoiceInventories(Base):
+    __tablename__ = 'invoice_inventories'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    medicine_id = Column(Integer, ForeignKey('medicines.id'), nullable=False)
+    quantity = Column(Integer, nullable=False)
+    batch_number = Column(String)
+    expiration_date = Column(Date)
+    delivery_price = Column(Numeric(precision=10, scale=2))
+    customer_price = Column(Numeric(precision=10, scale=2))
+    invoice_id = Column(Integer, ForeignKey('invoices.id'), nullable=False)
+
+    medicine = relationship('Medicine', back_populates='inventory_invoices')
+    invoice = relationship('Invoice', back_populates='invoice_inventories')
+
+    def __init__(self, medicine_id, quantity, batch_number, expiration_date, delivery_price, customer_price, invoice_id):
+        self.medicine_id = medicine_id
+        self.quantity = quantity
+        self.batch_number = batch_number
+        self.expiration_date = expiration_date
+        self.delivery_price = delivery_price
+        self.customer_price = customer_price
+        self.invoice_id = invoice_id
