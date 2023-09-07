@@ -294,11 +294,21 @@ class View():
         self.left_frame = ttk.Frame(self.receive_inventory_tab)
         self.left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
+        validate_numeric = self.left_frame.register(self.controller.validate_numeric_input)
+
         input_fields = [
             "row", "id", "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date", "supplier"
         ]
 
-        entries = [ttk.Entry(self.left_frame) for _ in range(len(input_fields))]
+        entries = []
+        for label in input_fields:
+            entry = ttk.Entry(self.left_frame)
+            entries.append(entry)
+
+            if label == "quantity" or label == "delivery_price":
+                entry.config(validate="key", validatecommand=(validate_numeric, "%P"))
+
+
         row_num = 1
 
         labels_to_skip = ["customer_price", "row", "id"]
@@ -329,8 +339,11 @@ class View():
         self.combobox.bind("<<ComboboxSelected>>", self.on_combobox_select)
 
         invoice_labels = ["invoice_number", "date", "sum", "vat", "total_sum"]
-        invoice_entries = [tb.Entry(self.left_frame) for _ in range(len(invoice_labels))]
 
+        invoice_entries = []
+        for _ in range(len(invoice_labels)):
+            entry = tb.Entry(self.left_frame)
+            invoice_entries.append(entry)
 
         for i, label in enumerate(invoice_labels):
             label = self.controller.humanize_text(label)
@@ -471,5 +484,5 @@ class View():
                 entry.configure(state="disabled")
                 entry_value = entry.get()
                 invoice_data[label] = entry_value
-                
+
             self.controller.save_invoice(self.get_invoice_fields, invoice_data)

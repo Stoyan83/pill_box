@@ -73,3 +73,13 @@ class Controller:
     def save_invoice(self, get_invoice_fields, invoice_data):
         print(invoice_data)
         print(get_invoice_fields)
+
+
+    def validate_numeric_input(self, value):
+        try:
+            if value == "" or isinstance(float(value), (int, float)):
+                return True
+            else:
+                return False
+        except ValueError:
+            return False
