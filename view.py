@@ -412,6 +412,7 @@ class View():
 
                 if label_name == "id":
                     label_text = self.label_text
+                    self.data_dict["id"] = label_text
 
                 width = column_widths[col - 1] if col <= len(column_widths) else 20  # Default width
                 label = tk.Label(row_frame, text=label_text, width=width, anchor="w", cursor="hand2")
@@ -470,3 +471,5 @@ class View():
                 entry.configure(state="disabled")
                 entry_value = entry.get()
                 invoice_data[label] = entry_value
+                
+            self.controller.save_invoice(self.get_invoice_fields, invoice_data)

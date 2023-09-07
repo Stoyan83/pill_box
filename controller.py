@@ -69,3 +69,7 @@ class Controller:
 
     def humanize_text(self, label):
         return ' '.join(word.capitalize() for word in label.split('_'))
+
+    def save_invoice(self, get_invoice_fields, invoice_data):
+        print(invoice_data)
+        print(get_invoice_fields)
