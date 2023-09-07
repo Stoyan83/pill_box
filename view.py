@@ -393,8 +393,9 @@ class View():
             entry_value = entry.get()
             if label == "customer_price":
                 delivery_price = self.data_dict.get("delivery_price", 0)
+                quantity = self.data_dict.get("quantity", 0)
                 entry_value = self.controller.calculate_customer_price(delivery_price)
-                self.controller.add_total(delivery_price)
+                self.controller.add_total(delivery_price, quantity)
 
             self.data_dict[label] = entry_value
 

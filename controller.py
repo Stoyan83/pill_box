@@ -48,9 +48,9 @@ class Controller:
     def calculate_customer_price(self, delivery_price):
          return (Decimal(delivery_price) * Decimal("1.4")).quantize(Decimal("0.00"))
 
-    def add_total(self, price):
+    def add_total(self, price, quantity):
         current_delivery_price = Decimal(self.view.delivery_price_var.get() or 0)
-        new_sum = current_delivery_price + Decimal(price)
+        new_sum = current_delivery_price + (Decimal(quantity) * Decimal(price))
         self.view.delivery_price_var.set(new_sum.quantize(Decimal("0.00")))
 
     def add_medicine_to_invoice(self, medicine_id, name):
