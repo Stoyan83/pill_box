@@ -170,3 +170,15 @@ class Inventory(Base):
             'delivery_price': random.randint(10, 100),
             'customer_price': random.randint(50, 200)
         }
+
+
+class Supplier(Base):
+    __tablename__ = 'suppliers'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(String, nullable=False)
+    initials = Column(String, nullable=False)
+
+    def __init__(self, name, initials):
+        self.name = name
+        self.initials = initials

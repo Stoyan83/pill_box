@@ -429,7 +429,6 @@ class View():
         self.name_widget.delete(0, tk.END)
         self.name_widget.configure(state="readonly")
 
-
     def on_combobox_select(self, event):
         selected_item = self.combobox.get()
         if selected_item in self.combobox_methods:
