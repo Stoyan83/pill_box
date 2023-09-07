@@ -360,7 +360,7 @@ class View():
         invoice_entries[3].config(state="readonly")
         invoice_entries[4].config(state="readonly")
 
-        submit_button = ttk.Button(self.left_frame, text="Add Medicine", command=lambda: self.add_medicine(entries, canvas, input_fields))
+        submit_button = ttk.Button(self.left_frame, text="Add Medicine", command=lambda: self.add_rows_to_inventory(entries, canvas, input_fields))
         submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
 
         confirm_button = ttk.Button(self.left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=invoice_entries))
@@ -385,7 +385,7 @@ class View():
 
         self.notebook.select(self.receive_inventory_tab)
 
-    def add_medicine(self, entries, canvas, labels):
+    def add_rows_to_inventory(self, entries, canvas, labels):
 
         self.data_dict = {}
 

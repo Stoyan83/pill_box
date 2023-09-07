@@ -40,8 +40,9 @@ class Controller:
 
     def calculate_total(self, invoice_data):
         invoice_sum = Decimal(invoice_data["sum"])
-        invoice_data["vat"] = invoice_sum * Decimal("0.20")
-        invoice_data["total_sum"] = invoice_sum + invoice_data["vat"]
+        vat_rate = Decimal("0.20")
+        invoice_data["vat"] = (invoice_sum * vat_rate).quantize(Decimal("0.00"))
+        invoice_data["total_sum"] = (invoice_sum + invoice_data["vat"]).quantize(Decimal("0.00"))
         self.view.confirm_inventory(calculated=invoice_data)
 
     def calculate_customer_price(self, delivery_price):
