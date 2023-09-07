@@ -6,8 +6,6 @@ from db import Base, engine, Session
 import xlrd
 
 
-
-
 class SessionManager:
     _session = None
 
