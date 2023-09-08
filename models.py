@@ -80,6 +80,7 @@ class Medicine(Base):
             self.session.add(medicine)
 
         self.session.commit()
+        print(f"Successfully added {sheet.nrows} fake medicines to the database.")
 
     def search_medicines(self, search_term, search_criteria, page=1, results_per_page=10):
         query = None
