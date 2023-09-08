@@ -24,7 +24,7 @@ class Controller:
 
         if count == 0:
             self.medicine_model.extract_and_insert_data()
-            Inventory.generate_fake_data(num_records=100)
+            # Inventory.generate_fake_data(num_records=100)
         else:
             print("Database is not empty. Skipping data extraction and insertion.")
 

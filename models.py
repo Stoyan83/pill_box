@@ -225,7 +225,7 @@ class Invoice(Base):
                 session.add(self)
                 session.flush()
 
-                # Create invoice items within the same transaction
+                # Create invoice inventory items within the same transaction
                 for field in get_invoice_fields:
                     invoice_date = datetime.strptime(field["expiry_date"], "%Y-%m-%d").date()
                     invoice_item = InvoiceInventories(
@@ -235,9 +235,20 @@ class Invoice(Base):
                         expiration_date=invoice_date,
                         delivery_price=field["delivery_price"],
                         customer_price=field["customer_price"],
-                        invoice_id=self.id  
+                        invoice_id=self.id
                     )
                     session.add(invoice_item)
+
+                    # Create inventory items within the same transaction
+                    inventory_item = Inventory(
+                        medicine_id=field["id"],
+                        quantity=field["quantity"],
+                        batch_number=field["batch_number"],
+                        expiration_date=invoice_date,
+                        delivery_price=field["delivery_price"],
+                        customer_price=field["customer_price"],
+                    )
+                    session.add(inventory_item)
 
                 return self.id
         except SQLAlchemyError as e:
