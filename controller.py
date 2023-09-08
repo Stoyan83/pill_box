@@ -1,5 +1,5 @@
 from db import Base, engine, Session
-from models import Medicine, Inventory, Invoice, InvoiceInventories
+from models import Medicine, Supplier
 from decimal import Decimal
 from tkinter import ttk
 import tkinter as tk
@@ -25,6 +25,7 @@ class Controller:
 
         if count == 0:
             self.medicine_model.extract_and_insert_data()
+            Supplier.create_fake_suppliers()
         else:
             print("Database is not empty. Skipping data extraction and insertion.")
 
