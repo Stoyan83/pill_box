@@ -45,8 +45,7 @@ class Medicine(Base):
     prescription_mode = Column(String)
 
     inventory = relationship('Inventory', back_populates='medicine')
-    inventory_invoices = relationship('InvoiceInventories', back_populates='medicine')  # Added this line
-
+    inventory_invoices = relationship('InvoiceInventories', back_populates='medicine')
 
     def __init__(self, session, **kwargs):
         super().__init__(**kwargs)
@@ -198,16 +197,23 @@ class Invoice(Base):
     supplier_id = Column(Integer, ForeignKey('suppliers.id'), nullable=False)
 
     supplier = relationship('Supplier', back_populates='invoices')
-    invoice_inventories = relationship('InvoiceInventories', back_populates='invoice')  # Added this line
+    invoice_inventories = relationship('InvoiceInventories', back_populates='invoice')
 
 
-    def __init__(self, number, date, sum, vat, total_sum, supplier_id):
+    def __init__(self, number=None, date=None, invoice_sum=None, vat=None, total_sum=None, supplier_id=None):
         self.number = number
         self.date = date
-        self.sum = sum
+        self.invoice_sum = invoice_sum
         self.vat = vat
         self.total_sum = total_sum
         self.supplier_id = supplier_id
+
+
+    def save(self):
+        session = SessionManager.get_session()
+        session.add(self)
+        session.commit()
+
 
 
 class InvoiceInventories(Base):

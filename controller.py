@@ -1,14 +1,16 @@
 from db import Base, engine, Session
-from models import Medicine, Inventory
+from models import Medicine, Inventory, Invoice
 from decimal import Decimal
 from tkinter import ttk
 import tkinter as tk
+from datetime import datetime
 
 
 class Controller:
     def __init__(self, view=None, **models):
         self.medicine_model = models.get('medicine_model')
         self.session_model = models.get('session_model')
+        self.invoice_model = models.get('invoice_model')
         self.view = view
 
         self.create_database()
@@ -72,8 +74,22 @@ class Controller:
         return ' '.join(word.capitalize() for word in label.split('_'))
 
     def save_invoice(self, get_invoice_fields, invoice_data):
-        print(invoice_data)
-        print(get_invoice_fields)
+        invoice_date = datetime.strptime(invoice_data["date"], "%Y-%m-%d").date()
+
+        new_invoice = Invoice(
+            number=invoice_data["invoice_number"],
+            date=invoice_date,
+            invoice_sum=Decimal(invoice_data["sum"]),
+            vat=Decimal(invoice_data["vat"]),
+            total_sum=Decimal(invoice_data["total_sum"]),
+            supplier_id=1
+        )
+        new_invoice.save()
+
+        print(new_invoice)
+
+
+
 
 
     def validate_numeric_input(self, value):
