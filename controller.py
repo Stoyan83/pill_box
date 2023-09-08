@@ -3,6 +3,7 @@ from models import Medicine, Inventory, Invoice, InvoiceInventories
 from decimal import Decimal
 from tkinter import ttk
 import tkinter as tk
+from datetime import datetime
 
 
 class Controller:
@@ -83,5 +84,12 @@ class Controller:
                 return True
             else:
                 return False
+        except ValueError:
+            return False
+
+    def is_valid_date(self, date_string):
+        try:
+            datetime.strptime(date_string, '%Y-%m-%d')
+            return True
         except ValueError:
             return False

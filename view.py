@@ -6,6 +6,7 @@ import ttkbootstrap as tb
 from ttkbootstrap.dialogs import Messagebox
 
 
+
 class View():
     def __init__(self, master,  controller=None):
         self.master = master
@@ -409,6 +410,12 @@ class View():
                 entry_value = self.controller.calculate_customer_price(delivery_price)
                 self.controller.add_total(delivery_price, quantity)
 
+            if label == "expiry_date":
+                    if not self.controller.is_valid_date(entry_value):
+                        expected_format = "YYYY-MM-DD"
+                        self.show_date_format_error(entry_value, expected_format)
+                        return
+
             self.data_dict[label] = entry_value
 
         self.get_invoice_fields.append(self.data_dict)
@@ -500,6 +507,11 @@ class View():
             self.invoice_labels = invoice_labels
             for entry, label in zip(invoice_entries, invoice_labels):
                 entry_value = entry.get()
+                if label == "date":
+                    if not self.controller.is_valid_date(entry_value):
+                        expected_format = "YYYY-MM-DD"
+                        self.show_date_format_error(entry_value, expected_format)
+                        return
                 invoice_data[label] = entry_value
 
             self.controller.calculate_total(invoice_data)
@@ -515,3 +527,7 @@ class View():
                 invoice_data[label] = entry_value
 
             self.controller.save_invoice(self.get_invoice_fields, invoice_data)
+
+    def show_date_format_error(self, entry_value, expected_format):
+        error_message = f"Invalid Date Format: {entry_value}. Please use the format: {expected_format}"
+        Messagebox.show_error(error_message, title="Validation Error")
