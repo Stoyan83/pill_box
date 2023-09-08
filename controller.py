@@ -1,7 +1,6 @@
-from db import Base, engine, Session
+from db import Session
 from models import Medicine, Supplier
 from decimal import Decimal
-from tkinter import ttk
 import tkinter as tk
 from datetime import datetime
 
@@ -20,14 +19,12 @@ class Controller:
         self.session_model.create_table()
 
         session = Session()
-        count = session.query(Medicine).count()
+        count = session.query(Supplier).count()
         session.close()
 
         if count == 0:
             self.medicine_model.extract_and_insert_data()
             Supplier.create_fake_suppliers()
-        else:
-            print("Database is not empty. Skipping data extraction and insertion.")
 
     def login(self, workplace):
         print(workplace)
