@@ -134,6 +134,12 @@ class View():
             self.search_frame.destroy()
             self.search_frame_loaded = False
             self.current_notebook_tab = None
+        if self.receive_inventory_tab is not None and frame_to_close == self.receive_inventory_tab:
+            self.receive_inventory_tab = None
+
+    # def close_receive_inventory_tab(self):
+    #     self.notebook.forget(self.receive_inventory_tab)
+    #     self.receive_inventory_tab = None
 
     def load_login_window(self):
         self.top_login = tk.Toplevel(self.master)
@@ -350,6 +356,9 @@ class View():
         for _ in range(len(invoice_labels)):
             entry = tb.Entry(self.left_frame)
             invoice_entries.append(entry)
+
+        close_button = tb.Button(self.receive_inventory_tab, text="Close", bootstyle="danger-outline", command=lambda: self.close_notebook(self.receive_inventory_tab))
+        close_button.grid(row=0, column=5, padx=5, pady=5, sticky="ne")
 
         for i, label in enumerate(invoice_labels):
             label = self.controller.humanize_text(label)
