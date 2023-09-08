@@ -3,6 +3,7 @@ from tkinter import ttk
 from utils import *
 from ttkbootstrap import Style
 import ttkbootstrap as tb
+from ttkbootstrap.dialogs import Messagebox
 
 
 class View():
@@ -394,6 +395,14 @@ class View():
         self.notebook.select(self.receive_inventory_tab)
 
     def add_rows_to_inventory(self, entries, canvas, labels):
+        labels_to_validate = ["name", "quantity", "delivery_price", "expiry_date", "batch_number"]
+
+        for entry, label in zip(entries, labels):
+            if label in labels_to_validate:
+                entry_value = entry.get()
+                if not entry_value:
+                    Messagebox.show_error(f"{label.capitalize()} field cannot be empty!", title="Error")
+                    return
 
         self.data_dict = {}
 
