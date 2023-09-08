@@ -298,9 +298,7 @@ class View():
         validate_numeric = self.left_frame.register(self.controller.validate_numeric_input)
 
         # Define input fields for inventory
-        input_fields = [
-            "row", "id", "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date", "supplier"
-        ]
+        input_fields = ["row", "id", "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date"]
 
         # Create Entry widgets for input fields
         entries = []
@@ -345,7 +343,7 @@ class View():
 
 
         # Define labels and Entry widgets for invoice details
-        invoice_labels = ["invoice_number", "date", "sum", "vat", "total_sum"]
+        invoice_labels = ["invoice_number", "supplier", "date", "sum", "vat", "total_sum"]
 
         invoice_entries = []
         for _ in range(len(invoice_labels)):
@@ -366,6 +364,7 @@ class View():
 
         invoice_entries[3].config(state="readonly")
         invoice_entries[4].config(state="readonly")
+        invoice_entries[5].config(state="readonly")
 
         submit_button = ttk.Button(self.left_frame, text="Add Medicine", command=lambda: self.add_rows_to_inventory(entries, canvas, input_fields))
         submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
