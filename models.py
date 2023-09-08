@@ -2,6 +2,7 @@ import random
 from datetime import date, timedelta
 from datetime import datetime
 from sqlalchemy import Column, String, Integer, ForeignKey, Date, Numeric
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import relationship
 from db import Base, engine, Session
 import xlrd
@@ -210,23 +211,44 @@ class Invoice(Base):
         self.supplier_id = supplier_id
 
 
-    def create_invoice(self, invoice_data):
-            invoice_date = datetime.strptime(invoice_data["date"], "%Y-%m-%d").date()
-            self.number = invoice_data["invoice_number"]
-            self.date = invoice_date
-            self.invoice_sum = invoice_data["sum"]
-            self.vat = invoice_data["vat"]
-            self.total_sum = invoice_data["total_sum"]
-            self.supplier_id = 1
-            self.save()
+    def create_invoice(self, invoice_data, get_invoice_fields):
+        session = SessionManager.get_session()
+        try:
+            with session.begin_nested():
+                invoice_date = datetime.strptime(invoice_data["date"], "%Y-%m-%d").date()
+                self.number = invoice_data["invoice_number"]
+                self.date = invoice_date
+                self.invoice_sum = invoice_data["sum"]
+                self.vat = invoice_data["vat"]
+                self.total_sum = invoice_data["total_sum"]
+                self.supplier_id = 1
+                session.add(self)
+                session.flush()
 
-            return self.id
+                # Create invoice items within the same transaction
+                for field in get_invoice_fields:
+                    invoice_date = datetime.strptime(field["expiry_date"], "%Y-%m-%d").date()
+                    invoice_item = InvoiceInventories(
+                        medicine_id=field["id"],
+                        quantity=field["quantity"],
+                        batch_number=field["batch_number"],
+                        expiration_date=invoice_date,
+                        delivery_price=field["delivery_price"],
+                        customer_price=field["customer_price"],
+                        invoice_id=self.id  
+                    )
+                    session.add(invoice_item)
 
+                return self.id
+        except SQLAlchemyError as e:
+            session.rollback()
+            raise e
 
     def save(self):
         session = SessionManager.get_session()
         session.add(self)
         session.commit()
+
 
 
 
@@ -253,22 +275,3 @@ class InvoiceInventories(Base):
         self.delivery_price = delivery_price
         self.customer_price = customer_price
         self.invoice_id = invoice_id
-
-    def create_invoice_items(self, get_invoice_fields, invoice_id):
-        session = SessionManager.get_session()
-
-        for field in get_invoice_fields:
-            invoice_date = datetime.strptime(field["expiry_date"], "%Y-%m-%d").date()
-            invoice_item = InvoiceInventories(
-                medicine_id=field["id"],
-                quantity=field["quantity"],
-                batch_number=field["batch_number"],
-                expiration_date=invoice_date,
-                delivery_price=field["delivery_price"],
-                customer_price=field["customer_price"],
-                invoice_id=invoice_id
-            )
-
-            session.add(invoice_item)
-
-        session.commit()
