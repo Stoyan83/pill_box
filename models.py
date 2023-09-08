@@ -220,6 +220,8 @@ class Invoice(Base):
             self.supplier_id = 1
             self.save()
 
+            return self.id
+
 
     def save(self):
         session = SessionManager.get_session()
@@ -243,7 +245,7 @@ class InvoiceInventories(Base):
     medicine = relationship('Medicine', back_populates='inventory_invoices')
     invoice = relationship('Invoice', back_populates='invoice_inventories')
 
-    def __init__(self, medicine_id, quantity, batch_number, expiration_date, delivery_price, customer_price, invoice_id):
+    def __init__(self, medicine_id=None, quantity=None, batch_number=None, expiration_date=None, delivery_price=None, customer_price=None, invoice_id=None):
         self.medicine_id = medicine_id
         self.quantity = quantity
         self.batch_number = batch_number
@@ -251,3 +253,22 @@ class InvoiceInventories(Base):
         self.delivery_price = delivery_price
         self.customer_price = customer_price
         self.invoice_id = invoice_id
+
+    def create_invoice_items(self, get_invoice_fields, invoice_id):
+        session = SessionManager.get_session()
+
+        for field in get_invoice_fields:
+            invoice_date = datetime.strptime(field["expiry_date"], "%Y-%m-%d").date()
+            invoice_item = InvoiceInventories(
+                medicine_id=field["id"],
+                quantity=field["quantity"],
+                batch_number=field["batch_number"],
+                expiration_date=invoice_date,
+                delivery_price=field["delivery_price"],
+                customer_price=field["customer_price"],
+                invoice_id=invoice_id
+            )
+
+            session.add(invoice_item)
+
+        session.commit()

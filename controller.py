@@ -10,6 +10,7 @@ class Controller:
         self.medicine_model = models.get('medicine_model')
         self.session_model = models.get('session_model')
         self.invoice_model = models.get('invoice_model')
+        self.invoice_inventory_model = models.get('invoice_inventory_model')
         self.view = view
 
         self.create_database()
@@ -73,23 +74,8 @@ class Controller:
         return ' '.join(word.capitalize() for word in label.split('_'))
 
     def save_invoice(self, get_invoice_fields, invoice_data):
-        self.invoice_model.create_invoice(invoice_data)
-        # self.create_invoice_items(get_invoice_fields)
-
-
-    def create_invoice_items(self, get_invoice_fields):
-        for field in get_invoice_fields:
-            new_item = InvoiceInventories(
-            medicine_id=field["medicine_id"],
-            quantity=field["quantity"],
-            batch_number=field["batch_number"],
-            expiration_date=field["expiration_date"],
-            delivery_price=field["delivery_price"],
-            customer_price=field["customer_price"]
-        )
-        # new_invoice.save()
-
-
+        invoice_id = self.invoice_model.create_invoice(invoice_data)
+        self.invoice_inventory_model.create_invoice_items(get_invoice_fields, invoice_id)
 
     def validate_numeric_input(self, value):
         try:
