@@ -1,9 +1,8 @@
 from db import Base, engine, Session
-from models import Medicine, Inventory, Invoice
+from models import Medicine, Inventory, Invoice, InvoiceInventories
 from decimal import Decimal
 from tkinter import ttk
 import tkinter as tk
-from datetime import datetime
 
 
 class Controller:
@@ -74,21 +73,21 @@ class Controller:
         return ' '.join(word.capitalize() for word in label.split('_'))
 
     def save_invoice(self, get_invoice_fields, invoice_data):
-        invoice_date = datetime.strptime(invoice_data["date"], "%Y-%m-%d").date()
+        self.invoice_model.create_invoice(invoice_data)
+        # self.create_invoice_items(get_invoice_fields)
 
-        new_invoice = Invoice(
-            number=invoice_data["invoice_number"],
-            date=invoice_date,
-            invoice_sum=Decimal(invoice_data["sum"]),
-            vat=Decimal(invoice_data["vat"]),
-            total_sum=Decimal(invoice_data["total_sum"]),
-            supplier_id=1
+
+    def create_invoice_items(self, get_invoice_fields):
+        for field in get_invoice_fields:
+            new_item = InvoiceInventories(
+            medicine_id=field["medicine_id"],
+            quantity=field["quantity"],
+            batch_number=field["batch_number"],
+            expiration_date=field["expiration_date"],
+            delivery_price=field["delivery_price"],
+            customer_price=field["customer_price"]
         )
-        new_invoice.save()
-
-        print(new_invoice)
-
-
+        # new_invoice.save()
 
 
 

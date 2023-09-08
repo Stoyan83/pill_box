@@ -1,5 +1,6 @@
 import random
 from datetime import date, timedelta
+from datetime import datetime
 from sqlalchemy import Column, String, Integer, ForeignKey, Date, Numeric
 from sqlalchemy.orm import relationship
 from db import Base, engine, Session
@@ -207,6 +208,17 @@ class Invoice(Base):
         self.vat = vat
         self.total_sum = total_sum
         self.supplier_id = supplier_id
+
+
+    def create_invoice(self, invoice_data):
+            invoice_date = datetime.strptime(invoice_data["date"], "%Y-%m-%d").date()
+            self.number = invoice_data["invoice_number"]
+            self.date = invoice_date
+            self.invoice_sum = invoice_data["sum"]
+            self.vat = invoice_data["vat"]
+            self.total_sum = invoice_data["total_sum"]
+            self.supplier_id = 1
+            self.save()
 
 
     def save(self):
