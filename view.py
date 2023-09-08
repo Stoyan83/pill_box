@@ -296,10 +296,12 @@ class View():
 
         validate_numeric = self.left_frame.register(self.controller.validate_numeric_input)
 
+        # Define input fields for inventory
         input_fields = [
             "row", "id", "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date", "supplier"
         ]
 
+        # Create Entry widgets for input fields
         entries = []
         for label in input_fields:
             entry = ttk.Entry(self.left_frame)
@@ -314,20 +316,22 @@ class View():
         labels_to_skip = ["customer_price", "row", "id"]
 
         for i, label in enumerate(input_fields):
+            # SKip some auto filled labels
             if label in labels_to_skip:
                 continue
 
             label = self.controller.humanize_text(label)
             label_widget = ttk.Label(self.left_frame, text=label, width=15)
             entry_widget = entries[i]
-            if label == "Name":
-                entry_widget.config(state="readonly")
-                self.name_widget = entry_widget
+
             self.combobox_methods = {
                 "Search by Name": self.search_by_name
             }
 
+            # Create a Combobox for choosing a medicine
             if label == "Name":
+                entry_widget.config(state="readonly")
+                self.name_widget = entry_widget
                 self.combobox = ttk.Combobox(self.left_frame, values=list(self.combobox_methods.keys()), state="readonly")
                 self.combobox.set("Choose Medicine")
                 self.combobox.grid(row=row_num, column=2, padx=5, pady=5, sticky="ew")
@@ -338,6 +342,8 @@ class View():
 
         self.combobox.bind("<<ComboboxSelected>>", self.on_combobox_select)
 
+
+        # Define labels and Entry widgets for invoice details
         invoice_labels = ["invoice_number", "date", "sum", "vat", "total_sum"]
 
         invoice_entries = []
@@ -366,12 +372,14 @@ class View():
         confirm_button = ttk.Button(self.left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=invoice_entries))
         confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
+        # Create a frame for displaying inventory data
         right_frame = ttk.Frame(self.receive_inventory_tab)
         right_frame.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
 
         labels_frame = ttk.Frame(right_frame)
         labels_frame.pack(fill=tk.X)
 
+        # Create labels for the inventory fields
         for i, label in enumerate(input_fields):
             label = self.controller.humanize_text(label)
             label_widget = ttk.Label(labels_frame, text=label, width=15)
@@ -463,7 +471,6 @@ class View():
     def edit_row(self, row_index):
         print("click")
         pass
-
 
     def confirm_inventory(self, invoice_labels=None, invoice_entries=None, calculated=None):
         invoice_data = {}
