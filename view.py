@@ -484,6 +484,15 @@ class View():
         invoice_data = {}
 
         if not calculated:
+            labels_to_validate = ["invoice_number", "supplier", "date", "sum"]
+
+            for entry, label in zip(invoice_entries, invoice_labels):
+                if label in labels_to_validate:
+                    entry_value = entry.get()
+                    if not entry_value:
+                        Messagebox.show_error(f"{label.capitalize()} field cannot be empty!", title="Error")
+                        return
+
             self.invoice_entries = invoice_entries
             self.invoice_labels = invoice_labels
             for entry, label in zip(invoice_entries, invoice_labels):
