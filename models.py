@@ -147,31 +147,6 @@ class Inventory(Base):
         self.delivery_price = delivery_price
         self.customer_price = customer_price
 
-    @staticmethod
-    def generate_fake_data(num_records=100):
-        session = SessionManager.get_session()
-
-        medicine_ids = [medicine.id for medicine in session.query(Medicine).all()]
-
-        for _ in range(num_records):
-            medicine_id = random.choice(medicine_ids)
-            inventory_data = Inventory._generate_random_inventory_data(medicine_id)
-            inventory = Inventory(**inventory_data)
-            session.add(inventory)
-
-        session.commit()
-
-    @staticmethod
-    def _generate_random_inventory_data(medicine_id):
-        return {
-            'medicine_id': medicine_id,
-            'quantity': random.randint(1, 100),
-            'batch_number': str(random.randint(100000, 999999)),
-            'expiration_date': date.today() + timedelta(days=random.randint(365, 730)),
-            'delivery_price': random.randint(10, 100),
-            'customer_price': random.randint(50, 200)
-        }
-
 
 class Supplier(Base):
     __tablename__ = 'suppliers'
@@ -259,8 +234,6 @@ class Invoice(Base):
         session = SessionManager.get_session()
         session.add(self)
         session.commit()
-
-
 
 
 class InvoiceInventories(Base):

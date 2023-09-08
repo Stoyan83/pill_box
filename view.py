@@ -6,7 +6,6 @@ import ttkbootstrap as tb
 from ttkbootstrap.dialogs import Messagebox
 
 
-
 class View():
     def __init__(self, master,  controller=None):
         self.master = master
@@ -32,7 +31,6 @@ class View():
         self.notebook.pack(fill=tk.BOTH, expand=True)
 
         self.load_menu()
-
 
     def create_notebook(self, page_title, data_list, page, results_per_page):
         if self.current_notebook_tab is not None:
