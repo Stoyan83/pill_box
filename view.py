@@ -396,12 +396,8 @@ class View():
     def add_rows_to_inventory(self, entries, canvas, labels):
         labels_to_validate = ["name", "quantity", "delivery_price", "expiry_date", "batch_number"]
 
-        for entry, label in zip(entries, labels):
-            if label in labels_to_validate:
-                entry_value = entry.get()
-                if not entry_value:
-                    Messagebox.show_error(f"{label.capitalize()} field cannot be empty!", title="Error")
-                    return
+        if self.validate_entries(entries, labels, labels_to_validate):
+            return
 
         self.data_dict = {}
 
@@ -460,6 +456,16 @@ class View():
         self.name_widget.delete(0, tk.END)
         self.name_widget.configure(state="readonly")
 
+
+    def validate_entries(self, entries, labels, labels_to_validate):
+        for entry, label in zip(entries, labels):
+            if label in labels_to_validate:
+                entry_value = entry.get()
+                if not entry_value:
+                    Messagebox.show_error(f"{label} field cannot be empty!", title="Error")
+                    return True
+        return False
+
     def on_combobox_select(self, event):
         selected_item = self.combobox.get()
         if selected_item in self.combobox_methods:
@@ -486,12 +492,9 @@ class View():
         if not calculated:
             labels_to_validate = ["invoice_number", "supplier", "date", "sum"]
 
-            for entry, label in zip(invoice_entries, invoice_labels):
-                if label in labels_to_validate:
-                    entry_value = entry.get()
-                    if not entry_value:
-                        Messagebox.show_error(f"{label.capitalize()} field cannot be empty!", title="Error")
-                        return
+
+            if self.validate_entries(invoice_entries, invoice_labels, labels_to_validate):
+                return
 
             self.invoice_entries = invoice_entries
             self.invoice_labels = invoice_labels
