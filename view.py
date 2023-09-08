@@ -135,11 +135,9 @@ class View():
             self.search_frame_loaded = False
             self.current_notebook_tab = None
         if self.receive_inventory_tab is not None and frame_to_close == self.receive_inventory_tab:
+            self.delivery_price_var = tk.StringVar()
+            self.get_invoice_fields = []
             self.receive_inventory_tab = None
-
-    # def close_receive_inventory_tab(self):
-    #     self.notebook.forget(self.receive_inventory_tab)
-    #     self.receive_inventory_tab = None
 
     def load_login_window(self):
         self.top_login = tk.Toplevel(self.master)
