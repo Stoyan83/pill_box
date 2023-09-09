@@ -502,8 +502,45 @@ class View():
         self.load_search()
 
     def edit_row(self, row_index):
-        print("click")
-        pass
+        if row_index < 0 or row_index >= len(self.get_invoice_fields):
+            return
+
+        selected_data = self.get_invoice_fields[row_index]
+
+        edit_window = tk.Toplevel(self.master)
+        edit_window.title("Edit Row")
+
+        edit_entries = {}
+        row_height = 20
+        y = 20
+
+        for label_name, label_value in selected_data.items():
+            label = tk.Label(edit_window, text=label_name, width=15, anchor="w")
+            label.grid(row=y, column=0, padx=5, pady=5, sticky="w")
+
+            entry = tk.Entry(edit_window)
+            entry.insert(0, label_value)
+            entry.grid(row=y, column=1, padx=5, pady=5, sticky="ew")
+
+            edit_entries[label_name] = entry
+            y += row_height
+
+        def update_row():
+            for label_name, entry in edit_entries.items():
+                updated_value = entry.get()
+                selected_data[label_name] = updated_value
+
+            for col, label_name in enumerate(selected_data, start=1):
+                label_value = selected_data[label_name]
+                label_text = f"{label_value}"
+                label = self.invoice_row_labels[row_index * len(selected_data) + col - 1]
+                
+                label.config(text=label_text)
+
+            edit_window.destroy()
+
+        save_button = tk.Button(edit_window, text="Save", command=update_row)
+        save_button.grid(row=y, column=1, padx=5, pady=10)
 
     def confirm_inventory(self, invoice_labels=None, invoice_entries=None, calculated=None):
         invoice_data = {}
