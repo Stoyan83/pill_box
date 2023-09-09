@@ -394,7 +394,7 @@ class View():
         labels_frame = ttk.Frame(right_frame)
         labels_frame.pack(fill=tk.X)
 
-        widths = [27, 12, 12, 12, 15, 15, 15, 15]
+        widths = [21, 12, 12, 12, 15, 15, 15, 15]
 
         # Create labels for the inventory fields
         for i, label in enumerate(input_fields):
@@ -441,7 +441,7 @@ class View():
 
         row_height, offset = 20, 0
 
-        column_widths = [11, 15, 15, 14, 18, 17, 17]
+        column_widths = [11, 15, 15, 14, 18, 17, 18]
 
         self.invoice_row_labels = []
         for i, row_data in enumerate(self.get_invoice_fields):
@@ -452,10 +452,10 @@ class View():
             canvas.create_window(x, y, anchor="w", window=row_frame)
 
             edit_button = tb.Button(row_frame, text="Edit", bootstyle="success-link", image=self.pencil_icon, command=lambda i=i: self.edit_row(i))
-            edit_button.grid(row=0, column=0, pady=10, padx=(10, 0), sticky="w")
+            edit_button.grid(row=0, column=0, pady=10, padx=(0, 0), sticky="w")
 
             delete_button = tb.Button(row_frame, text="Delete", bootstyle="danger-link", image=self.trash_icon, command=lambda i=i: self.edit_row(i))
-            delete_button.grid(row=0, column=1, pady=10, padx=(10, 0), sticky="w")
+            delete_button.grid(row=0, column=1, pady=10, padx=(0, 0), sticky="w")
 
             for col, label_name in enumerate(row_data, start=2):
                 label_value = row_data[label_name]
