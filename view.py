@@ -136,6 +136,7 @@ class View():
             self.delivery_price_var = tk.StringVar()
             self.get_invoice_fields = []
             self.receive_inventory_tab = None
+            self.invoice_row_labels = None
 
     def load_login_window(self):
         self.top_login = tk.Toplevel(self.master)
@@ -436,7 +437,7 @@ class View():
 
         column_widths = [11, 17, 18, 17, 18, 17, 18]
 
-
+        self.invoice_row_labels = []
         for i, row_data in enumerate(self.get_invoice_fields):
             y = (i + 1) * row_height + offset
             x = 20
@@ -456,11 +457,13 @@ class View():
                     label_text = self.label_text
                     self.data_dict["id"] = label_text
 
-                width = column_widths[col - 1] if col <= len(column_widths) else 20  # Default width
+                width = column_widths[col - 1] if col <= len(column_widths) else 20
                 label = tk.Label(row_frame, text=label_text, width=width, anchor="w", cursor="hand2")
                 label.grid(row=0, column=col, pady=10, sticky="w")
 
                 label.bind("<Button-1>", lambda event, i=i: self.edit_row(i))
+
+                self.invoice_row_labels.append(label)
 
             offset += row_height
 
@@ -534,6 +537,10 @@ class View():
                 entry.configure(state="disabled")
                 entry_value = entry.get()
                 invoice_data[label] = entry_value
+
+            if self.invoice_row_labels:
+                for label in self.invoice_row_labels:
+                    label.config(state="disabled", cursor="arrow")
 
             invoice_data = self.controller.changee_supplier_name_to_id(invoice_data)
             self.controller.save_invoice(self.get_invoice_fields, invoice_data)
