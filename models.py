@@ -162,25 +162,24 @@ class Supplier(Base):
         self.name = name
         self.initials = initials
 
-
     @classmethod
     def create_fake_suppliers(cls, num_suppliers=5):
         session = SessionManager.get_session()
-        common_supplier_names = [
+        supplier_names = [
             "ABC Pharmaceuticals",
             "XYZ Medical Supplies",
             "Johnson Medical Solutions",
             "MediCorp Inc.",
             "HealthPro Distributors"
         ]
-
         try:
-            for _ in range(num_suppliers):
-                name = random.choice(common_supplier_names)
-                initials = "".join(random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") for _ in range(2))
+            for i in range(num_suppliers):
+                if i < len(supplier_names):
+                    name = supplier_names[i]
+                    initials = "".join(random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ") for _ in range(2))
 
-                supplier = cls(name=name, initials=initials)
-                session.add(supplier)
+                    supplier = cls(name=name, initials=initials)
+                    session.add(supplier)
 
             session.commit()
             print(f"Successfully added {num_suppliers} fake suppliers to the database.")
