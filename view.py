@@ -250,8 +250,8 @@ class View():
 
     def load_search(self):
         if not self.search_frame_loaded:
-            self.search_frame = ttk.Frame(self.master)
-            self.search_frame.pack(pady=10, padx=10, fill="x")
+            self.search_frame = ttk.Frame(self.notebook)
+            self.search_frame.pack(side=tk.TOP, fill=tk.X)
 
             search_label = ttk.Label(self.search_frame, text="Search:")
             search_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
@@ -317,7 +317,6 @@ class View():
             if label == "quantity" or label == "delivery_price":
                 entry.config(validate="key", validatecommand=(validate_numeric, "%P"))
 
-
         row_num = 1
 
         labels_to_skip = ["customer_price", "actions", "id"]
@@ -348,7 +347,6 @@ class View():
             row_num += 1
 
         self.combobox.bind("<<ComboboxSelected>>", self.on_combobox_select)
-
 
         # Define labels and Entry widgets for invoice details
         invoice_labels = ["invoice_number", "supplier", "date", "sum", "vat", "total_sum"]
@@ -427,10 +425,10 @@ class View():
                 self.controller.add_total(delivery_price, quantity)
 
             if label == "expiry_date":
-                    if not self.controller.is_valid_date(entry_value):
-                        expected_format = "YYYY-MM-DD"
-                        self.show_date_format_error(entry_value, expected_format)
-                        return
+                if not self.controller.is_valid_date(entry_value):
+                    expected_format = "YYYY-MM-DD"
+                    self.show_date_format_error(entry_value, expected_format)
+                    return
 
             self.data_dict[label] = entry_value
 
@@ -439,23 +437,26 @@ class View():
         for entry in entries:
             entry.delete(0, "end")
 
-        row_height, offset = 20, 0
-
+        row_height, offset = 30, 0
         column_widths = [11, 15, 15, 14, 18, 17, 18]
 
         self.invoice_row_labels = []
-        for i, row_data in enumerate(self.get_invoice_fields):
-            y = (i + 1) * row_height + offset
-            x = 20
 
-            row_frame = tk.Frame(canvas)
-            canvas.create_window(x, y, anchor="w", window=row_frame)
+        rows_frame = tk.Frame(canvas)
+        canvas.create_window(0, 0, anchor="nw", window=rows_frame)
+
+        for i, row_data in enumerate(self.get_invoice_fields):
+            y = i * row_height + offset
+            x = 0
+
+            row_frame = tk.Frame(rows_frame, relief="ridge", borderwidth=1)
+            row_frame.grid(row=i, column=0, padx=10, pady=10, sticky="w")
 
             edit_button = tb.Button(row_frame, text="Edit", bootstyle="success-link", image=self.pencil_icon, command=lambda i=i: self.edit_row(i))
-            edit_button.grid(row=0, column=0, pady=10, padx=(0, 0), sticky="w")
+            edit_button.grid(row=0, column=0, pady=10, padx=(10, 0), sticky="w")  # Adjust padx for better alignment
 
             delete_button = tb.Button(row_frame, text="Delete", bootstyle="danger-link", image=self.trash_icon, command=lambda i=i: self.edit_row(i))
-            delete_button.grid(row=0, column=1, pady=10, padx=(0, 0), sticky="w")
+            delete_button.grid(row=0, column=1, pady=10, padx=(10, 0), sticky="w")  # Adjust padx for better alignment
 
             for col, label_name in enumerate(row_data, start=2):
                 label_value = row_data[label_name]
@@ -471,15 +472,13 @@ class View():
 
                 self.invoice_row_labels.append(label)
 
-            offset += row_height
-
-        total_height = (len(self.get_invoice_fields) + 1) * row_height + offset
-
+        total_height = len(self.get_invoice_fields) * row_height + offset
         canvas.config(scrollregion=(0, 0, 0, total_height))
 
         self.name_widget.configure(state="default")
         self.name_widget.delete(0, tk.END)
         self.name_widget.configure(state="readonly")
+
 
     def validate_entries(self, entries, labels, labels_to_validate):
         for entry, label in zip(entries, labels):
