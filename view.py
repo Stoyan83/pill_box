@@ -514,16 +514,19 @@ class View():
         row_height = 20
         y = 20
 
+        labels_to_display = ["quantity", "delivery_price", "expiry_date", "batch_number"]
+
         for label_name, label_value in selected_data.items():
-            label = tk.Label(edit_window, text=label_name, width=15, anchor="w")
-            label.grid(row=y, column=0, padx=5, pady=5, sticky="w")
+            if label_name in labels_to_display:
+                label = tk.Label(edit_window, text=label_name, width=15, anchor="w")
+                label.grid(row=y, column=0, padx=5, pady=5, sticky="w")
 
-            entry = tk.Entry(edit_window)
-            entry.insert(0, label_value)
-            entry.grid(row=y, column=1, padx=5, pady=5, sticky="ew")
+                entry = tk.Entry(edit_window)
+                entry.insert(0, label_value)
+                entry.grid(row=y, column=1, padx=5, pady=5, sticky="ew")
 
-            edit_entries[label_name] = entry
-            y += row_height
+                edit_entries[label_name] = entry
+                y += row_height
 
         def update_row():
             for label_name, entry in edit_entries.items():
@@ -534,13 +537,14 @@ class View():
                 label_value = selected_data[label_name]
                 label_text = f"{label_value}"
                 label = self.invoice_row_labels[row_index * len(selected_data) + col - 1]
-                
+
                 label.config(text=label_text)
 
             edit_window.destroy()
 
         save_button = tk.Button(edit_window, text="Save", command=update_row)
         save_button.grid(row=y, column=1, padx=5, pady=10)
+
 
     def confirm_inventory(self, invoice_labels=None, invoice_entries=None, calculated=None):
         invoice_data = {}
