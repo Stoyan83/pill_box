@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, PhotoImage
 from utils import *
 from ttkbootstrap import Style
 import ttkbootstrap as tb
@@ -30,6 +30,9 @@ class View():
     def load_widgets(self):
         self.notebook = ttk.Notebook(self.master)
         self.notebook.pack(fill=tk.BOTH, expand=True)
+
+        self.pencil_icon = PhotoImage(file="images/edit.png").subsample(11, 11)
+        self.trash_icon = PhotoImage(file="images/delete.png").subsample(10, 10)
 
         self.load_menu()
 
@@ -448,11 +451,11 @@ class View():
             row_frame = tk.Frame(canvas)
             canvas.create_window(x, y, anchor="w", window=row_frame)
 
-            edit_button = tb.Button(row_frame, text="Edit", command=lambda i=i: self.edit_row(i))
+            edit_button = tb.Button(row_frame, text="Edit", bootstyle="success-link", image=self.pencil_icon, command=lambda i=i: self.edit_row(i))
             edit_button.grid(row=0, column=0, pady=10, padx=(10, 0), sticky="w")
 
-            edit_button = tb.Button(row_frame, text="Delete", command=lambda i=i: self.edit_row(i))
-            edit_button.grid(row=0, column=1, pady=10, padx=(10, 0), sticky="w")
+            delete_button = tb.Button(row_frame, text="Delete", bootstyle="danger-link", image=self.trash_icon, command=lambda i=i: self.edit_row(i))
+            delete_button.grid(row=0, column=1, pady=10, padx=(10, 0), sticky="w")
 
             for col, label_name in enumerate(row_data, start=2):
                 label_value = row_data[label_name]
