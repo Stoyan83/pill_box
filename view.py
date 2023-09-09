@@ -533,6 +533,12 @@ class View():
                 updated_value = entry.get()
                 selected_data[label_name] = updated_value
 
+            delivery_price = selected_data.get("delivery_price", 0)
+            quantity = selected_data.get("quantity", 0)
+            selected_data["customer_price"] = self.controller.calculate_customer_price(delivery_price)
+
+            self.controller.add_total(delivery_price, quantity)
+
             for col, label_name in enumerate(selected_data, start=1):
                 label_value = selected_data[label_name]
                 label_text = f"{label_value}"
@@ -544,7 +550,6 @@ class View():
 
         save_button = tk.Button(edit_window, text="Save", command=update_row)
         save_button.grid(row=y, column=1, padx=5, pady=10)
-
 
     def confirm_inventory(self, invoice_labels=None, invoice_entries=None, calculated=None):
         invoice_data = {}
@@ -565,6 +570,7 @@ class View():
                         expected_format = "YYYY-MM-DD"
                         self.show_date_format_error(entry_value, expected_format)
                         return
+
                 invoice_data[label] = entry_value
 
             self.controller.calculate_total(invoice_data)
