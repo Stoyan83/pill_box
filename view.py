@@ -4,6 +4,7 @@ from utils import *
 from ttkbootstrap import Style
 import ttkbootstrap as tb
 from ttkbootstrap.dialogs import Messagebox
+from decimal import Decimal
 
 
 class View():
@@ -349,14 +350,14 @@ class View():
         # Define labels and Entry widgets for invoice details
         invoice_labels = ["invoice_number", "supplier", "date", "sum", "vat", "total_sum"]
 
-        invoice_entries = []
+        self.invoice_entries = []
         for i in range(len(invoice_labels)):
             if invoice_labels[i] == "supplier":
                 choices = self.controller.get_suppliers()
                 self.entry = tb.Combobox(self.left_frame, values=choices, state="readonly")
             else:
                 self.entry = tb.Entry(self.left_frame)
-            invoice_entries.append(self.entry)
+            self.invoice_entries.append(self.entry)
 
         close_button = tb.Button(self.receive_inventory_tab, text="Close", bootstyle="danger-outline", command=lambda: self.close_notebook(self.receive_inventory_tab))
         close_button.grid(row=0, column=5, padx=5, pady=5, sticky="ne")
@@ -364,7 +365,7 @@ class View():
         for i, label in enumerate(invoice_labels):
             label = self.controller.humanize_text(label)
             label_widget = tb.Label(self.left_frame, text=label, width=15, anchor="w")
-            entry_widget = invoice_entries[i]
+            entry_widget = self.invoice_entries[i]
 
             if label == "Sum":
                 entry_widget.config(textvariable=self.delivery_price_var)
@@ -373,14 +374,14 @@ class View():
             label_widget.grid(row=i + 1, column=4, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=i + 1, column=5, padx=5, pady=5, sticky="ew")
 
-        invoice_entries[3].config(state="readonly")
-        invoice_entries[4].config(state="readonly")
-        invoice_entries[5].config(state="readonly")
+        self.invoice_entries[3].config(state="readonly")
+        self.invoice_entries[4].config(state="readonly")
+        self.invoice_entries[5].config(state="readonly")
 
         submit_button = ttk.Button(self.left_frame, text="Add Medicine", command=lambda: self.add_rows_to_inventory(entries, canvas, input_fields))
         submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
 
-        confirm_button = ttk.Button(self.left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=invoice_entries))
+        confirm_button = ttk.Button(self.left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=self.invoice_entries))
         confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
         # Create a frame for displaying inventory data
@@ -501,6 +502,15 @@ class View():
         self.from_inventory = True
         self.load_search()
 
+    def recalculate_total(self):
+        total = Decimal('0.00')
+
+        for row_data in self.get_invoice_fields:
+            edited_row_total = Decimal(row_data.get("total", 0))
+            total += edited_row_total
+
+        self.delivery_price_var.set(str(total.quantize(Decimal("0.00"))))
+
     def edit_row(self, row_index):
         if row_index < 0 or row_index >= len(self.get_invoice_fields):
             return
@@ -537,19 +547,35 @@ class View():
             quantity = selected_data.get("quantity", 0)
             selected_data["customer_price"] = self.controller.calculate_customer_price(delivery_price)
 
-            self.controller.add_total(delivery_price, quantity)
+            edited_row_total = Decimal(quantity) * Decimal(delivery_price)
+            selected_data["total"] = str(edited_row_total.quantize(Decimal("0.00")))
+
+            self.recalculate_total()
 
             for col, label_name in enumerate(selected_data, start=1):
                 label_value = selected_data[label_name]
                 label_text = f"{label_value}"
-                label = self.invoice_row_labels[row_index * len(selected_data) + col - 1]
 
-                label.config(text=label_text)
+                if row_index * len(selected_data) + col - 1 < len(self.invoice_row_labels):
+                    label = self.invoice_row_labels[row_index * len(selected_data) + col - 1]
+                    label.config(text=label_text)
 
             edit_window.destroy()
 
         save_button = tk.Button(edit_window, text="Save", command=update_row)
         save_button.grid(row=y, column=1, padx=5, pady=10)
+
+        if len(self.invoice_row_labels) != len(selected_data):
+            pass
+        else:
+            for col, label_name in enumerate(selected_data, start=1):
+                label_value = selected_data[label_name]
+                label_text = f"{label_value}"
+
+                if row_index * len(selected_data) + col - 1 < len(self.invoice_row_labels):
+                    label = self.invoice_row_labels[row_index * len(selected_data) + col - 1]
+                    label.config(text=label_text)
+
 
     def confirm_inventory(self, invoice_labels=None, invoice_entries=None, calculated=None):
         invoice_data = {}
@@ -558,12 +584,12 @@ class View():
             labels_to_validate = ["invoice_number", "supplier", "date", "sum"]
 
 
-            if self.validate_entries(invoice_entries, invoice_labels, labels_to_validate):
+            if self.validate_entries(self.invoice_entries, invoice_labels, labels_to_validate):
                 return
 
-            self.invoice_entries = invoice_entries
+            self.self.invoice_entries = self.invoice_entries
             self.invoice_labels = invoice_labels
-            for entry, label in zip(invoice_entries, invoice_labels):
+            for entry, label in zip(self.invoice_entries, invoice_labels):
                 entry_value = entry.get()
                 if label == "date":
                     if not self.controller.is_valid_date(entry_value):
@@ -577,7 +603,7 @@ class View():
 
         else:
             new_data = calculated
-            for entry, label in zip(self.invoice_entries, self.invoice_labels):
+            for entry, label in zip(self.self.invoice_entries, self.invoice_labels):
                 entry.configure(state="default")
                 entry.delete(0, "end")
                 entry.insert(0, new_data.get(label))
