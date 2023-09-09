@@ -158,7 +158,7 @@ class Supplier(Base):
 
     invoices = relationship('Invoice', back_populates='supplier')
 
-    def __init__(self, name, initials):
+    def __init__(self, name=None, initials=None):
         self.name = name
         self.initials = initials
 
@@ -187,6 +187,24 @@ class Supplier(Base):
         except SQLAlchemyError as e:
             session.rollback()
             print(f"Error adding fake suppliers: {e}")
+
+    def find_supplier_id_by_name(self, name):
+        session = SessionManager.get_session()
+        supplier = session.query(Supplier).filter(Supplier.name == name).first()
+        if supplier:
+            return supplier.id
+        else:
+            return None
+
+    def get_all_supplier_names(self):
+        session = SessionManager.get_session()
+        try:
+            suppliers = session.query(Supplier).all()
+            supplier_names = [supplier.name for supplier in suppliers]
+            return supplier_names
+        except SQLAlchemyError as e:
+            print(f"Error fetching supplier names: {e}")
+            return []
 
 
 class Invoice(Base):
@@ -223,7 +241,7 @@ class Invoice(Base):
                 self.invoice_sum = invoice_data["sum"]
                 self.vat = invoice_data["vat"]
                 self.total_sum = invoice_data["total_sum"]
-                self.supplier_id = 1
+                self.supplier_id = invoice_data['supplier']
                 session.add(self)
                 session.flush()
 

@@ -11,6 +11,7 @@ class Controller:
         self.session_model = models.get('session_model')
         self.invoice_model = models.get('invoice_model')
         self.invoice_inventory_model = models.get('invoice_inventory_model')
+        self.supplier_model = models.get('supplier_model')
         self.view = view
 
         self.create_database()
@@ -90,3 +91,12 @@ class Controller:
             return True
         except ValueError:
             return False
+
+    def get_suppliers(self):
+        return self.supplier_model.get_all_supplier_names()
+
+    def changee_supplier_name_to_id(self, invoice_data):
+        supplier_name = invoice_data["supplier"]
+        supplier_id = self.supplier_model.find_supplier_id_by_name(supplier_name)
+        invoice_data["supplier"] = supplier_id
+        return invoice_data

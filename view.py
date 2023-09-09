@@ -349,9 +349,13 @@ class View():
         invoice_labels = ["invoice_number", "supplier", "date", "sum", "vat", "total_sum"]
 
         invoice_entries = []
-        for _ in range(len(invoice_labels)):
-            entry = tb.Entry(self.left_frame)
-            invoice_entries.append(entry)
+        for i in range(len(invoice_labels)):
+            if invoice_labels[i] == "supplier":
+                choices = self.controller.get_suppliers()
+                self.entry = tb.Combobox(self.left_frame, values=choices, state="readonly")
+            else:
+                self.entry = tb.Entry(self.left_frame)
+            invoice_entries.append(self.entry)
 
         close_button = tb.Button(self.receive_inventory_tab, text="Close", bootstyle="danger-outline", command=lambda: self.close_notebook(self.receive_inventory_tab))
         close_button.grid(row=0, column=5, padx=5, pady=5, sticky="ne")
@@ -531,6 +535,7 @@ class View():
                 entry_value = entry.get()
                 invoice_data[label] = entry_value
 
+            invoice_data = self.controller.changee_supplier_name_to_id(invoice_data)
             self.controller.save_invoice(self.get_invoice_fields, invoice_data)
 
     def show_date_format_error(self, entry_value, expected_format):
