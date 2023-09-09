@@ -298,12 +298,12 @@ class View():
         self.notebook.add(self.receive_inventory_tab, text="Receive Inventory")
 
         self.left_frame = ttk.Frame(self.receive_inventory_tab)
-        self.left_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.left_frame.grid(row=0, column=0, padx=5, pady=10, sticky="nsew")
 
         validate_numeric = self.left_frame.register(self.controller.validate_numeric_input)
 
         # Define input fields for inventory
-        input_fields = ["row", "id", "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date"]
+        input_fields = ["actions", "id", "name", "quantity", "delivery_price", "customer_price", "batch_number", "expiry_date"]
 
         # Create Entry widgets for input fields
         entries = []
@@ -317,7 +317,7 @@ class View():
 
         row_num = 1
 
-        labels_to_skip = ["customer_price", "row", "id"]
+        labels_to_skip = ["customer_price", "actions", "id"]
 
         for i, label in enumerate(input_fields):
             # SKip some auto filled labels
@@ -391,10 +391,12 @@ class View():
         labels_frame = ttk.Frame(right_frame)
         labels_frame.pack(fill=tk.X)
 
+        widths = [27, 12, 12, 12, 15, 15, 15, 15]
+
         # Create labels for the inventory fields
         for i, label in enumerate(input_fields):
             label = self.controller.humanize_text(label)
-            label_widget = ttk.Label(labels_frame, text=label, width=15)
+            label_widget = ttk.Label(labels_frame, text=label, width=widths[i])
             label_widget.grid(row=0, column=i, padx=10, pady=5, sticky="w")
 
         canvas = tk.Canvas(right_frame, bg="black")
@@ -436,7 +438,7 @@ class View():
 
         row_height, offset = 20, 0
 
-        column_widths = [11, 17, 18, 17, 18, 17, 18]
+        column_widths = [11, 15, 15, 14, 18, 17, 17]
 
         self.invoice_row_labels = []
         for i, row_data in enumerate(self.get_invoice_fields):
@@ -446,11 +448,13 @@ class View():
             row_frame = tk.Frame(canvas)
             canvas.create_window(x, y, anchor="w", window=row_frame)
 
+            edit_button = tb.Button(row_frame, text="Edit", command=lambda i=i: self.edit_row(i))
+            edit_button.grid(row=0, column=0, pady=10, padx=(10, 0), sticky="w")
 
-            label = tk.Label(row_frame, text=str(i + 1), width=5, anchor="w", cursor="hand2")
-            label.grid(row=0, column=0, pady=10, sticky="w")
+            edit_button = tb.Button(row_frame, text="Delete", command=lambda i=i: self.edit_row(i))
+            edit_button.grid(row=0, column=1, pady=10, padx=(10, 0), sticky="w")
 
-            for col, label_name in enumerate(row_data, start=1):
+            for col, label_name in enumerate(row_data, start=2):
                 label_value = row_data[label_name]
                 label_text = f"{label_value}"
 
@@ -458,11 +462,9 @@ class View():
                     label_text = self.label_text
                     self.data_dict["id"] = label_text
 
-                width = column_widths[col - 1] if col <= len(column_widths) else 20
+                width = column_widths[col - 2] if col - 2 < len(column_widths) else 20
                 label = tk.Label(row_frame, text=label_text, width=width, anchor="w", cursor="hand2")
                 label.grid(row=0, column=col, pady=10, sticky="w")
-
-                label.bind("<Button-1>", lambda event, i=i: self.edit_row(i))
 
                 self.invoice_row_labels.append(label)
 
@@ -475,7 +477,6 @@ class View():
         self.name_widget.configure(state="default")
         self.name_widget.delete(0, tk.END)
         self.name_widget.configure(state="readonly")
-
 
     def validate_entries(self, entries, labels, labels_to_validate):
         for entry, label in zip(entries, labels):
@@ -587,7 +588,7 @@ class View():
             if self.validate_entries(self.invoice_entries, invoice_labels, labels_to_validate):
                 return
 
-            self.self.invoice_entries = self.invoice_entries
+            self.invoice_entries = self.invoice_entries
             self.invoice_labels = invoice_labels
             for entry, label in zip(self.invoice_entries, invoice_labels):
                 entry_value = entry.get()
@@ -603,7 +604,7 @@ class View():
 
         else:
             new_data = calculated
-            for entry, label in zip(self.self.invoice_entries, self.invoice_labels):
+            for entry, label in zip(self.invoice_entries, self.invoice_labels):
                 entry.configure(state="default")
                 entry.delete(0, "end")
                 entry.insert(0, new_data.get(label))
