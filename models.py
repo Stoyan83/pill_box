@@ -84,9 +84,8 @@ class Medicine(Base):
     def seacrh_medicine_only_in_stock(self, search_term, page=1, results_per_page=10):
         query = None
 
-        # Determine whether search_term is an ID or a Name
         try:
-            search_term = int(search_term)  # Try to convert search_term to an integer (ID)
+            search_term = int(search_term)
             query = self.session.query(Medicine).filter(Medicine.id == search_term)
         except ValueError:
             query = self.session.query(Medicine).filter(Medicine.trade_name.like(f"{search_term}%"))
@@ -96,32 +95,28 @@ class Medicine(Base):
 
             medicines = query.offset(offset).all()
 
-            medicine_data_list = []  # Initialize an empty list for medicine data
+            medicine_data_list = []
 
             for medicine in medicines:
-                # Create a list to store inventory data for the medicine
                 inventory_data_list = []
 
-                # Group inventory items by expiration date
                 inventory_grouped = {}
                 for inventory in medicine.inventory:
                     expiration_date = inventory.expiration_date
-                    key = (medicine.id, expiration_date)  # Use ID and expiration date as the key
+                    key = (medicine.id, expiration_date)
                     if key not in inventory_grouped:
                         inventory_grouped[key] = []
                     inventory_grouped[key].append(inventory)
 
-                # Populate the inventory_data_list with grouped inventory data
                 for (id, expiration_date), inventory_items in inventory_grouped.items():
                     inventory_data = {
                         "Expiration Date": expiration_date,
                         "Delivery Price": inventory_items[0].delivery_price,
                         "Customer Price": inventory_items[0].customer_price,
-                        "Quantity": sum([item.quantity for item in inventory_items])  # Total quantity for this date
+                        "Quantity": sum([item.quantity for item in inventory_items])
                     }
                     inventory_data_list.append(inventory_data)
 
-                # Only add medicine data to the list if inventory is not empty
                 if inventory_data_list:
                     medicine_data_list.append({
                         "ID": medicine.id,
@@ -132,9 +127,6 @@ class Medicine(Base):
             return medicine_data_list
 
         return []
-
-
-
 
 class Inventory(Base):
     __tablename__ = 'inventory'
