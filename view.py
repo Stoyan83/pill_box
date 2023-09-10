@@ -21,9 +21,11 @@ class View():
         self.search_frame = None
         self.from_inventory = False
         self.receive_inventory_tab = None
-        self.delivery_price_var = tk.StringVar()
 
+        self.delivery_price_var = tk.StringVar()
         self.selected_workplace = tk.StringVar()
+        self.invoice_id_var = tk.StringVar()
+
         self.load_login_window()
         self.load_widgets()
 
@@ -354,7 +356,7 @@ class View():
         self.combobox.bind("<<ComboboxSelected>>", self.on_combobox_select)
 
         # Define labels and Entry widgets for invoice details
-        invoice_labels = ["invoice_number", "supplier", "date", "sum", "vat", "total_sum"]
+        invoice_labels = ["invoice_id", "invoice_number", "supplier", "date", "sum", "vat", "total_sum"]
 
         self.invoice_entries = []
         for i in range(len(invoice_labels)):
@@ -373,6 +375,9 @@ class View():
             label_widget = tb.Label(self.left_frame, text=label, width=15, anchor="w")
             entry_widget = self.invoice_entries[i]
 
+            if label == "Invoice Id":
+                entry_widget.config(textvariable=self.invoice_id_var)
+
             if label == "Sum":
                 entry_widget.config(textvariable=self.delivery_price_var)
 
@@ -380,9 +385,10 @@ class View():
             label_widget.grid(row=i + 1, column=4, padx=5, pady=5, sticky="w")
             entry_widget.grid(row=i + 1, column=5, padx=5, pady=5, sticky="ew")
 
-        self.invoice_entries[3].config(state="readonly")
+        self.invoice_entries[0].config(state="readonly")
         self.invoice_entries[4].config(state="readonly")
         self.invoice_entries[5].config(state="readonly")
+        self.invoice_entries[6].config(state="readonly")
 
         submit_button = ttk.Button(self.left_frame, text="Add Medicine", command=lambda: self.add_rows_to_inventory(entries, canvas, input_fields))
         submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
@@ -587,9 +593,6 @@ class View():
         save_button = tk.Button(edit_window, text="Save", command=update_row)
         save_button.grid(row=y, column=1, padx=5, pady=10)
 
-
-
-
     def confirm_inventory(self, invoice_labels=None, invoice_entries=None, calculated=None):
         invoice_data = {}
 
@@ -630,6 +633,9 @@ class View():
                     label.config(state="disabled", cursor="arrow")
 
             invoice_data = self.controller.changee_supplier_name_to_id(invoice_data)
+
+            invoice_id = self.controller.get_invoice_id()
+            self.invoice_id_var.set(invoice_id)
             self.controller.save_invoice(self.get_invoice_fields, invoice_data)
 
     def show_date_format_error(self, entry_value, expected_format):

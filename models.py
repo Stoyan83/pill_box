@@ -1,7 +1,6 @@
 import random
-from datetime import date, timedelta
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, ForeignKey, Date, Numeric
+from sqlalchemy import Column, String, Integer, ForeignKey, Date, Numeric, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import relationship
 from db import Base, engine, Session
@@ -273,6 +272,12 @@ class Invoice(Base):
         except SQLAlchemyError as e:
             session.rollback()
             raise e
+
+    def get_id(self):
+        session = SessionManager.get_session()
+        max_id = session.query(func.max(Invoice.id)).scalar()
+        print(max_id)
+        return max_id if max_id else 0
 
     def save(self):
         session = SessionManager.get_session()

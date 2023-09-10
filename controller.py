@@ -100,3 +100,6 @@ class Controller:
         supplier_id = self.supplier_model.find_supplier_id_by_name(supplier_name)
         invoice_data["supplier"] = supplier_id
         return invoice_data
+
+    def get_invoice_id(self):
+        return self.invoice_model.get_id()
