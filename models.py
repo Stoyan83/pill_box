@@ -81,12 +81,14 @@ class Medicine(Base):
         self.session.commit()
         print(f"Successfully added {sheet.nrows} fake medicines to the database.")
 
-    def search_medicines(self, search_term, search_criteria, page=1, results_per_page=10):
+    def seacrh_medicine_only_in_stock(self, search_term, page=1, results_per_page=10):
         query = None
 
-        if search_criteria == "ID":
+        # Determine whether search_term is an ID or a Name
+        try:
+            search_term = int(search_term)  # Try to convert search_term to an integer (ID)
             query = self.session.query(Medicine).filter(Medicine.id == search_term)
-        elif search_criteria == "Name":
+        except ValueError:
             query = self.session.query(Medicine).filter(Medicine.trade_name.like(f"{search_term}%"))
 
         if query is not None:
@@ -94,36 +96,44 @@ class Medicine(Base):
 
             medicines = query.offset(offset).all()
 
-            medicine_data_list = []
+            medicine_data_list = []  # Initialize an empty list for medicine data
 
             for medicine in medicines:
+                # Create a list to store inventory data for the medicine
+                inventory_data_list = []
 
-                inventory_quantities = [inv.quantity for inv in medicine.inventory]
-                total_inventory_quantity = sum(inventory_quantities)
+                # Group inventory items by expiration date
+                inventory_grouped = {}
+                for inventory in medicine.inventory:
+                    expiration_date = inventory.expiration_date
+                    key = (medicine.id, expiration_date)  # Use ID and expiration date as the key
+                    if key not in inventory_grouped:
+                        inventory_grouped[key] = []
+                    inventory_grouped[key].append(inventory)
 
-                medicine_data = {
-                    "ID": medicine.id,
-                    "Trade Name": medicine.trade_name,
-                    "Quantity": total_inventory_quantity,
-                    "Active Ingredient Quantity": medicine.active_ingredient_quantity,
-                    "Registration Number": medicine.reg_number,
-                    "Identifier": medicine.identifier,
-                    "Dosage Form (BG)": medicine.dosage_form_bg,
-                    "Dosage Form (EN)": medicine.dosage_form_en,
-                    "Packaging": medicine.packaging,
-                    "Volume Dose Unit": medicine.volume_dose_unit,
-                    "Quantity per Packaging": medicine.quantity_per_packaging,
-                    "Marketing Authorization Holder": medicine.marketing_authorization_holder,
-                    "Country (BG)": medicine.country_bg,
-                    "INN": medicine.inn,
-                    "ATC Code": medicine.atc_code,
-                    "Prescription Mode": medicine.prescription_mode
-                }
-                medicine_data_list.append(medicine_data)
+                # Populate the inventory_data_list with grouped inventory data
+                for (id, expiration_date), inventory_items in inventory_grouped.items():
+                    inventory_data = {
+                        "Expiration Date": expiration_date,
+                        "Delivery Price": inventory_items[0].delivery_price,
+                        "Customer Price": inventory_items[0].customer_price,
+                        "Quantity": sum([item.quantity for item in inventory_items])  # Total quantity for this date
+                    }
+                    inventory_data_list.append(inventory_data)
+
+                # Only add medicine data to the list if inventory is not empty
+                if inventory_data_list:
+                    medicine_data_list.append({
+                        "ID": medicine.id,
+                        "Name": medicine.trade_name + " " + medicine.active_ingredient_quantity,
+                        "Inventory": inventory_data_list
+                    })
 
             return medicine_data_list
 
         return []
+
+
 
 
 class Inventory(Base):

@@ -119,3 +119,6 @@ class Controller:
 
     def get_invoice_id(self):
         return self.invoice_model.get_id()
+
+    def search_product_for_sale(self, searched_product_for_sale):
+        print(self.medicine_model.seacrh_medicine_only_in_stock(searched_product_for_sale))
