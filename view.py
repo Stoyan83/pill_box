@@ -700,8 +700,38 @@ class View():
 
         self.tree.pack(fill='both', expand=True)
 
+        process_button = tb.Button(sales_frame, text="Process", command=None)
+        process_button.pack(pady=10, anchor="center")
+
     def search_product(self):
-        # self.tree.insert("", "end", values=("1", "Product 1", "10", "10.00"))
-        # self.tree.insert("", "end", values=("2", "Product 2", "20", "20.00"))
         searched_product_for_sale = self.product_name_entry.get()
         self.controller.search_product_for_sale(searched_product_for_sale)
+
+        print(self.controller.filtered_medicine_data_list)
+
+        for product in self.controller.filtered_medicine_data_list:
+            self.tree.insert("", "end", values=(product["ID"], product["Name"], product["Quantity"]))
+
+        self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
+
+    def on_tree_select(self, event):
+        selected_item = self.tree.selection()
+        if selected_item:
+            selected_product_id = self.tree.item(selected_item)["values"][0]
+            print(selected_product_id)
+    #     if self.controller.filtered_medicine_data_list:
+    #         self.open_result_window(self.controller.filtered_medicine_data_list)
+
+    # def open_result_window(self, product_data):
+    #     result_window = tk.Toplevel(self.master)
+    #     result_window.title("Search Results")
+
+    #     tree = ttk.Treeview(result_window, columns=("ID", "Name", "Quantity"))
+    #     tree.heading("ID", text="ID")
+    #     tree.heading("Name", text="Name")
+    #     tree.heading("Quantity", text="Quantity")
+
+    #     for product in product_data:
+    #         tree.insert("", "end", values=(product["ID"], product["Name"], product["Quantity"]))
+
+    #     tree.pack()

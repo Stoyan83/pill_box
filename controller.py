@@ -121,4 +121,26 @@ class Controller:
         return self.invoice_model.get_id()
 
     def search_product_for_sale(self, searched_product_for_sale):
-        print(self.medicine_model.seacrh_medicine_only_in_stock(searched_product_for_sale))
+        medicine_data_list = self.medicine_model.seacrh_medicine_only_in_stock(searched_product_for_sale)
+
+        self.filtered_medicine_data_list = []
+        self.inventory_data_list = []
+
+        for medicine_data in medicine_data_list:
+            filtered_medicine_data = {
+                "ID": medicine_data["ID"],
+                "Name": medicine_data["Name"],
+                "Quantity": medicine_data["Quantity"],
+            }
+
+            self.filtered_medicine_data_list.append(filtered_medicine_data)
+            inventory_data = medicine_data.get("Inventory")
+
+            if inventory_data:
+                self.inventory_data_list.extend(inventory_data)
+
+        # print("Filtered Medicine Data List:")
+        # print(self.filtered_medicine_data_list)
+
+        # print("Inventory Data List:")
+        # print(self.inventory_data_list)
