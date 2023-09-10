@@ -258,11 +258,25 @@ class View():
     def execute_command(self, command):
         getattr(self.controller, command)()
 
+
     def set_superhero_theme(self):
-        self.style.theme_use('superhero')
+        if isinstance(self.master, tk.Tk):  # Check if self.master is the main application window
+            try:
+                self.style.theme_use('superhero')
+            except tk.TclError as e:
+                if "bad window path name" in str(e) and ".!toplevel.!combobox" in str(e):
+                    # Ignore the error for destroyed combobox login widget
+                    pass
 
     def set_flatly_theme(self):
-        self.style.theme_use('flatly')
+        if isinstance(self.master, tk.Tk):
+            try:
+                self.style.theme_use('flatly')
+            except tk.TclError as e:
+                if "bad window path name" in str(e) and ".!toplevel.!combobox" in str(e):
+                    # Ignore the error for destroyed combobox login widget
+                    pass
+
 
     def load_search(self):
         if not self.search_frame_loaded:
