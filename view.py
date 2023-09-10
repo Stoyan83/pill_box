@@ -4,7 +4,6 @@ from utils import *
 from ttkbootstrap import Style
 import ttkbootstrap as tb
 from ttkbootstrap.dialogs import Messagebox
-from decimal import Decimal
 
 
 class View():
@@ -14,13 +13,15 @@ class View():
 
         self.master.title("PillBox")
         self.style = Style()
-        self.style.theme_use('flatly')
+        self.style.theme_use('superhero')
 
         self.current_notebook_tab = None
         self.search_frame_loaded = False
         self.search_frame = None
         self.from_inventory = False
         self.receive_inventory_tab = None
+
+        self.sales_data = []
 
         self.delivery_price_var = tk.StringVar()
         self.selected_workplace = tk.StringVar()
@@ -201,6 +202,7 @@ class View():
     def load_menu(self):
         menu_data = [
             ("Menu", [
+                ("Sales", self.sales),
                 ("Nomenclature", self.load_search),
 
                 ("Inventory Management", [
@@ -208,7 +210,6 @@ class View():
                     ("Placing Order", "placing_order"),
                     ("Inventory Check", "inventory_check")
                 ])
-
             ]),
             ("Admin Menu", [
                 ("Users", [
@@ -219,9 +220,14 @@ class View():
             ("Help", [
                 ("About", "show_about"),
                 ("Documentation", "show_documentation"),
+                ("Toggle Theme", [
+                    ("Dark Theme", self.set_superhero_theme),
+                    ("Light Theme", self.set_flatly_theme)
+                ]),
                 ("Log Out", self.log_out)
             ])
         ]
+
 
         self.menu_bar = tk.Menu(self.master)
         self.master.config(menu=self.menu_bar)
@@ -251,6 +257,12 @@ class View():
 
     def execute_command(self, command):
         getattr(self.controller, command)()
+
+    def set_superhero_theme(self):
+        self.style.theme_use('superhero')
+
+    def set_flatly_theme(self):
+        self.style.theme_use('flatly')
 
     def load_search(self):
         if not self.search_frame_loaded:
@@ -641,3 +653,94 @@ class View():
     def show_date_format_error(self, entry_value, expected_format):
         error_message = f"Invalid Date Format: {entry_value}. Please use the format: {expected_format}"
         Messagebox.show_error(error_message, title="Validation Error")
+
+    def sales(self):
+          # Create the Sales frame
+        sales_frame = ttk.Frame(self.notebook)
+        self.notebook.add(sales_frame, text="Sales")
+
+        # Create a title label
+        title_label = ttk.Label(
+            sales_frame,
+            text="Sales Section",
+            font=("Helvetica", 20, "bold"),
+            padding=(0, 10)
+        )
+        title_label.pack()
+
+        # Create a frame to hold input fields
+        input_frame = ttk.Frame(sales_frame)
+        input_frame.pack(pady=20)
+
+        # Product Name
+        product_name_label = ttk.Label(input_frame, text="Product Name:")
+        product_name_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        product_name_entry = ttk.Entry(input_frame)
+        product_name_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+
+        # Quantity
+        quantity_label = ttk.Label(input_frame, text="Quantity:")
+        quantity_label.grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        quantity_entry = ttk.Entry(input_frame)
+        quantity_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+        # Add Button
+        add_button = ttk.Button(
+            input_frame,
+            text="Add",
+            command=lambda: self.add_sale(product_name_entry.get(), quantity_entry.get()),
+            style="Primary.TButton"
+        )
+        add_button.grid(row=2, column=0, columnspan=2, pady=10)
+
+        # Create a table to display sales data
+        self.sales_table = ttk.Treeview(
+            sales_frame,
+            columns=("Product", "Quantity", "Price"),
+            show="headings"
+        )
+        self.sales_table.heading("Product", text="Product")
+        self.sales_table.heading("Quantity", text="Quantity")
+        self.sales_table.heading("Price", text="Price")
+        self.sales_table.pack(padx=20, pady=20, fill=tk.BOTH, expand=True)
+
+        # Configure the Treeview style
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=("Helvetica", 12, "bold"))
+        style.configure("Treeview", font=("Helvetica", 12))
+
+        # Process Button
+        process_button = ttk.Button(
+            sales_frame,
+            text="Process",
+            command=self.process_sale,
+            style="Primary.TButton"
+        )
+        process_button.pack(pady=10)
+
+    def add_sale(self, product_name, quantity):
+        # Validate input (you can add more error handling here)
+        if not product_name or not quantity:
+            return
+
+        # Calculate the price (you can modify this logic)
+        price = 10  # Example price calculation
+
+        # Add the sale data to the list
+        self.sales_data.append((product_name, quantity, price))
+
+        # Update the sales table
+        self.update_sales_table()
+
+    def update_sales_table(self):
+        # Clear existing data in the table
+        for item in self.sales_table.get_children():
+            self.sales_table.delete(item)
+
+        # Insert new data into the table
+        for sale in self.sales_data:
+            self.sales_table.insert("", "end", values=sale)
+
+    def process_sale(self):
+        # Implement the logic to process the sale here
+        pass
