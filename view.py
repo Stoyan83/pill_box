@@ -383,11 +383,14 @@ class View():
             if label == "Sum":
                 entry_widget.config(textvariable=self.delivery_price_var)
 
+            if label in ["Invoice Id", "Invoice Number"]:
+                label_widget.grid(row=i + 1, column=4, padx=5, pady=5, sticky="w")
+                entry_widget.grid(row=i + 1, column=5, padx=5, pady=5, sticky="ew")
+            else:
+                label_widget.grid(row=i - 1, column=6, padx=5, pady=5, sticky="w")
+                entry_widget.grid(row=i - 1, column=7, padx=5, pady=5, sticky="ew")
 
-            label_widget.grid(row=i + 1, column=4, padx=5, pady=5, sticky="w")
-            entry_widget.grid(row=i + 1, column=5, padx=5, pady=5, sticky="ew")
-
-        self.invoice_entries[0].config(state="readonly")
+        self.invoice_entries[0].config(state="readonly", bootstyle="info")
         self.invoice_entries[4].config(state="readonly")
         self.invoice_entries[5].config(state="readonly")
         self.invoice_entries[6].config(state="readonly")
