@@ -53,6 +53,15 @@ class Controller:
         new_sum = current_delivery_price + (Decimal(quantity) * Decimal(price))
         self.view.delivery_price_var.set(new_sum.quantize(Decimal("0.00")))
 
+    def recalculate_total(self):
+        total = Decimal('0.00')
+
+        for row_data in self.view.get_invoice_fields:
+            edited_row_total = Decimal(row_data.get("total", 0))
+            total += edited_row_total
+
+        self.view.delivery_price_var.set(str(total.quantize(Decimal("0.00"))))
+
     def add_medicine_to_invoice(self, medicine_id, name):
         self.update_name_entry(name)
         self.view.label_text = medicine_id

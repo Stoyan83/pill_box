@@ -540,15 +540,6 @@ class View():
         self.from_inventory = True
         self.load_search()
 
-    def recalculate_total(self):
-        total = Decimal('0.00')
-
-        for row_data in self.get_invoice_fields:
-            edited_row_total = Decimal(row_data.get("total", 0))
-            total += edited_row_total
-
-        self.delivery_price_var.set(str(total.quantize(Decimal("0.00"))))
-
     def edit_row(self, row_index):
         if row_index < 0 or row_index >= len(self.get_invoice_fields):
             return
@@ -600,7 +591,7 @@ class View():
 
             edit_window.destroy()
 
-            self.recalculate_total()
+            self.controller.recalculate_total()
 
         save_button = tk.Button(edit_window, text="Save", command=update_row)
         save_button.grid(row=y, column=1, padx=5, pady=10)
