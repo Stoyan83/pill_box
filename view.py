@@ -414,76 +414,90 @@ class View():
         self.notebook.select(self.receive_inventory_tab)
 
     def add_rows_to_inventory(self, entries, canvas, labels):
-        labels_to_validate = ["name", "quantity", "delivery_price", "expiry_date", "batch_number"]
+            labels_to_validate = ["name", "quantity", "delivery_price", "expiry_date", "batch_number"]
 
-        if self.validate_entries(entries, labels, labels_to_validate):
-            return
+            if self.validate_entries(entries, labels, labels_to_validate):
+                return
 
-        self.data_dict = {}
+            self.data_dict = {}
 
-        for entry, label in zip(entries, labels):
-            entry_value = entry.get()
-            if label == "customer_price":
-                delivery_price = self.data_dict.get("delivery_price", 0)
-                quantity = self.data_dict.get("quantity", 0)
-                entry_value = self.controller.calculate_customer_price(delivery_price)
-                self.controller.add_total(delivery_price, quantity)
+            for entry, label in zip(entries, labels):
+                entry_value = entry.get()
+                if label == "customer_price":
+                    delivery_price = self.data_dict.get("delivery_price", 0)
+                    quantity = self.data_dict.get("quantity", 0)
+                    entry_value = self.controller.calculate_customer_price(delivery_price)
+                    self.controller.add_total(delivery_price, quantity)
 
-            if label == "expiry_date":
-                if not self.controller.is_valid_date(entry_value):
-                    expected_format = "YYYY-MM-DD"
-                    self.show_date_format_error(entry_value, expected_format)
-                    return
+                if label == "expiry_date":
+                    if not self.controller.is_valid_date(entry_value):
+                        expected_format = "YYYY-MM-DD"
+                        self.show_date_format_error(entry_value, expected_format)
+                        return
 
-            self.data_dict[label] = entry_value
+                self.data_dict[label] = entry_value
 
-        self.get_invoice_fields.append(self.data_dict)
+            self.get_invoice_fields.append(self.data_dict)
 
-        for entry in entries:
-            entry.delete(0, "end")
+            for entry in entries:
+                entry.delete(0, "end")
 
-        row_height, offset = 30, 0
-        column_widths = [11, 15, 15, 14, 18, 17, 18]
+            row_height, offset = 30, 0
+            column_widths = [11, 15, 15, 14, 18, 17, 18]
 
-        self.invoice_row_labels = []
+            self.invoice_row_labels = []
 
-        rows_frame = tk.Frame(canvas)
-        canvas.create_window(0, 0, anchor="nw", window=rows_frame)
+            # Create a canvas for displaying rows with a vertical scrollbar
+            canvas_frame = tk.Frame(canvas)
+            canvas_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
 
-        for i, row_data in enumerate(self.get_invoice_fields):
-            y = i * row_height + offset
-            x = 0
+            # Set the canvas to span multiple columns
+            canvas = tk.Canvas(canvas_frame, bg="white", width=1200)
+            canvas.grid(row=0, column=0, columnspan=3, sticky="news")
 
-            row_frame = tk.Frame(rows_frame, relief="ridge", borderwidth=1)
-            row_frame.grid(row=i, column=0, padx=10, pady=10, sticky="w")
+            scrollbar = tk.Scrollbar(canvas_frame, orient="vertical", command=canvas.yview)
+            scrollbar.grid(row=0, column=3, sticky="ns")
 
-            edit_button = tb.Button(row_frame, text="Edit", bootstyle="success-link", image=self.pencil_icon, command=lambda i=i: self.edit_row(i))
-            edit_button.grid(row=0, column=0, pady=10, padx=(10, 0), sticky="w")  # Adjust padx for better alignment
+            canvas.configure(yscrollcommand=scrollbar.set)
 
-            delete_button = tb.Button(row_frame, text="Delete", bootstyle="danger-link", image=self.trash_icon, command=lambda i=i: self.edit_row(i))
-            delete_button.grid(row=0, column=1, pady=10, padx=(10, 0), sticky="w")  # Adjust padx for better alignment
+            # Create a frame inside the canvas to hold rows
+            rows_frame = tk.Frame(canvas, bg="white")
+            canvas.create_window((0, 0), window=rows_frame, anchor="nw")
 
-            for col, label_name in enumerate(row_data, start=2):
-                label_value = row_data[label_name]
-                label_text = f"{label_value}"
+            for i, row_data in enumerate(self.get_invoice_fields):
+                y = i * row_height + offset
+                x = 0
 
-                if label_name == "id":
-                    label_text = self.label_text
-                    self.data_dict["id"] = label_text
+                row_frame = tk.Frame(rows_frame, relief="ridge", borderwidth=1)
+                row_frame.grid(row=i, column=0, padx=10, pady=10, sticky="w")
 
-                width = column_widths[col - 2] if col - 2 < len(column_widths) else 20
-                label = tk.Label(row_frame, text=label_text, width=width, anchor="w", cursor="hand2")
-                label.grid(row=0, column=col, pady=10, sticky="w")
+                edit_button = tb.Button(row_frame, text="Edit", bootstyle="success-link", image=self.pencil_icon, command=lambda i=i: self.edit_row(i))
+                edit_button.grid(row=0, column=0, pady=10, padx=(10, 0), sticky="w")
 
-                self.invoice_row_labels.append(label)
+                delete_button = tb.Button(row_frame, text="Delete", bootstyle="danger-link", image=self.trash_icon, command=lambda i=i: self.edit_row(i))
+                delete_button.grid(row=0, column=1, pady=10, padx=(10, 0), sticky="w")
 
-        total_height = len(self.get_invoice_fields) * row_height + offset
-        canvas.config(scrollregion=(0, 0, 0, total_height))
+                for col, label_name in enumerate(row_data, start=2):
+                    label_value = row_data[label_name]
+                    label_text = f"{label_value}"
 
-        self.name_widget.configure(state="default")
-        self.name_widget.delete(0, tk.END)
-        self.name_widget.configure(state="readonly")
+                    if label_name == "id":
+                        label_text = self.label_text
+                        self.data_dict["id"] = label_text
 
+                    width = column_widths[col - 2] if col - 2 < len(column_widths) else 20
+                    label = tk.Label(row_frame, text=label_text, width=width, anchor="w", cursor="hand2")
+                    label.grid(row=0, column=col, pady=10, sticky="w")
+
+                    self.invoice_row_labels.append(label)
+
+            total_height = len(self.get_invoice_fields) * row_height + offset
+            canvas.config(scrollregion=(0, 0, total_height, 500))
+            canvas.yview_moveto(0)
+
+            self.name_widget.configure(state="default")
+            self.name_widget.delete(0, tk.END)
+            self.name_widget.configure(state="readonly")
 
     def validate_entries(self, entries, labels, labels_to_validate):
         for entry, label in zip(entries, labels):
