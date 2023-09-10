@@ -475,7 +475,7 @@ class View():
                 edit_button = tb.Button(row_frame, text="Edit", bootstyle="success-link", image=self.pencil_icon, command=lambda i=i: self.edit_row(i))
                 edit_button.grid(row=0, column=0, pady=10, padx=(10, 0), sticky="w")
 
-                delete_button = tb.Button(row_frame, text="Delete", bootstyle="danger-link", image=self.trash_icon, command=lambda i=i: self.edit_row(i))
+                delete_button = tb.Button(row_frame, text="Delete", bootstyle="danger-link", image=self.trash_icon, command=lambda i=i: self.delete_row(i, canvas))
                 delete_button.grid(row=0, column=1, pady=10, padx=(10, 0), sticky="w")
 
                 for col, label_name in enumerate(row_data, start=2):
@@ -637,3 +637,48 @@ class View():
     def show_date_format_error(self, entry_value, expected_format):
         error_message = f"Invalid Date Format: {entry_value}. Please use the format: {expected_format}"
         Messagebox.show_error(error_message, title="Validation Error")
+
+    def delete_row(self, row_index, canvas):
+        if row_index >= 0 and row_index < len(self.get_invoice_fields):
+
+            self.get_invoice_fields.pop(row_index)
+
+            self.recalculate_total()
+
+            for widget in canvas.winfo_children():
+                widget.destroy()
+
+            # Re-create widgets for updated data
+            row_height, offset = 30, 0
+            column_widths = [11, 15, 15, 14, 18, 17, 18]
+
+            for i, row_data in enumerate(self.get_invoice_fields):
+                y = i * row_height + offset
+                x = 0
+
+                row_frame = tk.Frame(canvas, relief="ridge", borderwidth=1)
+                row_frame.grid(row=i, column=0, padx=10, pady=10, sticky="w")
+
+                edit_button = tb.Button(row_frame, text="Edit", bootstyle="success-link", image=self.pencil_icon, command=lambda i=i: self.edit_row(i))
+                edit_button.grid(row=0, column=0, pady=10, padx=(10, 0), sticky="w")
+
+                delete_button = tb.Button(row_frame, text="Delete", bootstyle="danger-link", image=self.trash_icon, command=lambda i=i: self.delete_row(i, canvas))
+                delete_button.grid(row=0, column=1, pady=10, padx=(10, 0), sticky="w")
+
+                for col, label_name in enumerate(row_data, start=2):
+                    label_value = row_data[label_name]
+                    label_text = f"{label_value}"
+
+                    if label_name == "id":
+                        label_text = self.label_text
+                        self.data_dict["id"] = label_text
+
+                    width = column_widths[col - 2] if col - 2 < len(column_widths) else 20
+                    label = tk.Label(row_frame, text=label_text, width=width, anchor="w", cursor="hand2")
+                    label.grid(row=0, column=col, pady=10, sticky="w")
+
+                    self.invoice_row_labels.append(label)
+
+            total_height = len(self.get_invoice_fields) * row_height + offset
+            canvas.config(scrollregion=(0, 0, total_height, 500))
+            canvas.yview_moveto(0)
