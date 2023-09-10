@@ -687,21 +687,26 @@ class View():
         tree_frame = tb.Frame(sales_frame)
         tree_frame.pack(fill='both', expand=True, padx=10, pady=10)
 
-        self.tree = ttk.Treeview(tree_frame, columns=("id", "name", "quantity", "price"), show="headings")
-        self.tree.heading("id", text="ID", anchor="w")
-        self.tree.heading("name", text="Name", anchor="w")
-        self.tree.heading("quantity", text="Quantity", anchor="w")
-        self.tree.heading("price", text="Price", anchor="w")
+        columns = ("id", "name", "quantity", "price")
 
-        self.tree.column("id", width=50)
-        self.tree.column("name", width=150)
-        self.tree.column("quantity", width=75)
-        self.tree.column("price", width=75)
+        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings")
+        for col in columns:
+            self.tree.heading(col, text=col.capitalize(), anchor="w")
+            self.tree.column(col, width=100)  # Adjust width as needed
 
         self.tree.pack(fill='both', expand=True)
 
+        self.tree2 = ttk.Treeview(tree_frame, columns=columns, show="headings")
+        for col in columns:
+            self.tree2.heading(col, text=col.capitalize(), anchor="w")
+            self.tree2.column(col, width=100)  # Adjust width as needed
+
+        self.tree2.pack(fill='both', expand=True)
+
         process_button = tb.Button(sales_frame, text="Process", command=None)
         process_button.pack(pady=10, anchor="center")
+
+
 
     def search_product(self):
         searched_product_for_sale = self.product_name_entry.get()
