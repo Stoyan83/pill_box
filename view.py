@@ -250,7 +250,14 @@ class View():
 
     def load_search(self):
         if not self.search_frame_loaded:
-            self.search_frame = ttk.Frame(self.notebook)
+            if self.current_notebook_tab is not None:
+                self.notebook.forget(self.current_notebook_tab)
+
+            self.frame = ttk.Frame(self.notebook)
+            self.notebook.add(self.frame, text="Search")
+            self.notebook.select(self.frame)
+
+            self.search_frame = ttk.Frame(self.frame)
             self.search_frame.pack(side=tk.TOP, fill=tk.X)
 
             search_label = ttk.Label(self.search_frame, text="Search:")
@@ -271,9 +278,7 @@ class View():
 
             self.search_frame_loaded = True
 
-            self.create_notebook("Nomenclature", [], 1, 10)
-
-        self.notebook.select(self.current_notebook_tab)
+        self.current_notebook_tab = self.frame
 
     def on_search(self):
         search_term = self.search_entry.get().strip()
