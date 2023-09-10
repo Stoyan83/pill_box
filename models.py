@@ -276,7 +276,6 @@ class Invoice(Base):
     def get_id(self):
         session = SessionManager.get_session()
         max_id = session.query(func.max(Invoice.id)).scalar()
-        print(max_id)
         return max_id if max_id else 0
 
     def save(self):

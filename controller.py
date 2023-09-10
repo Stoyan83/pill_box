@@ -28,7 +28,6 @@ class Controller:
             Supplier.create_fake_suppliers()
 
     def login(self, workplace):
-        print(workplace)
         self.view.master.deiconify()
         self.view.top_login.destroy()
 

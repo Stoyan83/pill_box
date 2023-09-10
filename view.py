@@ -395,11 +395,11 @@ class View():
         self.invoice_entries[5].config(state="readonly")
         self.invoice_entries[6].config(state="readonly")
 
-        submit_button = ttk.Button(self.left_frame, text="Add Medicine", command=lambda: self.add_rows_to_inventory(entries, canvas, input_fields))
-        submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
+        self.submit_button = ttk.Button(self.left_frame, text="Add Medicine", command=lambda: self.add_rows_to_inventory(entries, canvas, input_fields))
+        self.submit_button.grid(row=len(input_fields) + 1, column=1, columnspan=2, pady=10)
 
-        confirm_button = ttk.Button(self.left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=self.invoice_entries))
-        confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
+        self.confirm_button = ttk.Button(self.left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=self.invoice_entries))
+        self.confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
         clear_button = ttk.Button(self.left_frame, text="Clear", command=lambda: self.clear_fields(self.receive_inventory_tab))
         clear_button.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
@@ -648,6 +648,8 @@ class View():
 
             invoice_id = self.controller.get_invoice_id()
             self.invoice_id_var.set(invoice_id)
+            self.combobox.config(state="disabled")
+            self.submit_button.config(state="disabled")
             self.controller.save_invoice(self.get_invoice_fields, invoice_data)
 
     def show_date_format_error(self, entry_value, expected_format):
