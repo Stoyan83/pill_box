@@ -684,7 +684,26 @@ class View():
         search_button = tb.Button(input_frame, text="Search", command=self.search_product)
         search_button.grid(row=0, column=3, pady=10, sticky="w")
 
+        # Create a Frame for the Treeview widget
+        tree_frame = tb.Frame(sales_frame)
+        tree_frame.pack(fill='both', expand=True, padx=10, pady=10)
+
+        # Create a Treeview widget with columns in the desired order inside the tree_frame
+        self.tree = ttk.Treeview(tree_frame, columns=("id", "name", "quantity", "price"), show="headings")
+        self.tree.heading("id", text="ID", anchor="w")  # Set anchor to "w" for left alignment
+        self.tree.heading("name", text="Name", anchor="w")  # Set anchor to "w" for left alignment
+        self.tree.heading("quantity", text="Quantity", anchor="w")  # Set anchor to "w" for left alignment
+        self.tree.heading("price", text="Price", anchor="w")
+
+        self.tree.column("id", width=50)
+        self.tree.column("name", width=150)
+        self.tree.column("quantity", width=75)
+        self.tree.column("price", width=75)
+
+        self.tree.pack(fill='both', expand=True)
+
 
 
     def search_product(self):
-        pass
+        self.tree.insert("", "end", values=("1", "Product 1", "10", "10.00"))
+        self.tree.insert("", "end", values=("2", "Product 2", "20", "20.00"))
