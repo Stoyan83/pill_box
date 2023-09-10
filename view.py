@@ -572,12 +572,7 @@ class View():
                 updated_value = entry.get()
                 selected_data[label_name] = updated_value
 
-            delivery_price = selected_data.get("delivery_price", 0)
-            quantity = selected_data.get("quantity", 0)
-            selected_data["customer_price"] = self.controller.calculate_customer_price(delivery_price)
-
-            edited_row_total = Decimal(quantity) * Decimal(delivery_price)
-            selected_data["total"] = str(edited_row_total.quantize(Decimal("0.00")))
+            self.controller.update_selected_data(selected_data)
 
             for i, label_name in enumerate(selected_data, start=1):
                 if label_name == "total":

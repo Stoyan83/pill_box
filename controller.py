@@ -73,6 +73,14 @@ class Controller:
         self.view.name_widget.insert(0, name)
         self.view.name_widget.configure(state="readonly")
 
+    def update_selected_data(self, selected_data):
+        delivery_price = selected_data.get("delivery_price", 0)
+        quantity = selected_data.get("quantity", 0)
+        selected_data["customer_price"] = self.calculate_customer_price(delivery_price)
+
+        edited_row_total = Decimal(quantity) * Decimal(delivery_price)
+        selected_data["total"] = str(edited_row_total.quantize(Decimal("0.00")))
+
     def cleanup_view(self):
         self.view.close_notebook(self.view.frame)
         self.view.current_notebook_tab = None
