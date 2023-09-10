@@ -99,34 +99,32 @@ class Medicine(Base):
 
             for medicine in medicines:
                 inventory_data_list = []
+                total_quantity = 0
 
-                inventory_grouped = {}
                 for inventory in medicine.inventory:
                     expiration_date = inventory.expiration_date
-                    key = (medicine.id, expiration_date)
-                    if key not in inventory_grouped:
-                        inventory_grouped[key] = []
-                    inventory_grouped[key].append(inventory)
-
-                for (id, expiration_date), inventory_items in inventory_grouped.items():
                     inventory_data = {
                         "Expiration Date": expiration_date,
-                        "Delivery Price": inventory_items[0].delivery_price,
-                        "Customer Price": inventory_items[0].customer_price,
-                        "Quantity": sum([item.quantity for item in inventory_items])
+                        "Delivery Price": inventory.delivery_price,
+                        "Customer Price": inventory.customer_price,
+                        "Quantity": inventory.quantity
                     }
                     inventory_data_list.append(inventory_data)
+
+                    total_quantity += inventory.quantity
 
                 if inventory_data_list:
                     medicine_data_list.append({
                         "ID": medicine.id,
                         "Name": medicine.trade_name + " " + medicine.active_ingredient_quantity,
+                        "Quantity": total_quantity,
                         "Inventory": inventory_data_list
                     })
 
             return medicine_data_list
 
         return []
+
 
 class Inventory(Base):
     __tablename__ = 'inventory'
