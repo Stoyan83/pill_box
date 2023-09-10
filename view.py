@@ -140,9 +140,11 @@ class View():
             self.current_notebook_tab = None
         if self.receive_inventory_tab is not None and frame_to_close == self.receive_inventory_tab:
             self.delivery_price_var = tk.StringVar()
+            self.invoice_id_var = tk.StringVar()
             self.get_invoice_fields = []
             self.receive_inventory_tab = None
             self.invoice_row_labels = None
+
 
     def load_login_window(self):
         self.top_login = tk.Toplevel(self.master)
@@ -396,6 +398,9 @@ class View():
         confirm_button = ttk.Button(self.left_frame, text="Confirm",  command=lambda: self.confirm_inventory(invoice_labels=invoice_labels, invoice_entries=self.invoice_entries))
         confirm_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
+        clear_button = ttk.Button(self.left_frame, text="Clear", command=lambda: self.clear_fields(self.receive_inventory_tab))
+        clear_button.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+
         # Create a frame for displaying inventory data
         right_frame = ttk.Frame(self.receive_inventory_tab)
         right_frame.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
@@ -502,6 +507,10 @@ class View():
             self.name_widget.configure(state="default")
             self.name_widget.delete(0, tk.END)
             self.name_widget.configure(state="readonly")
+
+    def clear_fields(self, frame_to_close):
+        self.close_notebook(frame_to_close)
+        self.receive_inventory()
 
     def validate_entries(self, entries, labels, labels_to_validate):
         for entry, label in zip(entries, labels):
