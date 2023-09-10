@@ -709,6 +709,8 @@ class View():
 
 
     def search_product(self):
+        self.tree.delete(*self.tree.get_children())
+        
         searched_product_for_sale = self.product_name_entry.get()
         self.controller.search_product_for_sale(searched_product_for_sale)
 
