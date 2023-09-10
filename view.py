@@ -472,8 +472,8 @@ class View():
                 row_frame = tk.Frame(rows_frame, relief="ridge", borderwidth=1)
                 row_frame.grid(row=i, column=0, padx=10, pady=10, sticky="w")
 
-                edit_button = tb.Button(row_frame, text="Edit", bootstyle="success-link", image=self.pencil_icon, command=lambda i=i: self.edit_row(i))
-                edit_button.grid(row=0, column=0, pady=10, padx=(10, 0), sticky="w")
+                self.edit_button = tb.Button(row_frame, text="Edit", bootstyle="success-link", image=self.pencil_icon, command=lambda i=i: self.edit_row(i))
+                self.edit_button.grid(row=0, column=0, pady=10, padx=(10, 0), sticky="w")
 
                 for col, label_name in enumerate(row_data, start=2):
                     label_value = row_data[label_name]
@@ -625,6 +625,7 @@ class View():
                 invoice_data[label] = entry_value
 
             if self.invoice_row_labels:
+                self.edit_button.config(state="disabled")
                 for label in self.invoice_row_labels:
                     label.config(state="disabled", cursor="arrow")
 
