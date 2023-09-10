@@ -572,19 +572,19 @@ class View():
             edited_row_total = Decimal(quantity) * Decimal(delivery_price)
             selected_data["total"] = str(edited_row_total.quantize(Decimal("0.00")))
 
-            # Find the index of the selected_data in get_invoice_fields
-            index = self.get_invoice_fields.index(selected_data)
-
-            # Update the labels for this specific row
-            for col, label_name in enumerate(selected_data, start=1):
-                label_value = selected_data[label_name]
+            for i, label_name in enumerate(selected_data, start=1):
+                if label_name == "total":
+                    continue
+                label_value = selected_data.get(label_name, "")
                 label_text = f"{label_value}"
 
-                if index * len(selected_data) + col - 1 < len(self.invoice_row_labels):
-                    label = self.invoice_row_labels[index * len(selected_data) + col - 1]
+                if row_index * (len(selected_data) - 1) + i - 1 < len(self.invoice_row_labels):
+                    label = self.invoice_row_labels[row_index * (len(selected_data) - 1) + i - 1]
                     label.config(text=label_text)
 
             edit_window.destroy()
+
+            self.recalculate_total()
 
 
         save_button = tk.Button(edit_window, text="Save", command=update_row)
