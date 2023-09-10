@@ -464,6 +464,7 @@ class View():
             rows_frame = tk.Frame(canvas, bg="white")
             canvas.create_window((0, 0), window=rows_frame, anchor="nw")
 
+
             for i, row_data in enumerate(self.get_invoice_fields):
                 y = i * row_height + offset
                 x = 0
@@ -586,20 +587,10 @@ class View():
 
             self.recalculate_total()
 
-
         save_button = tk.Button(edit_window, text="Save", command=update_row)
         save_button.grid(row=y, column=1, padx=5, pady=10)
 
-        if len(self.invoice_row_labels) != len(selected_data):
-            pass
-        else:
-            for col, label_name in enumerate(selected_data, start=1):
-                label_value = selected_data[label_name]
-                label_text = f"{label_value}"
 
-                if row_index * len(selected_data) + col - 1 < len(self.invoice_row_labels):
-                    label = self.invoice_row_labels[row_index * len(selected_data) + col - 1]
-                    label.config(text=label_text)
 
 
     def confirm_inventory(self, invoice_labels=None, invoice_entries=None, calculated=None):
