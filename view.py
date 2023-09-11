@@ -754,20 +754,20 @@ class View():
     def on_second_tree_select(self, event):
         selected_item = self.tree3.selection()
         if selected_item:
-            item_id = self.tree3.item(selected_item)["values"][0]
+            self.item_id = self.tree3.item(selected_item)["values"][0]
             item_quantity = self.tree3.item(selected_item)["values"][1]
             item_price = self.tree3.item(selected_item)["values"][3]
             self.result_window.destroy()
             user_quantity = simpledialog.askinteger("Choose Quantity", f"Select quantity for {self.selected_name}:")
             self.tree.delete(*self.tree.get_children())
             if user_quantity is not None:
-                if self.controller.lock_product(item_id):
+                if self.controller.lock_product(self.item_id):
                     Messagebox.show_error("This batch is currently being sold, and we need to wait.", title="Error")
                 elif item_quantity < user_quantity:
                     Messagebox.show_error("Insufficient quantity available.", title="Error")
                 else:
                     self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, user_quantity, item_price))
-                    self.controller.locked_products[item_id] = "locked"
+                    self.controller.locked_products[self.item_id] = "locked"
                     invoice_data =  self.controller.calculate_sales_total(user_quantity, item_price)
 
                 self.tree2.bind("<<TreeviewSelect>>", self.delete_from_second_tree)
@@ -780,6 +780,8 @@ class View():
 
             if confirm_delete == 'Yes':
                 self.tree2.delete(selected_item)
+                if self.item_id in self.controller.locked_products:
+                    del self.controller.locked_products[self.item_id]
 
     def on_process(self):
         self.controller.locked_products = {}
