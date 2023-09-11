@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, PhotoImage, simpledialog
-from utils import *
+from utils import WindowUtils
 from ttkbootstrap import Style
 import ttkbootstrap as tb
 from ttkbootstrap.dialogs import Messagebox
+
 
 
 class View():
@@ -581,6 +582,8 @@ class View():
         self.edit_window = tk.Toplevel(self.master)
         self.edit_window.title("Edit Row")
 
+        WindowUtils.center_window(self.edit_window, 400, 200)
+
         edit_entries = {}
         row_height = 20
         y = 20
@@ -752,8 +755,10 @@ class View():
         if hasattr(self, "result_window") and self.result_window.winfo_exists():
             return
 
-        self.result_window = tk.Toplevel(self.master)
+        self.result_window = tb.Toplevel(self.master)
         self.result_window.title("Search Results")
+
+        WindowUtils.center_window(self.result_window, 1000, 200)
 
         columns = ("ID", "Quantity", "Expiration Date", "Price")
         self.tree3 = ttk.Treeview(self.result_window, columns=columns, bootstyle='primary')
