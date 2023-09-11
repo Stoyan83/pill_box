@@ -26,10 +26,6 @@ class View():
         self.delivery_price_var = tk.StringVar()
         self.selected_workplace = tk.StringVar()
 
-        self.total_sales = 0
-        self.sales_total_var = tk.StringVar()
-        self.sales_total_var.set(f"Total Sum: {self.total_sales}")
-
         self.invoice_id_var = tk.StringVar()
 
         self.load_login_window()
@@ -711,7 +707,7 @@ class View():
         process_button = tb.Button(sales_frame, text="Process", command=self.on_process)
         process_button.pack(pady=10, anchor="center")
 
-        self.total_label = tb.Label(sales_frame, text="Total sum: ", textvariable=self.sales_total_var, borderwidth=1, relief="solid")
+        self.total_label = tb.Label(sales_frame, text="Total sum: ", textvariable=self.controller.sales_total_var, borderwidth=1, relief="solid")
         self.total_label.pack(side="right", padx=10, pady=5)
 
 
@@ -760,7 +756,6 @@ class View():
         if selected_item:
             item_id = self.tree3.item(selected_item)["values"][0]
             item_quantity = self.tree3.item(selected_item)["values"][1]
-            print(item_id)
             self.result_window.destroy()
             user_quantity = simpledialog.askinteger("Choose Quantity", f"Select quantity for {self.selected_name}:")
             self.tree.delete(*self.tree.get_children())
@@ -772,6 +767,7 @@ class View():
                 else:
                     self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, user_quantity, self.selected_price))
                     self.controller.locked_products[item_id] = "locked"
+                    self.controller.calculate_sales_total(user_quantity, self.selected_price)
 
     def on_process(self):
         self.controller.locked_products = {}

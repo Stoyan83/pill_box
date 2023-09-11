@@ -18,6 +18,12 @@ class Controller:
 
         self.create_database()
 
+        self.vat_rate = Decimal("0.20")
+
+        self.total_sales = 0
+        self.sales_total_var = tk.StringVar()
+        self.sales_total_var.set(f"Total Sum: {self.total_sales}")
+
     def create_database(self):
         self.session_model.create_table()
 
@@ -42,8 +48,7 @@ class Controller:
 
     def calculate_total(self, invoice_data):
         invoice_sum = Decimal(invoice_data["sum"])
-        vat_rate = Decimal("0.20")
-        invoice_data["vat"] = (invoice_sum * vat_rate).quantize(Decimal("0.00"))
+        invoice_data["vat"] = (invoice_sum * self.vat_rate).quantize(Decimal("0.00"))
         invoice_data["total_sum"] = (invoice_sum + invoice_data["vat"]).quantize(Decimal("0.00"))
         self.view.confirm_inventory(calculated=invoice_data)
 
@@ -150,3 +155,13 @@ class Controller:
             return True
         else:
             return False
+
+
+    def calculate_sales_total(self, quantity, price):
+         self.total_sales += Decimal(quantity) * Decimal(price)
+         self.sales_total_var.set(f"Total Sum: {self.total_sales}")
+         total_with_vat = Decimal(quantity) * Decimal(price)
+         vat_amount = total_with_vat * self.vat_rate
+         total_without_vat = total_with_vat - vat_amount
+
+         return total_without_vat, vat_amount, total_with_vat
