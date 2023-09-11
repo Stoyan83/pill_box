@@ -160,18 +160,13 @@ class View():
         login_label.pack(pady=10)
 
         login_options = ttk.Combobox(self.top_login, values=["workplace 1", "workplace 2", "workplace 3"], textvariable=self.selected_workplace)
-        login_options.set("Select Workplace")
+        login_options.set("workplace 1")
         login_options.pack(pady=10, padx=20)
 
         self.entry_username = self.create_entry(self.top_login, "Username")
         self.entry_password = self.create_entry(self.top_login, "Password", show="•")
 
-        login_button = ttk.Button(
-            self.top_login,
-            text="Login",
-            command=self.on_login,
-            style="primary"
-        )
+        login_button = ttk.Button( self.top_login, text="Login", command=self.on_login, style="primary")
         login_button.pack(pady=20)
 
         self.top_login.bind("<Return>", lambda event: self.on_login())
