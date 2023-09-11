@@ -144,6 +144,7 @@ class Medicine(Base):
             for medicine in medicines:
                 inventory_data_list = []
                 total_quantity = 0
+                customer_prices = []
 
                 for inventory in medicine.inventory:
                     inventory_data = {
@@ -154,15 +155,18 @@ class Medicine(Base):
                         "Quantity": inventory.quantity
                     }
                     inventory_data_list.append(inventory_data)
+                    customer_prices.append(inventory.customer_price)
 
                     total_quantity += inventory.quantity
 
                 if inventory_data_list:
+                    average_customer_price = sum(customer_prices) / len(customer_prices) if customer_prices else 0
+
                     medicine_data_list.append({
                         "ID": medicine.id,
                         "Name": medicine.trade_name + " " + medicine.active_ingredient_quantity,
                         "Quantity": total_quantity,
-                        "Customer Price": inventory_data_list[0]["Customer Price"],
+                        "Customer Price": average_customer_price,
                         "Inventory": inventory_data_list
                     })
 

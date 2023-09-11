@@ -129,7 +129,6 @@ class Controller:
 
     def search_product_for_sale(self, searched_product_for_sale):
         medicine_data_list = self.medicine_model.seacrh_medicine_only_in_stock(searched_product_for_sale)
-
         self.filtered_medicine_data_list = []
         self.inventory_data_list = []
         self.medicine_inventory = {}
@@ -158,10 +157,18 @@ class Controller:
 
 
     def calculate_sales_total(self, quantity, price):
-         self.total_sales += Decimal(quantity) * Decimal(price)
-         self.sales_total_var.set(f"Total Sum: {self.total_sales}")
-         total_with_vat = Decimal(quantity) * Decimal(price)
-         vat_amount = total_with_vat * self.vat_rate
-         total_without_vat = total_with_vat - vat_amount
+        quantity = Decimal(quantity)
+        price = Decimal(price)
 
-         return total_without_vat, vat_amount, total_with_vat
+        total_with_vat = quantity * price
+        vat_amount = total_with_vat * self.vat_rate
+        total_without_vat = total_with_vat - vat_amount
+
+        self.total_sales += total_with_vat
+        self.sales_total_var.set(f"Total Sum: {self.total_sales}")
+
+        return (
+            total_without_vat.quantize(Decimal("0.00")),
+            vat_amount.quantize(Decimal("0.00")),
+            total_with_vat.quantize(Decimal("0.00"))
+        )

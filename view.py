@@ -756,6 +756,7 @@ class View():
         if selected_item:
             item_id = self.tree3.item(selected_item)["values"][0]
             item_quantity = self.tree3.item(selected_item)["values"][1]
+            item_price = self.tree3.item(selected_item)["values"][3]
             self.result_window.destroy()
             user_quantity = simpledialog.askinteger("Choose Quantity", f"Select quantity for {self.selected_name}:")
             self.tree.delete(*self.tree.get_children())
@@ -765,9 +766,12 @@ class View():
                 elif item_quantity < user_quantity:
                     Messagebox.show_error("Insufficient quantity available.", title="Error")
                 else:
-                    self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, user_quantity, self.selected_price))
+                    self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, user_quantity, item_price))
                     self.controller.locked_products[item_id] = "locked"
-                    self.controller.calculate_sales_total(user_quantity, self.selected_price)
+                    invoice_data =  self.controller.calculate_sales_total(user_quantity, item_price)
+                    print(invoice_data)
 
     def on_process(self):
         self.controller.locked_products = {}
+        self.controller.total_sales = 0
+        self.controller.sales_total_var.set(f"Total Sum: {self.controller.total_sales}")
