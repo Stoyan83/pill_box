@@ -745,11 +745,14 @@ class View():
             self.open_result_window(inventory_medicine)
 
     def open_result_window(self, inventory_medicine):
+        if hasattr(self, "result_window") and self.result_window.winfo_exists():
+            return
+
         self.result_window = tk.Toplevel(self.master)
         self.result_window.title("Search Results")
 
-        self.tree3 = ttk.Treeview(self.result_window, columns=("ID", "Quantity", "Expiration Date", "Price"), bootstyle='primary')
         columns = ("ID", "Quantity", "Expiration Date", "Price")
+        self.tree3 = ttk.Treeview(self.result_window, columns=columns, bootstyle='primary')
         for col in columns:
             self.tree3.heading(col, text=col.capitalize(), anchor="w")
             self.tree3.column(col)
