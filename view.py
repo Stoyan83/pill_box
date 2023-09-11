@@ -716,11 +716,16 @@ class View():
         self.total_label = tb.Label(sales_frame, text="Total sum: ", textvariable=self.controller.sales_total_var, borderwidth=1, relief="solid")
         self.total_label.pack(side="right", padx=10, pady=5)
 
+        self.notebook.select(sales_frame)
 
     def search_product(self):
         self.tree.delete(*self.tree.get_children())
 
         searched_product_for_sale = self.product_name_entry.get()
+
+        if not searched_product_for_sale:
+            return
+        
         self.controller.search_product_for_sale(searched_product_for_sale)
         self.product_name_entry.delete(0, "end")
 
