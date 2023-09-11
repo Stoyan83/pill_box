@@ -710,14 +710,12 @@ class View():
 
     def search_product(self):
         self.tree.delete(*self.tree.get_children())
-        
+
         searched_product_for_sale = self.product_name_entry.get()
         self.controller.search_product_for_sale(searched_product_for_sale)
 
-        print(self.controller.filtered_medicine_data_list)
-
         for product in self.controller.filtered_medicine_data_list:
-            self.tree.insert("", "end", values=(product["ID"], product["Name"], product["Quantity"]))
+            self.tree.insert("", "end", values=(product["ID"], product["Name"], product["Quantity"], product["Price"]))
 
         self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
 
@@ -725,20 +723,23 @@ class View():
         selected_item = self.tree.selection()
         if selected_item:
             selected_product_id = self.tree.item(selected_item)["values"][0]
-            print(selected_product_id)
+            inventory_medicine = self.controller.medicine_inventory[selected_product_id]
+            self.open_result_window(inventory_medicine)
     #     if self.controller.filtered_medicine_data_list:
     #         self.open_result_window(self.controller.filtered_medicine_data_list)
 
-    # def open_result_window(self, product_data):
-    #     result_window = tk.Toplevel(self.master)
-    #     result_window.title("Search Results")
+    def open_result_window(self, inventory_medicine):
+        result_window = tk.Toplevel(self.master)
+        result_window.title("Search Results")
 
-    #     tree = ttk.Treeview(result_window, columns=("ID", "Name", "Quantity"))
-    #     tree.heading("ID", text="ID")
-    #     tree.heading("Name", text="Name")
-    #     tree.heading("Quantity", text="Quantity")
+        tree = ttk.Treeview(result_window, columns=("ID", "Quantity", "Expiration Date", "Customer Price"))
+        tree.heading("ID", text="ID")
+        tree.heading("Quantity", text="Quantity")
+        tree.heading("Expiration Date", text="Expiration Date")
+        tree.heading("Customer Price", text="Customer Price")
 
-    #     for product in product_data:
-    #         tree.insert("", "end", values=(product["ID"], product["Name"], product["Quantity"]))
 
-    #     tree.pack()
+        for product in inventory_medicine:
+            tree.insert("", "end", values=(product["ID"], product["Quantity"], product["Expiration Date"], product["Customer Price"]))
+
+        tree.pack()

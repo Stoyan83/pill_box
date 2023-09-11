@@ -146,9 +146,9 @@ class Medicine(Base):
                 total_quantity = 0
 
                 for inventory in medicine.inventory:
-                    expiration_date = inventory.expiration_date
                     inventory_data = {
-                        "Expiration Date": expiration_date,
+                        "ID": inventory.id,
+                        "Expiration Date": inventory.expiration_date,
                         "Delivery Price": inventory.delivery_price,
                         "Customer Price": inventory.customer_price,
                         "Quantity": inventory.quantity
@@ -162,6 +162,7 @@ class Medicine(Base):
                         "ID": medicine.id,
                         "Name": medicine.trade_name + " " + medicine.active_ingredient_quantity,
                         "Quantity": total_quantity,
+                        "Customer Price": inventory_data_list[0]["Customer Price"],
                         "Inventory": inventory_data_list
                     })
 

@@ -125,16 +125,19 @@ class Controller:
 
         self.filtered_medicine_data_list = []
         self.inventory_data_list = []
+        self.medicine_inventory = {}
 
         for medicine_data in medicine_data_list:
             filtered_medicine_data = {
                 "ID": medicine_data["ID"],
                 "Name": medicine_data["Name"],
                 "Quantity": medicine_data["Quantity"],
+                "Price": medicine_data["Customer Price"]
             }
 
             self.filtered_medicine_data_list.append(filtered_medicine_data)
             inventory_data = medicine_data.get("Inventory")
+            self.medicine_inventory[medicine_data["ID"]] = inventory_data
 
             if inventory_data:
                 self.inventory_data_list.extend(inventory_data)
