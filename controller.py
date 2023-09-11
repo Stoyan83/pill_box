@@ -161,14 +161,16 @@ class Controller:
         price = Decimal(price)
 
         total_with_vat = quantity * price
-        vat_amount = total_with_vat * self.vat_rate
-        total_without_vat = total_with_vat - vat_amount
+
 
         self.total_sales += total_with_vat
         self.sales_total_var.set(f"Total Sum: {self.total_sales}")
 
-        return (
-            total_without_vat.quantize(Decimal("0.00")),
-            vat_amount.quantize(Decimal("0.00")),
-            total_with_vat.quantize(Decimal("0.00"))
-        )
+
+    def recalculate_sale_sum(self, quantity, price):
+        quantity = Decimal(quantity)
+        price = Decimal(price)
+
+        total_with_vat = quantity * price
+        self.total_sales -= total_with_vat
+        self.sales_total_var.set(f"Total Sum: {self.total_sales}")

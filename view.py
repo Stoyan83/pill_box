@@ -755,20 +755,20 @@ class View():
         selected_item = self.tree3.selection()
         if selected_item:
             self.item_id = self.tree3.item(selected_item)["values"][0]
-            item_quantity = self.tree3.item(selected_item)["values"][1]
-            item_price = self.tree3.item(selected_item)["values"][3]
+            self.item_quantity = self.tree3.item(selected_item)["values"][1]
+            self.item_price = self.tree3.item(selected_item)["values"][3]
             self.result_window.destroy()
-            user_quantity = simpledialog.askinteger("Choose Quantity", f"Select quantity for {self.selected_name}:")
+            self.user_quantity = simpledialog.askinteger("Choose Quantity", f"Select quantity for {self.selected_name}:")
             self.tree.delete(*self.tree.get_children())
-            if user_quantity is not None:
+            if self.user_quantity is not None:
                 if self.controller.lock_product(self.item_id):
                     Messagebox.show_error("This batch is currently being sold, and we need to wait.", title="Error")
-                elif item_quantity < user_quantity:
+                elif self.item_quantity < self.user_quantity:
                     Messagebox.show_error("Insufficient quantity available.", title="Error")
                 else:
-                    self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, user_quantity, item_price))
+                    self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, self.user_quantity, self.item_price))
                     self.controller.locked_products[self.item_id] = "locked"
-                    invoice_data =  self.controller.calculate_sales_total(user_quantity, item_price)
+                    self.controller.calculate_sales_total(self.user_quantity, self.item_price)
 
                 self.tree2.bind("<<TreeviewSelect>>", self.delete_from_second_tree)
 
@@ -776,14 +776,18 @@ class View():
         selected_items = self.tree2.selection()
         if selected_items:
             selected_item = selected_items[0]
+            item_quantity = self.tree2.item(selected_item)["values"][2]
+            item_price = self.tree2.item(selected_item)["values"][3]
             confirm_delete = Messagebox.show_question("Are you sure you want to delete this item?", buttons=['Yes:primary', 'No:secondary'])
 
             if confirm_delete == 'Yes':
+                self.controller.recalculate_sale_sum(item_quantity, item_price)
                 self.tree2.delete(selected_item)
                 if self.item_id in self.controller.locked_products:
                     del self.controller.locked_products[self.item_id]
 
     def on_process(self):
+        print(self.controller.total_sales)
         self.controller.locked_products = {}
         self.controller.total_sales = 0
         self.controller.sales_total_var.set(f"Total Sum: {self.controller.total_sales}")
