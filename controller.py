@@ -14,6 +14,8 @@ class Controller:
         self.supplier_model = models.get('supplier_model')
         self.view = view
 
+        self.locked_products = {}
+
         self.create_database()
 
     def create_database(self):
@@ -142,8 +144,9 @@ class Controller:
             if inventory_data:
                 self.inventory_data_list.extend(inventory_data)
 
-        # print("Filtered Medicine Data List:")
-        # print(self.filtered_medicine_data_list)
 
-        # print("Inventory Data List:")
-        # print(self.inventory_data_list)
+    def lock_product(self, product_id):
+        if product_id in self.locked_products:
+            return True
+        else:
+            return False
