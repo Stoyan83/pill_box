@@ -13,13 +13,14 @@ class View():
 
         self.master.title("PillBox")
         self.style = Style()
-        self.style.theme_use('superhero')
+        self.style.theme_use('flatly')
 
         self.current_notebook_tab = None
         self.search_frame_loaded = False
         self.search_frame = None
         self.from_inventory = False
         self.receive_inventory_tab = None
+
 
         self.sales_data = []
 
@@ -670,6 +671,11 @@ class View():
         Messagebox.show_error(error_message, title="Validation Error")
 
     def sales(self):
+        for tab_id in self.notebook.tabs():
+            if self.notebook.tab(tab_id, "text") == "Sales":
+                self.notebook.select(tab_id)
+                return
+
         sales_frame = tb.Frame(self.notebook)
         self.notebook.add(sales_frame, text="Sales")
 
