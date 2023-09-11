@@ -696,14 +696,14 @@ class View():
 
         columns = ("id", "name", "quantity", "price")
 
-        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings")
+        self.tree = tb.Treeview(tree_frame, columns=columns, show="headings", bootstyle='secondary')
         for col in columns:
             self.tree.heading(col, text=col.capitalize(), anchor="w")
             self.tree.column(col, width=100)
 
         self.tree.pack(fill='both', expand=True)
 
-        self.tree2 = ttk.Treeview(tree_frame, columns=columns, show="headings")
+        self.tree2 = tb.Treeview(tree_frame, columns=columns, show="headings", bootstyle='success')
         for col in columns:
             self.tree2.heading(col, text=col.capitalize(), anchor="w")
             self.tree2.column(col, width=100)
@@ -725,7 +725,7 @@ class View():
 
         if not searched_product_for_sale:
             return
-        
+
         self.controller.search_product_for_sale(searched_product_for_sale)
         self.product_name_entry.delete(0, "end")
 
@@ -748,12 +748,11 @@ class View():
         self.result_window = tk.Toplevel(self.master)
         self.result_window.title("Search Results")
 
-        self.tree3 = ttk.Treeview(self.result_window, columns=("ID", "Quantity", "Expiration Date", "Customer Price"))
-        self.tree3.heading("ID", text="ID")
-        self.tree3.heading("Quantity", text="Quantity")
-        self.tree3.heading("Expiration Date", text="Expiration Date")
-        self.tree3.heading("Customer Price", text="Customer Price")
-
+        self.tree3 = ttk.Treeview(self.result_window, columns=("ID", "Quantity", "Expiration Date", "Price"), bootstyle='primary')
+        columns = ("ID", "Quantity", "Expiration Date", "Price")
+        for col in columns:
+            self.tree3.heading(col, text=col.capitalize(), anchor="w")
+            self.tree3.column(col)
 
         for product in inventory_medicine:
             self.tree3.insert("", "end", values=(product["ID"], product["Quantity"], product["Expiration Date"], product["Customer Price"]))
@@ -761,6 +760,7 @@ class View():
         self.tree3.bind("<<TreeviewSelect>>", self.on_second_tree_select)
 
         self.tree3.pack()
+
 
     def on_second_tree_select(self, event):
         selected_item = self.tree3.selection()
