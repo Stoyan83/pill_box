@@ -762,14 +762,24 @@ class View():
             self.tree.delete(*self.tree.get_children())
             if user_quantity is not None:
                 if self.controller.lock_product(item_id):
-                     Messagebox.show_error("This batch is currently being sold, and we need to wait.", title="Error")
+                    Messagebox.show_error("This batch is currently being sold, and we need to wait.", title="Error")
                 elif item_quantity < user_quantity:
                     Messagebox.show_error("Insufficient quantity available.", title="Error")
                 else:
                     self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, user_quantity, item_price))
                     self.controller.locked_products[item_id] = "locked"
                     invoice_data =  self.controller.calculate_sales_total(user_quantity, item_price)
-                    print(invoice_data)
+
+                self.tree2.bind("<<TreeviewSelect>>", self.delete_from_second_tree)
+
+    def delete_from_second_tree(self, event):
+        selected_items = self.tree2.selection()
+        if selected_items:
+            selected_item = selected_items[0]
+            confirm_delete = Messagebox.show_question("Are you sure you want to delete this item?", buttons=['Yes:primary', 'No:secondary'])
+
+            if confirm_delete == 'Yes':
+                self.tree2.delete(selected_item)
 
     def on_process(self):
         self.controller.locked_products = {}
