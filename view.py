@@ -758,7 +758,7 @@ class View():
             self.item_quantity = self.tree3.item(selected_item)["values"][1]
             self.item_price = self.tree3.item(selected_item)["values"][3]
             self.result_window.destroy()
-            self.user_quantity = simpledialog.askinteger("Choose Quantity", f"Select quantity for {self.selected_name}:")
+            self.user_quantity = simpledialog.askinteger("Choose Quantity", f"Select quantity for {self.selected_name}:", minvalue=1)
             self.tree.delete(*self.tree.get_children())
             if self.user_quantity is not None:
                 if self.controller.lock_product(self.item_id):

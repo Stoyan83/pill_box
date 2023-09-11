@@ -24,6 +24,14 @@ class Controller:
         self.sales_total_var = tk.StringVar()
         self.sales_total_var.set(f"Total Sum: {self.total_sales}")
 
+    def _update_total_sales(self, quantity, price):
+        quantity = Decimal(quantity)
+        price = Decimal(price)
+
+        total_with_vat = quantity * price
+        return total_with_vat
+
+
     def create_database(self):
         self.session_model.create_table()
 
@@ -157,20 +165,13 @@ class Controller:
 
 
     def calculate_sales_total(self, quantity, price):
-        quantity = Decimal(quantity)
-        price = Decimal(price)
-
-        total_with_vat = quantity * price
-
+        total_with_vat = self._update_total_sales(quantity, price)
 
         self.total_sales += total_with_vat
         self.sales_total_var.set(f"Total Sum: {self.total_sales}")
 
-
     def recalculate_sale_sum(self, quantity, price):
-        quantity = Decimal(quantity)
-        price = Decimal(price)
+        total_with_vat = self._update_total_sales(quantity, price)
 
-        total_with_vat = quantity * price
         self.total_sales -= total_with_vat
         self.sales_total_var.set(f"Total Sum: {self.total_sales}")
