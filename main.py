@@ -16,7 +16,8 @@ def main():
     invoice_model = models.Invoice()
     invoice_inventory_model = models.InvoiceInventories()
     supplier_model = models.Supplier()
-    controller_instance = controller.Controller(view=view_instance, medicine_model=medicine_model, session_model=session_model, invoice_model=invoice_model, invoice_inventory_model=invoice_inventory_model, supplier_model=supplier_model)
+    user_model = models.User()
+    controller_instance = controller.Controller(view=view_instance, medicine_model=medicine_model, session_model=session_model, invoice_model=invoice_model, invoice_inventory_model=invoice_inventory_model, supplier_model=supplier_model, user_model=user_model)
     view_instance.controller = controller_instance
     WindowUtils.center_window(root, 1400, 1000)
     root.mainloop()

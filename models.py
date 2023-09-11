@@ -1,10 +1,11 @@
 import random
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, ForeignKey, Date, Numeric, func
+from sqlalchemy import Column, String, Integer, ForeignKey, Date, Numeric, func, Boolean
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import relationship
 from db import Base, engine, Session
 import xlrd
+import bcrypt
 
 
 class SessionManager:
@@ -356,3 +357,40 @@ class InvoiceInventories(Base):
         self.delivery_price = delivery_price
         self.customer_price = customer_price
         self.invoice_id = invoice_id
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    name = Column(String, nullable=False)
+    password_hash = Column(String, nullable=False)
+    is_admin = Column(Boolean, default=False, nullable=False)
+
+    def __init__(self, name=None, password_hash=None, is_admin=False):
+        self.name = name
+        self.password_hash = password_hash
+        self.is_admin = is_admin
+
+    def create_user(self, name, password, is_admin=False):
+        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        new_user = User(name=name, password_hash=password_hash, is_admin=is_admin)
+
+        session = SessionManager.get_session()
+        session.add(new_user)
+        session.commit()
+
+        return new_user
+
+    def create_admin_if_not_exists(self):
+        session = SessionManager.get_session()
+
+        admin_user = session.query(User).filter(User.is_admin == True).first()
+
+        if not admin_user:
+            password_hash = bcrypt.hashpw("admin".encode('utf-8'), bcrypt.gensalt())
+            admin_user = User(name="admin", password_hash=password_hash, is_admin=True)
+            session.add(admin_user)
+            session.commit()
+
+        return admin_user

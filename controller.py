@@ -12,6 +12,7 @@ class Controller:
         self.invoice_model = models.get('invoice_model')
         self.invoice_inventory_model = models.get('invoice_inventory_model')
         self.supplier_model = models.get('supplier_model')
+        self.user_model = models.get('user_model')
         self.view = view
 
         self.locked_products = {}
@@ -42,6 +43,7 @@ class Controller:
         if count == 0:
             self.medicine_model.extract_and_insert_data()
             Supplier.create_fake_suppliers()
+            self.user_model.create_admin_if_not_exists()
 
     def login(self, workplace):
         self.view.master.deiconify()
