@@ -569,13 +569,17 @@ class View():
         self.load_search()
 
     def edit_row(self, row_index):
+        if hasattr(self, "edit_window") and self.edit_window.winfo_exists():
+            return
+
         if row_index < 0 or row_index >= len(self.get_invoice_fields):
             return
 
+
         selected_data = self.get_invoice_fields[row_index]
 
-        edit_window = tk.Toplevel(self.master)
-        edit_window.title("Edit Row")
+        self.edit_window = tk.Toplevel(self.master)
+        self.edit_window.title("Edit Row")
 
         edit_entries = {}
         row_height = 20
@@ -585,10 +589,10 @@ class View():
 
         for label_name, label_value in selected_data.items():
             if label_name in labels_to_display:
-                label = tk.Label(edit_window, text=label_name, width=15, anchor="w")
+                label = tk.Label(self.edit_window, text=label_name, width=15, anchor="w")
                 label.grid(row=y, column=0, padx=5, pady=5, sticky="w")
 
-                entry = tk.Entry(edit_window)
+                entry = tk.Entry(self.edit_window)
                 entry.insert(0, label_value)
                 entry.grid(row=y, column=1, padx=5, pady=5, sticky="ew")
 
@@ -612,11 +616,11 @@ class View():
                     label = self.invoice_row_labels[row_index * (len(selected_data) - 1) + i - 1]
                     label.config(text=label_text)
 
-            edit_window.destroy()
+            self.edit_window.destroy()
 
             self.controller.recalculate_total()
 
-        save_button = tk.Button(edit_window, text="Save", command=update_row)
+        save_button = tk.Button(self.edit_window, text="Save", command=update_row)
         save_button.grid(row=y, column=1, padx=5, pady=10)
 
     def confirm_inventory(self, invoice_labels=None, invoice_entries=None, calculated=None):
