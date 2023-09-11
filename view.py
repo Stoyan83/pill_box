@@ -692,21 +692,19 @@ class View():
         self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings")
         for col in columns:
             self.tree.heading(col, text=col.capitalize(), anchor="w")
-            self.tree.column(col, width=100)  # Adjust width as needed
+            self.tree.column(col, width=100)
 
         self.tree.pack(fill='both', expand=True)
 
         self.tree2 = ttk.Treeview(tree_frame, columns=columns, show="headings")
         for col in columns:
             self.tree2.heading(col, text=col.capitalize(), anchor="w")
-            self.tree2.column(col, width=100)  # Adjust width as needed
+            self.tree2.column(col, width=100)
 
         self.tree2.pack(fill='both', expand=True)
 
         process_button = tb.Button(sales_frame, text="Process", command=None)
         process_button.pack(pady=10, anchor="center")
-
-
 
     def search_product(self):
         self.tree.delete(*self.tree.get_children())
@@ -722,24 +720,37 @@ class View():
     def on_tree_select(self, event):
         selected_item = self.tree.selection()
         if selected_item:
-            selected_product_id = self.tree.item(selected_item)["values"][0]
-            inventory_medicine = self.controller.medicine_inventory[selected_product_id]
+            self.selected_product_id = self.tree.item(selected_item)["values"][0]
+            self.selected_name = self.tree.item(selected_item)["values"][1]
+            self.selected_quantity = self.tree.item(selected_item)["values"][2]
+            self.selected_price = self.tree.item(selected_item)["values"][3]
+            inventory_medicine = self.controller.medicine_inventory[self.selected_product_id]
             self.open_result_window(inventory_medicine)
-    #     if self.controller.filtered_medicine_data_list:
-    #         self.open_result_window(self.controller.filtered_medicine_data_list)
 
     def open_result_window(self, inventory_medicine):
         result_window = tk.Toplevel(self.master)
         result_window.title("Search Results")
 
-        tree = ttk.Treeview(result_window, columns=("ID", "Quantity", "Expiration Date", "Customer Price"))
-        tree.heading("ID", text="ID")
-        tree.heading("Quantity", text="Quantity")
-        tree.heading("Expiration Date", text="Expiration Date")
-        tree.heading("Customer Price", text="Customer Price")
+        self.tree3 = ttk.Treeview(result_window, columns=("ID", "Quantity", "Expiration Date", "Customer Price"))
+        self.tree3.heading("ID", text="ID")
+        self.tree3.heading("Quantity", text="Quantity")
+        self.tree3.heading("Expiration Date", text="Expiration Date")
+        self.tree3.heading("Customer Price", text="Customer Price")
 
 
         for product in inventory_medicine:
-            tree.insert("", "end", values=(product["ID"], product["Quantity"], product["Expiration Date"], product["Customer Price"]))
+            self.tree3.insert("", "end", values=(product["ID"], product["Quantity"], product["Expiration Date"], product["Customer Price"]))
 
-        tree.pack()
+        self.tree3.bind("<<TreeviewSelect>>", self.on_second_tree_select)
+
+        self.tree3.pack()
+
+    def on_second_tree_select(self, event):
+        selected_item = self.tree3.selection()
+        if selected_item:
+            item_values = self.tree3.item(selected_item)["values"][0]
+            print(self.selected_product_id)
+            print(self.selected_name)
+            print(self.selected_quantity)
+            print(self.selected_price)
+        print(item_values)
