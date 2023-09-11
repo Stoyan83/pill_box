@@ -21,6 +21,7 @@ class View():
         self.from_inventory = False
         self.receive_inventory_tab = None
 
+        self.locked_products = {}
         self.sales_data = []
 
         self.delivery_price_var = tk.StringVar()
@@ -703,7 +704,7 @@ class View():
 
         self.tree2.pack(fill='both', expand=True)
 
-        process_button = tb.Button(sales_frame, text="Process", command=None)
+        process_button = tb.Button(sales_frame, text="Process", command=self.on_process)
         process_button.pack(pady=10, anchor="center")
 
     def search_product(self):
@@ -753,5 +754,18 @@ class View():
             self.result_window.destroy()
             user_quantity = simpledialog.askinteger("Choose Quantity", f"Select quantity for {self.selected_name}:")
             self.tree.delete(*self.tree.get_children())
+            if user_quantity is not None:
+                if self.lock_product(self.selected_product_id):
+                     Messagebox.show_error("A product is currently being sold, and we need to wait.", title="Error")
+                else:
+                    self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, user_quantity, self.selected_price))
+                    self.locked_products[self.selected_product_id] = "locked"
 
-            self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, user_quantity, self.selected_price))
+    def lock_product(self, product_id):
+        if product_id in self.locked_products:
+            return True
+        else:
+            return False
+
+    def on_process(self):
+        self.locked_products = {}
