@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, PhotoImage
+from tkinter import ttk, PhotoImage, simpledialog
 from utils import *
 from ttkbootstrap import Style
 import ttkbootstrap as tb
@@ -728,10 +728,10 @@ class View():
             self.open_result_window(inventory_medicine)
 
     def open_result_window(self, inventory_medicine):
-        result_window = tk.Toplevel(self.master)
-        result_window.title("Search Results")
+        self.result_window = tk.Toplevel(self.master)
+        self.result_window.title("Search Results")
 
-        self.tree3 = ttk.Treeview(result_window, columns=("ID", "Quantity", "Expiration Date", "Customer Price"))
+        self.tree3 = ttk.Treeview(self.result_window, columns=("ID", "Quantity", "Expiration Date", "Customer Price"))
         self.tree3.heading("ID", text="ID")
         self.tree3.heading("Quantity", text="Quantity")
         self.tree3.heading("Expiration Date", text="Expiration Date")
@@ -749,8 +749,12 @@ class View():
         selected_item = self.tree3.selection()
         if selected_item:
             item_values = self.tree3.item(selected_item)["values"][0]
-            print(self.selected_product_id)
-            print(self.selected_name)
-            print(self.selected_quantity)
-            print(self.selected_price)
+            self.result_window.destroy()
+            user_quantity = simpledialog.askinteger("Choose Quantity", f"Select quantity for {self.selected_name}:")
+
+            print(user_quantity)
+            # print(self.selected_product_id)
+            # print(self.selected_name)
+            # print(self.selected_quantity)
+            # print(self.selected_price)
         print(item_values)
