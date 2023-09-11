@@ -711,6 +711,7 @@ class View():
 
         searched_product_for_sale = self.product_name_entry.get()
         self.controller.search_product_for_sale(searched_product_for_sale)
+        self.product_name_entry.delete(0, "end")
 
         for product in self.controller.filtered_medicine_data_list:
             self.tree.insert("", "end", values=(product["ID"], product["Name"], product["Quantity"], product["Price"]))
@@ -751,10 +752,6 @@ class View():
             item_values = self.tree3.item(selected_item)["values"][0]
             self.result_window.destroy()
             user_quantity = simpledialog.askinteger("Choose Quantity", f"Select quantity for {self.selected_name}:")
+            self.tree.delete(*self.tree.get_children())
 
-            print(user_quantity)
-            # print(self.selected_product_id)
-            # print(self.selected_name)
-            # print(self.selected_quantity)
-            # print(self.selected_price)
-        print(item_values)
+            self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, user_quantity, self.selected_price))
