@@ -1,8 +1,11 @@
 from db import Session
-from models import Medicine, Supplier
+from models import Supplier
+import tkinter.messagebox as messagebox
+from ttkbootstrap.dialogs import Messagebox
 from decimal import Decimal
 import tkinter as tk
 from datetime import datetime
+import bcrypt
 
 
 class Controller:
@@ -45,10 +48,18 @@ class Controller:
             Supplier.create_fake_suppliers()
             self.user_model.create_admin_if_not_exists()
 
-    def login(self, workplace):
-        self.view.master.deiconify()
-        self.view.top_login.destroy()
+    def login(self, workplace, username, password):
+        user = self.user_model.find_user(username)
 
+        if user:
+            if bcrypt.checkpw(password.encode('utf-8'), user.password_hash):
+                self.view.master.deiconify()
+                self.view.top_login.destroy()
+                messagebox.showinfo("Success", "Login successful")
+            else:
+                messagebox.showerror("Login Failed", "Invalid username or password.")
+        else:
+            messagebox.showerror("Login Failed", "Invalid username or password.")
 
     def show_nomenclature(self, search_term, search_criteria):
         page = 1

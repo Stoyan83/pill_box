@@ -196,7 +196,9 @@ class View():
 
     def on_login(self):
         selected_option = self.selected_workplace.get()
-        self.controller.login(selected_option)
+        username = self.entry_username.get()
+        password = self.entry_password.get()
+        self.controller.login(selected_option, username, password)
 
     def on_login_window_close(self):
         self.top_login.destroy()

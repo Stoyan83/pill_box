@@ -394,3 +394,10 @@ class User(Base):
             session.commit()
 
         return admin_user
+
+    def find_user(self, username):
+        session = SessionManager.get_session()
+
+        user = session.query(User).filter(User.name == username).first()
+
+        return user
