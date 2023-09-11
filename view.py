@@ -787,7 +787,14 @@ class View():
                     del self.controller.locked_products[self.item_id]
 
     def on_process(self):
-        print(self.controller.total_sales)
-        self.controller.locked_products = {}
-        self.controller.total_sales = 0
-        self.controller.sales_total_var.set(f"Total Sum: {self.controller.total_sales}")
+        sum_no_vat, vat, sum_vat = self.controller.sell_sum_for_invoice()
+
+        confirmation_message = f"Sum: {sum_no_vat}\nVAT: {vat}\nTotal Sum: {sum_vat}\n\nAre you sure you want to complete the sale?"
+        user_confirmation = Messagebox.show_question(confirmation_message, buttons=['Yes:primary', 'No:secondary'])
+
+        if user_confirmation == "Yes":
+            if self.tree2.get_children():
+                self.tree2.delete(*self.tree2.get_children())
+            self.controller.locked_products = {}
+            self.controller.total_sales = 0
+            self.controller.sales_total_var.set(f"Total Sum: {self.controller.total_sales}")

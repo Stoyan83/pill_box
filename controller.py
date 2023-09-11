@@ -163,7 +163,6 @@ class Controller:
         else:
             return False
 
-
     def calculate_sales_total(self, quantity, price):
         total_with_vat = self._update_total_sales(quantity, price)
 
@@ -175,3 +174,10 @@ class Controller:
 
         self.total_sales -= total_with_vat
         self.sales_total_var.set(f"Total Sum: {self.total_sales}")
+
+    def sell_sum_for_invoice(self):
+        sum_vat = self.total_sales
+        vat = (sum_vat * Decimal(self.vat_rate)).quantize(Decimal('0.00'))
+        sum_no_vat = (sum_vat - vat).quantize(Decimal('0.00'))
+
+        return sum_no_vat, vat, sum_vat
