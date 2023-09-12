@@ -47,7 +47,6 @@ class Medicine(Base):
     prescription_mode = Column(String)
 
     inventory = relationship('Inventory', back_populates='medicine')
-    inventory_invoices = relationship('InvoiceInventories', back_populates='medicine')
 
     def __init__(self, session, **kwargs):
         super().__init__(**kwargs)
@@ -188,6 +187,7 @@ class Inventory(Base):
     customer_price = Column(Numeric(precision=10, scale=2))
 
     medicine = relationship('Medicine', back_populates='inventory')
+    invoice_inventories = relationship('InvoiceInventories', back_populates='inventory')
 
     def __init__(self, medicine_id, quantity, batch_number, expiration_date, delivery_price, customer_price):
         self.medicine_id = medicine_id
@@ -297,20 +297,8 @@ class Invoice(Base):
                 session.add(self)
                 session.flush()
 
-                # Create invoice inventory items within the same transaction
-                for field in get_invoice_fields:
-                    invoice_date = datetime.strptime(field["expiry_date"], "%Y-%m-%d").date()
-                    invoice_item = InvoiceInventories(
-                        medicine_id=field["id"],
-                        quantity=field["quantity"],
-                        batch_number=field["batch_number"],
-                        expiration_date=invoice_date,
-                        delivery_price=field["delivery_price"],
-                        customer_price=field["customer_price"],
-                        invoice_id=self.id
-                    )
-                    session.add(invoice_item)
 
+                for field in get_invoice_fields:
                     # Create inventory items within the same transaction
                     inventory_item = Inventory(
                         medicine_id=field["id"],
@@ -321,6 +309,15 @@ class Invoice(Base):
                         customer_price=field["customer_price"],
                     )
                     session.add(inventory_item)
+                    session.flush()
+
+                    # Create invoice inventory items within the same transaction
+                    invoice_item = InvoiceInventories(
+                        quantity=field["quantity"],
+                        invoice_id=self.id,
+                        inventory_id=inventory_item.id
+                    )
+                    session.add(invoice_item)
 
                 return self.id
         except SQLAlchemyError as e:
@@ -342,25 +339,17 @@ class InvoiceInventories(Base):
     __tablename__ = 'invoice_inventories'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    medicine_id = Column(Integer, ForeignKey('medicines.id'), nullable=False)
     quantity = Column(Integer, nullable=False)
-    batch_number = Column(String)
-    expiration_date = Column(Date)
-    delivery_price = Column(Numeric(precision=10, scale=2))
-    customer_price = Column(Numeric(precision=10, scale=2))
     invoice_id = Column(Integer, ForeignKey('invoices.id'), nullable=False)
+    inventory_id = Column(Integer, ForeignKey('inventory.id'), nullable=False)
 
-    medicine = relationship('Medicine', back_populates='inventory_invoices')
     invoice = relationship('Invoice', back_populates='invoice_inventories')
+    inventory = relationship('Inventory', back_populates='invoice_inventories')
 
-    def __init__(self, medicine_id=None, quantity=None, batch_number=None, expiration_date=None, delivery_price=None, customer_price=None, invoice_id=None):
-        self.medicine_id = medicine_id
+    def __init__(self, quantity=None, invoice_id=None, inventory_id=None):
         self.quantity = quantity
-        self.batch_number = batch_number
-        self.expiration_date = expiration_date
-        self.delivery_price = delivery_price
-        self.customer_price = customer_price
         self.invoice_id = invoice_id
+        self.inventory_id = inventory_id
 
 
 class User(Base):
