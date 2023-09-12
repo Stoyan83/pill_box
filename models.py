@@ -363,7 +363,7 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
     password_hash = Column(String, nullable=False)
     is_admin = Column(Boolean, default=False, nullable=False)
 
@@ -382,18 +382,24 @@ class User(Base):
 
         return new_user
 
-    def create_admin_if_not_exists(self):
+    def create_users_if_not_exist(self):
         session = SessionManager.get_session()
 
         admin_user = session.query(User).filter(User.is_admin == True).first()
-
         if not admin_user:
             password_hash = bcrypt.hashpw("admin".encode('utf-8'), bcrypt.gensalt())
             admin_user = User(name="admin", password_hash=password_hash, is_admin=True)
             session.add(admin_user)
-            session.commit()
 
-        return admin_user
+        non_admin_user = session.query(User).filter(User.is_admin == False).first()
+        if not non_admin_user:
+            password_hash = bcrypt.hashpw("user".encode('utf-8'), bcrypt.gensalt())
+            non_admin_user = User(name="user", password_hash=password_hash, is_admin=False)
+            session.add(non_admin_user)
+
+        session.commit()
+
+        return admin_user, non_admin_user
 
     def find_user(self, username):
         session = SessionManager.get_session()

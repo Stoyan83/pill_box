@@ -46,7 +46,7 @@ class Controller:
         if count == 0:
             self.medicine_model.extract_and_insert_data()
             Supplier.create_fake_suppliers()
-            self.user_model.create_admin_if_not_exists()
+            self.user_model.create_users_if_not_exist()
 
     def login(self, workplace, username, password):
         user = self.user_model.find_user(username)
