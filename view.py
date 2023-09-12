@@ -206,15 +206,7 @@ class View():
                 ("Nomenclature", self.load_search),
 
                 ("Inventory Management", [
-                    ("Receive Inventory", self.receive_inventory),
-                    ("Placing Order", "placing_order"),
-                    ("Inventory Check", "inventory_check")
-                ])
-            ]),
-            ("Admin Menu", [
-                ("Users", [
-                    ("Add New User", "add_new_user"),
-                    ("Show Users", "show_users")
+                    ("Receive Inventory", self.receive_inventory)
                 ])
             ]),
             ("Help", [
@@ -326,6 +318,7 @@ class View():
             self.current_notebook_tab = None
         self.master.withdraw()
         self.load_login_window()
+        self.controller.user = None
 
 
     def receive_inventory(self):
