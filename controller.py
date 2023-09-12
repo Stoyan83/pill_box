@@ -143,7 +143,7 @@ class Controller:
     def get_suppliers(self):
         return self.supplier_model.get_all_supplier_names()
 
-    def changee_supplier_name_to_id(self, invoice_data):
+    def change_supplier_name_to_id(self, invoice_data):
         supplier_name = invoice_data["supplier"]
         supplier_id = self.supplier_model.find_supplier_id_by_name(supplier_name)
         invoice_data["supplier"] = supplier_id

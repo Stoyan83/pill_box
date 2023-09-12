@@ -659,7 +659,7 @@ class View():
                 for label in self.invoice_row_labels:
                     label.config(state="disabled", cursor="arrow")
 
-            invoice_data = self.controller.changee_supplier_name_to_id(invoice_data)
+            invoice_data = self.controller.change_supplier_name_to_id(invoice_data)
 
             invoice_id = self.controller.get_invoice_id()
             self.invoice_id_var.set(invoice_id)
