@@ -22,6 +22,7 @@ class Controller:
 
         self.create_database()
 
+        self.user = None
         self.vat_rate = Decimal("0.20")
 
         self.total_sales = 0
@@ -49,10 +50,10 @@ class Controller:
             self.user_model.create_users_if_not_exist()
 
     def login(self, workplace, username, password):
-        user = self.user_model.find_user(username)
+        self.user = self.user_model.find_user(username)
 
-        if user:
-            if bcrypt.checkpw(password.encode('utf-8'), user.password_hash):
+        if self.user:
+            if bcrypt.checkpw(password.encode('utf-8'), self.user.password_hash):
                 self.view.master.deiconify()
                 self.view.top_login.destroy()
                 messagebox.showinfo("Success", "Login successful")

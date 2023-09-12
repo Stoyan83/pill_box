@@ -265,9 +265,11 @@ class Invoice(Base):
     vat = Column(Numeric(precision=10, scale=2), nullable=False)
     total_sum = Column(Numeric(precision=10, scale=2), nullable=False)
     supplier_id = Column(Integer, ForeignKey('suppliers.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
 
     supplier = relationship('Supplier', back_populates='invoices')
     invoice_inventories = relationship('InvoiceInventories', back_populates='invoice')
+    user = relationship('User', back_populates='invoices')
 
 
     def __init__(self, number=None, date=None, invoice_sum=None, vat=None, total_sum=None, supplier_id=None):
@@ -366,6 +368,8 @@ class User(Base):
     name = Column(String, nullable=False, unique=True)
     password_hash = Column(String, nullable=False)
     is_admin = Column(Boolean, default=False, nullable=False)
+
+    invoices = relationship('Invoice', back_populates='user')
 
     def __init__(self, name=None, password_hash=None, is_admin=False):
         self.name = name
