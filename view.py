@@ -49,6 +49,10 @@ class View():
         self.frame = ttk.Frame(self.notebook)
         self.notebook.add(self.frame, text=page_title)
 
+        if not data_list:
+            self.close_notebook(self.frame)
+            Messagebox.show_info("No medicines were found for your search. Please try again.", title="No Medicines Found" )
+
         self.notebook.select(self.frame)
 
         self.current_notebook_tab = self.frame
@@ -713,7 +717,21 @@ class View():
         self.total_label = tb.Label(sales_frame, text="Total sum: ", textvariable=self.controller.sales_total_var, borderwidth=1, relief="solid")
         self.total_label.pack(side="right", padx=10, pady=5)
 
+        close_button = tb.Button(sales_frame, text="Close", bootstyle="danger-outline", command=self.close_sales)
+        close_button.pack(side=tk.TOP, anchor=tk.NE)
+
+
         self.notebook.select(sales_frame)
+
+    def close_sales(self):
+        tree2_items = self.tree2.get_children()
+        if not tree2_items:
+            for tab_id in self.notebook.tabs():
+                if self.notebook.tab(tab_id, "text") == "Sales":
+                    self.notebook.forget(tab_id)
+                    break
+        else:
+            Messagebox.show_error("First delete all rows in sale.", title="Error")
 
     def search_product(self):
         self.tree.delete(*self.tree.get_children())
