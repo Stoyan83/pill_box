@@ -272,16 +272,17 @@ class Invoice(Base):
     user = relationship('User', back_populates='invoices')
 
 
-    def __init__(self, number=None, date=None, invoice_sum=None, vat=None, total_sum=None, supplier_id=None):
+    def __init__(self, number=None, date=None, invoice_sum=None, vat=None, total_sum=None, supplier_id=None, user_id=None):
         self.number = number
         self.date = date
         self.invoice_sum = invoice_sum
         self.vat = vat
         self.total_sum = total_sum
         self.supplier_id = supplier_id
+        self.user_id = user_id
 
 
-    def create_invoice(self, invoice_data, get_invoice_fields):
+    def create_invoice(self, invoice_data, get_invoice_fields, user_id):
         session = SessionManager.get_session()
         try:
             with session.begin_nested():
@@ -292,6 +293,7 @@ class Invoice(Base):
                 self.vat = invoice_data["vat"]
                 self.total_sum = invoice_data["total_sum"]
                 self.supplier_id = invoice_data['supplier']
+                self.user_id = user_id
                 session.add(self)
                 session.flush()
 

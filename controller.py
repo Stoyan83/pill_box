@@ -118,7 +118,7 @@ class Controller:
         return ' '.join(word.capitalize() for word in label.split('_'))
 
     def save_invoice(self, get_invoice_fields, invoice_data):
-        self.invoice_model.create_invoice(invoice_data, get_invoice_fields)
+        self.invoice_model.create_invoice(invoice_data, get_invoice_fields, self.user.id)
 
 
     def validate_numeric_input(self, value):
