@@ -307,6 +307,9 @@ class Invoice(Base):
                     if existing_inventory_item:
                         # Update the quantity of the existing item
                         existing_inventory_item.quantity += int(field["quantity"])
+                        if existing_inventory_item.delivery_price != field["delivery_price"]:
+                            existing_inventory_item.delivery_price = field["delivery_price"]
+                            existing_inventory_item.customer_price = field["customer_price"]
                     else:
                         # Create a new inventory item
                         inventory_item = Inventory(
