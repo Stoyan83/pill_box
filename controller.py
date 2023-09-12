@@ -16,6 +16,7 @@ class Controller:
         self.invoice_inventory_model = models.get('invoice_inventory_model')
         self.supplier_model = models.get('supplier_model')
         self.user_model = models.get('user_model')
+        self.sale_model = models.get('sale_model')
         self.view = view
 
         self.locked_products = {}
@@ -120,6 +121,8 @@ class Controller:
     def save_invoice(self, get_invoice_fields, invoice_data):
         self.invoice_model.create_invoice(invoice_data, get_invoice_fields, self.user.id)
 
+    def save_sale(self, sale_data, sum_no_vat, vat, sum_va):
+        self.sale_model.create_sale(sale_data, sum_no_vat, vat, sum_va, self.user.id)
 
     def validate_numeric_input(self, value):
         try:

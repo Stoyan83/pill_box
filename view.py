@@ -804,7 +804,7 @@ class View():
     def on_process(self):
         sum_no_vat, vat, sum_vat = self.controller.sell_sum_for_invoice()
 
-        print(self.controller.locked_products)
+        self.controller.save_sale(self.controller.locked_products, sum_no_vat, vat, sum_vat)
 
         confirmation_message = f"Sum: {sum_no_vat}\nVAT: {vat}\nTotal Sum: {sum_vat}\n\nAre you sure you want to complete the sale?"
         user_confirmation = Messagebox.show_question(confirmation_message, buttons=['Yes:primary', 'No:secondary'])

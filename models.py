@@ -440,6 +440,9 @@ class Sale(Base):
         self.total_sum = total_sum
         self.user_id = user_id
 
+    def create_sale(self, sale_data, sum_no_vat, vat, sum_va, user_id):
+        print(sale_data)
+
 
 class SaleInventory(Base):
     __tablename__ = 'sale_inventories'
