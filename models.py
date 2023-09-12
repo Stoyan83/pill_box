@@ -79,7 +79,7 @@ class Medicine(Base):
             self.session.add(medicine)
 
         self.session.commit()
-        print(f"Successfully added {sheet.nrows} fake medicines to the database.")
+        print(f"Successfully added {sheet.nrows} medicines to the database.")
 
     def search_medicines(self, search_term, search_criteria, page=1, results_per_page=10):
         query = None
@@ -188,6 +188,8 @@ class Inventory(Base):
 
     medicine = relationship('Medicine', back_populates='inventory')
     invoice_inventories = relationship('InvoiceInventories', back_populates='inventory')
+    sale_inventories = relationship('SaleInventory', back_populates='inventory')
+
 
     def __init__(self, medicine_id, quantity, batch_number, expiration_date, delivery_price, customer_price):
         self.medicine_id = medicine_id
@@ -374,6 +376,7 @@ class User(Base):
     is_admin = Column(Boolean, default=False, nullable=False)
 
     invoices = relationship('Invoice', back_populates='user')
+    sales = relationship('Sale', back_populates='user')
 
     def __init__(self, name=None, password_hash=None, is_admin=False):
         self.name = name
@@ -415,3 +418,41 @@ class User(Base):
         user = session.query(User).filter(User.name == username).first()
 
         return user
+
+
+class Sale(Base):
+    __tablename__ = 'sales'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    date = Column(Date, nullable=False)
+    sale_sum = Column(Numeric(precision=10, scale=2), nullable=False)
+    vat = Column(Numeric(precision=10, scale=2), nullable=False)
+    total_sum = Column(Numeric(precision=10, scale=2), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    user = relationship('User', back_populates='sales')
+    sale_inventories = relationship('SaleInventory', back_populates='sale')
+
+    def __init__(self, date=None, sale_sum=None, vat=None, total_sum=None, user_id=None):
+        self.date = date
+        self.sale_sum = sale_sum
+        self.vat = vat
+        self.total_sum = total_sum
+        self.user_id = user_id
+
+
+class SaleInventory(Base):
+    __tablename__ = 'sale_inventories'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    quantity = Column(Integer, nullable=False)
+    sale_id = Column(Integer, ForeignKey('sales.id'), nullable=False)
+    inventory_id = Column(Integer, ForeignKey('inventory.id'), nullable=False)
+
+    sale = relationship('Sale', back_populates='sale_inventories')
+    inventory = relationship('Inventory', back_populates='sale_inventories')
+
+    def __init__(self, quantity=None, sale_id=None, inventory_id=None):
+        self.quantity = quantity
+        self.sale_id = sale_id
+        self.inventory_id = inventory_id
