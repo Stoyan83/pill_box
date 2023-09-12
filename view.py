@@ -780,7 +780,7 @@ class View():
                     Messagebox.show_error("Insufficient quantity available.", title="Error")
                 else:
                     self.tree2.insert("", "end", values=(self.item_id, self.selected_product_id, self.selected_name, self.user_quantity, self.item_price))
-                    inserted_values = (self.selected_product_id, self.selected_name, self.user_quantity, self.item_price)
+                    inserted_values = (self.user_quantity)
                     self.controller.locked_products[self.item_id] = inserted_values
                     self.controller.calculate_sales_total(self.user_quantity, self.item_price)
 

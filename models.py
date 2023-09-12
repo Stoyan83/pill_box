@@ -1,5 +1,6 @@
 import random
 from datetime import datetime
+from datetime import datetime
 from sqlalchemy import Column, String, Integer, ForeignKey, Date, Numeric, func, Boolean
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import relationship
@@ -440,8 +441,40 @@ class Sale(Base):
         self.total_sum = total_sum
         self.user_id = user_id
 
-    def create_sale(self, sale_data, sum_no_vat, vat, sum_va, user_id):
-        print(sale_data)
+    def create_sale(self, sale_data, sum_no_vat, vat, sum_vat, user_id):
+        session = SessionManager.get_session()
+        try:
+            with session.begin_nested():
+                self.date = datetime.now()
+                self.sale_sum = sum_no_vat
+                self.vat = vat
+                self.total_sum = sum_vat
+                self.user_id = user_id
+                session.add(self)
+                session.flush()
+
+                for inventory_id, sale_quantity in sale_data.items():
+                    inventory_item = session.query(Inventory).get(inventory_id)
+                    if inventory_item:
+                        if sale_quantity > inventory_item.quantity:
+                            raise ValueError(f"Insufficient inventory for item with ID {inventory_id}")
+
+                        inventory_item.quantity -= int(sale_quantity)
+
+                        sale_item = SaleInventory(
+                            quantity=sale_quantity,
+                            sale_id=self.id,
+                            inventory_id=inventory_id
+                        )
+                        session.add(sale_item)
+                    else:
+                        raise ValueError(f"Inventory item with ID {inventory_id} not found")
+
+                return self.id
+        except SQLAlchemyError as e:
+            session.rollback()
+            raise e
+
 
 
 class SaleInventory(Base):
