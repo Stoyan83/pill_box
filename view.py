@@ -779,8 +779,9 @@ class View():
                 elif self.item_quantity < self.user_quantity:
                     Messagebox.show_error("Insufficient quantity available.", title="Error")
                 else:
-                    self.tree2.insert("", "end", values=(self.selected_product_id, self.selected_name, self.user_quantity, self.item_price))
-                    self.controller.locked_products[self.item_id] = "locked"
+                    self.tree2.insert("", "end", values=(self.item_id, self.selected_product_id, self.selected_name, self.user_quantity, self.item_price))
+                    inserted_values = (self.selected_product_id, self.selected_name, self.user_quantity, self.item_price)
+                    self.controller.locked_products[self.item_id] = inserted_values
                     self.controller.calculate_sales_total(self.user_quantity, self.item_price)
 
                 self.tree2.bind("<<TreeviewSelect>>", self.delete_from_second_tree)
@@ -789,18 +790,21 @@ class View():
         selected_items = self.tree2.selection()
         if selected_items:
             selected_item = selected_items[0]
-            item_quantity = self.tree2.item(selected_item)["values"][2]
-            item_price = self.tree2.item(selected_item)["values"][3]
+            item_id = self.tree2.item(selected_item)["values"][0]
+            item_quantity = self.tree2.item(selected_item)["values"][3]
+            item_price = self.tree2.item(selected_item)["values"][4]
             confirm_delete = Messagebox.show_question("Are you sure you want to delete this item?", buttons=['Yes:primary', 'No:secondary'])
 
             if confirm_delete == 'Yes':
                 self.controller.recalculate_sale_sum(item_quantity, item_price)
                 self.tree2.delete(selected_item)
-                if self.item_id in self.controller.locked_products:
-                    del self.controller.locked_products[self.item_id]
+                if item_id in self.controller.locked_products:
+                    del self.controller.locked_products[item_id]
 
     def on_process(self):
         sum_no_vat, vat, sum_vat = self.controller.sell_sum_for_invoice()
+
+        print(self.controller.locked_products)
 
         confirmation_message = f"Sum: {sum_no_vat}\nVAT: {vat}\nTotal Sum: {sum_vat}\n\nAre you sure you want to complete the sale?"
         user_confirmation = Messagebox.show_question(confirmation_message, buttons=['Yes:primary', 'No:secondary'])
