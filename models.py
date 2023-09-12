@@ -297,25 +297,34 @@ class Invoice(Base):
                 session.add(self)
                 session.flush()
 
-
                 for field in get_invoice_fields:
-                    # Create inventory items within the same transaction
-                    inventory_item = Inventory(
+                    # Check if an inventory item with the same batch number and medicine ID exists
+                    existing_inventory_item = session.query(Inventory).filter_by(
                         medicine_id=field["id"],
-                        quantity=field["quantity"],
-                        batch_number=field["batch_number"],
-                        expiration_date=invoice_date,
-                        delivery_price=field["delivery_price"],
-                        customer_price=field["customer_price"],
-                    )
-                    session.add(inventory_item)
-                    session.flush()
+                        batch_number=field["batch_number"]
+                    ).first()
+
+                    if existing_inventory_item:
+                        # Update the quantity of the existing item
+                        existing_inventory_item.quantity += int(field["quantity"])
+                    else:
+                        # Create a new inventory item
+                        inventory_item = Inventory(
+                            medicine_id=field["id"],
+                            quantity=field["quantity"],
+                            batch_number=field["batch_number"],
+                            expiration_date=invoice_date,
+                            delivery_price=field["delivery_price"],
+                            customer_price=field["customer_price"],
+                        )
+                        session.add(inventory_item)
+                        session.flush()
 
                     # Create invoice inventory items within the same transaction
                     invoice_item = InvoiceInventories(
                         quantity=field["quantity"],
                         invoice_id=self.id,
-                        inventory_id=inventory_item.id
+                        inventory_id=existing_inventory_item.id if existing_inventory_item else inventory_item.id
                     )
                     session.add(invoice_item)
 
@@ -323,6 +332,7 @@ class Invoice(Base):
         except SQLAlchemyError as e:
             session.rollback()
             raise e
+
 
     def get_id(self):
         session = SessionManager.get_session()
