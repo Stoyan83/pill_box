@@ -797,7 +797,7 @@ class View():
                 elif self.item_quantity < self.user_quantity:
                     Messagebox.show_error("Insufficient quantity available.", title="Error")
                 else:
-                    self.tree2.insert("", "end", values=(self.item_id, self.selected_product_id, self.selected_name, self.user_quantity, self.item_price))
+                    self.tree2.insert("", "end", values=(self.item_id, self.selected_name, self.user_quantity, self.item_price))
                     inserted_values = (self.user_quantity)
                     self.controller.locked_products[self.item_id] = inserted_values
                     self.controller.calculate_sales_total(self.user_quantity, self.item_price)
@@ -809,8 +809,8 @@ class View():
         if selected_items:
             selected_item = selected_items[0]
             item_id = self.tree2.item(selected_item)["values"][0]
-            item_quantity = self.tree2.item(selected_item)["values"][3]
-            item_price = self.tree2.item(selected_item)["values"][4]
+            item_quantity = self.tree2.item(selected_item)["values"][2]
+            item_price = self.tree2.item(selected_item)["values"][3]
             confirm_delete = Messagebox.show_question("Are you sure you want to delete this item?", buttons=['Yes:primary', 'No:secondary'])
 
             if confirm_delete == 'Yes':
