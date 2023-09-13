@@ -661,11 +661,10 @@ class View():
 
             invoice_data = self.controller.change_supplier_name_to_id(invoice_data)
 
-            invoice_id = self.controller.get_invoice_id()
-            self.invoice_id_var.set(invoice_id)
             self.combobox.config(state="disabled")
             self.submit_button.config(state="disabled")
-            self.controller.save_invoice(self.get_invoice_fields, invoice_data)
+            invoice_id = self.controller.save_invoice(self.get_invoice_fields, invoice_data)
+            self.invoice_id_var.set(invoice_id)
 
     def show_date_format_error(self, entry_value, expected_format):
         error_message = f"Invalid Date Format: {entry_value}. Please use the format: {expected_format}"

@@ -119,7 +119,7 @@ class Controller:
         return ' '.join(word.capitalize() for word in label.split('_'))
 
     def save_invoice(self, get_invoice_fields, invoice_data):
-        self.invoice_model.create_invoice(invoice_data, get_invoice_fields, self.user.id)
+        return self.invoice_model.create_invoice(invoice_data, get_invoice_fields, self.user.id)
 
     def save_sale(self, sale_data, sum_no_vat, vat, sum_va):
         self.sale_model.create_sale(sale_data, sum_no_vat, vat, sum_va, self.user.id)
@@ -148,9 +148,6 @@ class Controller:
         supplier_id = self.supplier_model.find_supplier_id_by_name(supplier_name)
         invoice_data["supplier"] = supplier_id
         return invoice_data
-
-    def get_invoice_id(self):
-        return self.invoice_model.get_id()
 
     def search_product_for_sale(self, searched_product_for_sale):
         medicine_data_list = self.medicine_model.seacrh_medicine_only_in_stock(searched_product_for_sale)

@@ -330,22 +330,12 @@ class Invoice(Base):
                         inventory_id=existing_inventory_item.id if existing_inventory_item else inventory_item.id
                     )
                     session.add(invoice_item)
+                    
 
                 return self.id
         except SQLAlchemyError as e:
             session.rollback()
             raise e
-
-
-    def get_id(self):
-        session = SessionManager.get_session()
-        max_id = session.query(func.max(Invoice.id)).scalar()
-        return max_id if max_id else 0
-
-    def save(self):
-        session = SessionManager.get_session()
-        session.add(self)
-        session.commit()
 
 
 class InvoiceInventories(Base):
