@@ -82,7 +82,7 @@ class Medicine(Base):
         self.session.commit()
         print(f"Successfully added {sheet.nrows} medicines to the database.")
 
-    def search_medicines(self, search_term, search_criteria, page=1, results_per_page=10):
+    def search_medicines(self, search_term, search_criteria):
         query = None
 
         if search_criteria == "ID":
@@ -91,9 +91,8 @@ class Medicine(Base):
             query = self.session.query(Medicine).filter(Medicine.trade_name.like(f"{search_term}%"))
 
         if query is not None:
-            offset = (page - 1) * results_per_page
 
-            medicines = query.offset(offset).all()
+            medicines = query.all()
 
             medicine_data_list = []
 
@@ -126,7 +125,7 @@ class Medicine(Base):
 
         return []
 
-    def seacrh_medicine_only_in_stock(self, search_term, page=1, results_per_page=10):
+    def seacrh_medicine_only_in_stock(self, search_term):
         query = None
 
         try:
@@ -136,9 +135,7 @@ class Medicine(Base):
             query = self.session.query(Medicine).filter(Medicine.trade_name.like(f"{search_term}%"))
 
         if query is not None:
-            offset = (page - 1) * results_per_page
-
-            medicines = query.offset(offset).all()
+            medicines = query.all()
 
             medicine_data_list = []
 

@@ -66,7 +66,7 @@ class Controller:
     def show_nomenclature(self, search_term, search_criteria):
         page = 1
         results_per_page = 10
-        nomenclature = self.medicine_model.search_medicines(search_term, search_criteria, page, results_per_page)
+        nomenclature = self.medicine_model.search_medicines(search_term, search_criteria)
         self.view.create_notebook("Nomenclature", nomenclature, page, results_per_page)
 
     def calculate_total(self, invoice_data):
