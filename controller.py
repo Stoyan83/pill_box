@@ -37,7 +37,6 @@ class Controller:
         total_with_vat = quantity * price
         return total_with_vat
 
-
     def create_database(self):
         self.session_model.create_table()
 

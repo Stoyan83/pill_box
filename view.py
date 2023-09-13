@@ -38,7 +38,6 @@ class View():
         self.notebook.pack(fill=tk.BOTH, expand=True)
 
         self.pencil_icon = PhotoImage(file="images/edit.png").subsample(11, 11)
-        self.trash_icon = PhotoImage(file="images/delete.png").subsample(10, 10)
 
         self.load_menu()
 
