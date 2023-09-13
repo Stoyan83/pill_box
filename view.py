@@ -213,8 +213,6 @@ class View():
                 ])
             ]),
             ("Help", [
-                ("About", "show_about"),
-                ("Documentation", "show_documentation"),
                 ("Toggle Theme", [
                     ("Dark Theme", self.set_superhero_theme),
                     ("Light Theme", self.set_flatly_theme)
